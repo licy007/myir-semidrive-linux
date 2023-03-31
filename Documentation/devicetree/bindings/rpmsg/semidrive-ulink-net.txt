@@ -1,0 +1,12 @@
+Semidrive ulink net driver.
+
+Required properties:
+- compatible : "sd,ulink-net"
+
+Example:
+
+ulink_net: ulink_net {
+	compatible = "sd,ulink-net";
+	default_rproc = <4>;
+	status = "okay";
+};

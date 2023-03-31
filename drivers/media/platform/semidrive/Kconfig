@@ -1,0 +1,31 @@
+#
+# Multiplexer devices
+#
+
+menu "Semidrive vpu drivers"
+
+config SEMIDRIVE_VPU_CODA988
+	tristate "semidrive vpu coda988"
+	---help---
+	    This driver provides downloading VPU firmware and
+	    communicating with VPU. This driver for hw video
+	    codec embedded in semidirver-x9 SOCs. It is able
+	    to handle video decoding/encoding in a range of formats.
+
+
+config SEMIDRIVE_VPU_WAVE412
+	tristate "semidrive vpu wave412"
+	---help---
+	    This driver provides downloading VPU firmware and
+	    communicating with VPU. This driver for hw video
+	    codec embedded in semidrive-x9 SOCs. It is able
+	    to handle video decoding/encoding in a range of formats.
+
+config SEMIDRIVE_JPU_CODAJ12
+	tristate "semidrive jpu codaj12"
+	---help---
+	    This driver provides communicating with JPU. This driver
+	    for hw codec embedded in semidrive-v9 SOCs. It is able
+	    to handle jpeg decoding/encoding format.
+
+endmenu

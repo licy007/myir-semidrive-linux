@@ -1,0 +1,30 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/soc/sdrv_dt_mapping.h>
+
+/{
+	compatible = "semidrive,kunlun";
+	chip-id = < SDRV_CHIPID_ALL >;
+	board-type = < SDRV_BOARD_TYPE_MS >;
+	board-id = < SDRV_BOARDID_ALL >;
+
+	fragment@0 {
+		target = <&mdio2>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			eth_phy2: ethernet-phy@2 {
+				compatible = "ethernet-phy-id0022.1620", "ethernet-phy-ieee802.3-c22";
+				reg = <0>;
+				rxc-skew-ps = <1860>;
+				rxdv-skew-ps = <60>;
+				rxd0-skew-ps = <60>;
+				rxd1-skew-ps = <60>;
+				rxd2-skew-ps = <60>;
+				rxd3-skew-ps = <60>;
+			};
+		};
+	};
+};

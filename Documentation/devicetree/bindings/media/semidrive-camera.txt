@@ -1,0 +1,93 @@
+Semidrive KUNLUN X9 camera host interface
+
+* Properties
+
+- compatible:
+	Usage: required
+	Value type: <stringlist>
+	Definition: Should contain:
+		- "semdrive,kunlun-csi"
+		- "semidrive,sdrv-csi"
+		- "semidrive,sdrv-csi-mipi"
+- reg:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: Register ranges as listed in the reg-names property.
+
+- interrupts:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: Interrupts as listed in the interrupt-names property.
+
+- mbus-type:
+	Usage: required
+	Value type: <stringlist>
+	Definition: Should contain the following entries:
+                - "mipi-csi2"
+                - "parallel"
+
+
+* Nodes
+
+- ports:
+	Usage: required
+	Definition: As described in video-interfaces.txt in same directory.
+	Properties:
+		- reg:
+			Usage: required
+			Value type: <u32>
+			Definition: Selects CSI stream index.
+
+
+* Example:
+
+	csi0:csi@30cc0000 {
+			compatible = "semdrive,kunlun-csi";
+			reg = <0x0 0x30CC0000 0x0 0x10000>;
+			interrupts = <0 141 4>;
+			host_id = <0>;
+			mbus-type = "mipi-csi2";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				csi0_stream0: port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					csi0_stream0_in: endpoint@0 {
+						reg = <0>;
+					};
+				};
+
+				csi0_stream1: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					csi0_stream1_in: endpoint@0 {
+						reg = <1>;
+					};
+				};
+
+				csi0_stream2: port@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					csi0_stream2_in: endpoint@0 {
+						reg = <2>;
+					};
+				};
+
+				csi0_stream3: port@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					csi0_stream3_in: endpoint@0 {
+						reg = <3>;
+					};
+				};
+			};
+	};
+

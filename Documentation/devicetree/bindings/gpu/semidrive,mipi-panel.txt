@@ -1,0 +1,17 @@
+Semidrive display mipi panel driver.
+
+Required properties:
+- compatible : "semidrive,mipi-panel"
+
+Example:
+
+dsi1 {
+	panel {
+		compatible = "semidrive,mipi-panel";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		status = "okay";
+		semidrive,lcd-attached = "lcd_hsd123_serdes_mipi_1920x720";
+	};
+};

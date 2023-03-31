@@ -1,0 +1,29 @@
+Generic device tree bindings for lt9611
+===========================================
+
+This document describes generic bindings which can be used to describe lt9611
+busses in a device tree.
+
+Required properties
+-------------------
+- compatible
+    should contain "semidrive,lt9611"
+
+- status:
+    "okay" or "disabled"
+
+Example:
+
+    i2c@00000000 {
+        /* ... */
+
+        lt9611_bridge: bridge@39 {
+            status = "okay";
+            compatible = "semidrive,lt9611";
+            reg = <0x39>;   /* i2c device address */
+            /* GPIO_D9 */
+            lt9611-rst-gpios = <&port4c 9 GPIO_ACTIVE_HIGH>;
+        };
+
+        /* ... */
+    };

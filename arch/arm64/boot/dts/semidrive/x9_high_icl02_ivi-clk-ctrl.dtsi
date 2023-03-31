@@ -1,0 +1,335 @@
+/*
+ * Semidrive X9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+&clk_cpu1 {
+	status = "okay";
+};
+
+&clk_gpu1 {
+	status = "okay";
+};
+
+&clk_gpu2 {
+	status = "disabled";
+};
+
+&clk_vsn {
+	status = "okay";
+};
+
+&clk_vpumjpeg {
+	status = "okay";
+};
+
+&clk_hpi {
+	status = "okay";
+};
+
+&clk_ddr {
+	status = "okay";
+};
+
+&clk_his {
+	status = "okay";
+};
+
+&clk_disp {
+	status = "okay";
+};
+
+&clk_extaud {
+	status = "okay";
+};
+
+/*ckgen sec */
+&PLL3 {
+	status = "okay";
+};
+&PLL4 {
+	status = "okay";
+};
+&PLL5 {
+	status = "okay";
+};
+&PLL6 {
+	status = "okay";
+};
+&PLL7 {
+	status = "okay";
+};
+
+&CE2 {
+	status = "okay";
+};
+
+&ADC {
+	status = "okay";
+};
+
+&I2C_SEC0 {
+	status = "okay";
+};
+
+&I2C_SEC0_5 {
+	status = "okay";
+};
+&I2C_SEC0_7 {
+	status = "disabled";
+};
+&I2C_SEC0_9 {
+	status = "okay";
+};
+&I2C_SEC0_11 {
+	status = "okay";
+};
+&I2C_SEC0_13 {
+	status = "disabled";
+};
+&I2C_SEC0_15 {
+	status = "okay";
+};
+
+&I2C_SEC1 {
+	status = "okay";
+};
+
+&I2C_SEC1_6 {
+	status = "okay";
+};
+&I2C_SEC1_8 {
+	status = "disabled";
+};
+&I2C_SEC1_10 {
+	status = "okay";
+};
+&I2C_SEC1_12 {
+	status = "okay";
+};
+&I2C_SEC1_14 {
+	status = "okay";
+};
+&I2C_SEC1_16 {
+	status = "okay";
+};
+
+&SPI_SEC0 {
+	status = "disabled";
+};
+
+&SPI_SEC1 {
+	status = "disabled";
+};
+
+&SPI_SEC0_5 {
+	status = "disabled";
+};
+&SPI_SEC0_7 {
+	status = "disabled";
+};
+&SPI_SEC1_6 {
+	status = "disabled";
+};
+&SPI_SEC1_8 {
+	status = "disabled";
+};
+&UART_SEC0 {
+	status = "okay";
+};
+
+&UART_SEC0_9 {
+	status = "okay";
+};
+&UART_SEC0_11 {
+	status = "disabled";
+};
+&UART_SEC0_13 {
+	status = "okay";
+};
+&UART_SEC0_15 {
+	status = "okay";
+};
+&UART_SEC1_10 {
+	status = "okay";
+};
+&UART_SEC1_12 {
+	status = "disabled";
+};
+&UART_SEC1_14 {
+	status = "disabled";
+};
+&UART_SEC1_16 {
+	status = "okay";
+};
+
+&UART_SEC1 {
+	status = "okay";
+};
+
+&EMMC1 {
+	status = "okay";
+};
+
+&EMMC2 {
+	status = "disabled";
+};
+
+&EMMC3 {
+	status = "okay";
+};
+
+&EMMC4 {
+	status = "disabled";
+};
+
+&ETH2_TX {
+	status = "okay";
+};
+
+&ETH2_RMII {
+	status = "okay";
+};
+
+&ETH2_PHY_REF {
+	status = "okay";
+};
+
+&ETH2_TIMER_SEC {
+	status = "okay";
+};
+
+&SPDIF1 {
+	status = "disabled";
+};
+
+&SPDIF2 {
+	status = "disabled";
+};
+
+&SPDIF3 {
+	status = "disabled";
+};
+
+&SPDIF4 {
+	status = "disabled";
+};
+
+&OSPI2 {
+	status = "disabled";
+};
+
+&TIMER3 {
+	status = "disabled";
+};
+
+&TIMER4 {
+	status = "disabled";
+};
+
+&TIMER5 {
+	status = "disabled";
+};
+
+&TIMER6 {
+	status = "disabled";
+};
+
+&TIMER7 {
+	status = "disabled";
+};
+
+&TIMER8 {
+	status = "disabled";
+};
+
+&PWM3 {
+	status = "okay";
+};
+
+&PWM4 {
+	status = "disabled";
+};
+
+&PWM5 {
+	status = "okay";
+};
+
+&PWM6 {
+	status = "disabled";
+};
+
+&PWM7 {
+	status = "disabled";
+};
+
+&PWM8 {
+	status = "disabled";
+};
+
+&I2S_MCLK2 {
+	status = "okay";
+};
+
+&I2S_MCLK3 {
+	status = "okay";
+};
+
+&I2S_MC1 {
+	status = "okay";
+};
+
+&I2S_MC2 {
+	status = "okay";
+};
+
+&I2S_SC3 {
+	status = "disabled";
+};
+
+&I2S_SC4 {
+	status = "disabled";
+};
+
+&I2S_SC5 {
+	status = "okay";
+};
+
+&I2S_SC6 {
+	status = "okay";
+};
+
+&I2S_SC7 {
+	status = "disabled";
+};
+
+&I2S_SC8 {
+	status = "okay";
+};
+
+&CSI_MCLK1 {
+	status = "okay";
+};
+
+&CSI_MCLK2 {
+	status = "okay";
+};
+
+&CAN5_TO_20 {
+	status = "okay";
+};
+
+&TRACE {
+	status = "okay";
+};
+
+&SYS_CNT {
+	status = "okay";
+};
+
+&MSHC_TIMER {
+	status = "okay";
+};

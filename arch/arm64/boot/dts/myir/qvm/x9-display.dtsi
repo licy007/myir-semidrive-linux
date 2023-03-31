@@ -1,0 +1,475 @@
+#include <dt-bindings/display/dpu-sdx9.h>
+
+/{
+	soc {
+		display: display@0 {
+			compatible = "semdrive,display-subsystem";
+			sdriv,crtc = <&crtc0>;
+			status = "disabled";
+		};
+
+		display1: display@1 {
+			compatible = "semdrive,display-subsystem";
+			sdriv,crtc = <&crtc1>;
+			status = "disabled";
+		};
+
+		display2: display@2 {
+			compatible = "semdrive,display-subsystem";
+			sdriv,crtc = <&crtc2>;
+			status = "disabled";
+		};
+
+		display3: display@3 {
+			compatible = "semdrive,display-subsystem";
+			sdriv,crtc = <&crtc3>;
+			status = "disabled";
+		};
+
+		g2d: g2d@30c90000 {
+			compatible = "semidrive,g2d";
+			reg = <0x00 0x30c90000 0x00 0x10000>;
+			interrupts = <0 147 4>;
+			status = "disabled";
+			sdrv,ip = "g2d-r0p1";
+		};
+
+		g2d_lite: g2d_lite@30ca0000 {
+			compatible = "semidrive,g2d_lite";
+			reg = <0x00 0x30ca0000 0x00 0x10000>;
+			interrupts = <0 148 4>;
+			status = "disabled";
+			sdrv,ip = "g2dlite-r0p0";
+		};
+
+		dp1: dp1@30d80000 {
+			compatible = "sdrv,dp";
+			reg = <DP1_BASE DPU_RANGE>;
+			interrupts = <0 DP1_IRQ 4>;
+			status = "disabled";
+			mlc-select = <0>;
+			sdrv,ip = "dp-r0p1";
+		};
+
+		dc1: dc1@30db0000 {
+			compatible = "sdrv,dc";
+			reg = <DC1_BASE DPU_RANGE>;
+			interrupts = <0 DC1_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS1 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};
+
+		dp2: dp2@30d90000 {
+			compatible = "sdrv,dp";
+			reg = <DP2_BASE DPU_RANGE>;
+			interrupts = <0 DP2_IRQ 4>;
+			status = "disabled";
+			mlc-select = <1>;
+			sdrv,ip = "dp-r0p1";
+		};
+
+		dc2: dc2@30dc0000 {
+			compatible = "sdrv,dc";
+			reg = <DC2_BASE DPU_RANGE>;
+			interrupts = <0 DC2_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS2 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};
+
+		dp3: dp3@30da0000 {
+			compatible = "sdrv,dp";
+			reg = <DP3_BASE DPU_RANGE>;
+			interrupts = <0 DP3_IRQ 4>;
+			mlc-select = <0>;
+			status = "disabled";
+			sdrv,ip = "dp-r0p1";
+		};
+
+		dc3: dc3@30dd0000 {
+			compatible = "sdrv,dc";
+			reg = <DC3_BASE DPU_RANGE>;
+			interrupts = <0 DC3_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS3 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};
+
+		dc4: dc4@30de0000 {
+			compatible = "sdrv,dc";
+			reg = <DC4_BASE DPU_RANGE>;
+			interrupts = <0 DC4_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS4 PLL_DIVA>;		//set PLL_LVDS1 in X9U
+			clock-names = "pll_clk";
+		};
+
+		dc5: dc5@30df0000 {
+			compatible = "sdrv,dc";
+			reg = <DC5_BASE DPU_RANGE>;
+			interrupts = <0 DC5_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS4 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};
+
+		dp_dummy0: dp_dummy@0 {
+			compatible = "sdrv,dummy";
+
+			status = "disabled";
+			sdrv,ip = "dp-dummy";
+		};
+
+		dp_rpcall0: dp_dummy2@0 {
+			compatible = "sdrv,dummy";
+			mboxes = <&mbox 0x90 0x8000>;
+
+			status = "disabled";
+			sdrv,ip = "dp-rpcall";
+		};
+
+		dp_dummy1: dp_dummy1@0 {
+			compatible = "sdrv,dummy";
+
+			status = "disabled";
+			sdrv,ip = "dp-op";
+		};
+
+		crtc0: crtc0 {
+			compatible = "semidrive,kunlun-crtc";
+			dpc-master = <&dc1>;
+			display-mode = <1>; //1 single mode, 2: duplicate mode, 3: combine mode
+
+			crtc0_out: port {
+				crtc0_out_interface: endpoint@0 {
+					remote-endpoint = <&parallel_in_crtc0>;
+				};
+			};
+		};
+
+		crtc1: crtc1 {
+			compatible = "semidrive,kunlun-crtc";
+			dpc-master = <&dc2>;
+			display-mode = <1>; //1 single mode, 2: duplicate mode, 3: combine mode
+
+			crtc1_out: port {
+				crtc1_out_interface: endpoint@0 {
+					remote-endpoint = <&parallel_in_crtc1>;
+				};
+			};
+		};
+
+
+		crtc2: crtc2 {
+			compatible = "semidrive,kunlun-crtc";
+			dpc-master = <&dc3>;
+			display-mode = <1>; //1 single mode, 2: duplicate mode, 3: combine mode
+
+			crtc2_out: port {
+				crtc2_out_interface: endpoint@0 {
+					remote-endpoint = <&parallel_in_crtc2>;
+				};
+			};
+		};
+
+		crtc3: crtc3 {
+			compatible = "semidrive,kunlun-crtc";
+			dpc-master = <&dc4>;
+			display-mode = <1>; //1 single mode, 2: duplicate mode, 3: combine mode
+
+			crtc3_out: port {
+				crtc3_out_interface: endpoint@0 {
+					remote-endpoint = <&parallel_in_crtc3>;
+				};
+			};
+		};
+
+		parallel0: parallel@0 {
+			compatible = "semidrive, kunlun-display-parallel";
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				parallel0_in: port@0 {
+					parallel_in_crtc0: endpoint@0 {
+						remote-endpoint = <&crtc0_out_interface>;
+					};
+				};
+
+				parallel0_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					parallel_out_timing0: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel0_in>;
+					};
+				};
+			};
+		};
+
+		parallel1: parallel@1 {
+			compatible = "semidrive, kunlun-display-parallel";
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				parallel1_in: port@0 {
+					parallel_in_crtc1: endpoint@0 {
+						remote-endpoint = <&crtc1_out_interface>;
+					};
+				};
+
+				parallel1_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					parallel_out_timing1: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel1_in>;
+					};
+				};
+			};
+		};
+
+		parallel2: parallel@2 {
+			compatible = "semidrive, kunlun-display-parallel";
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				parallel2_in: port@0 {
+					parallel_in_crtc2: endpoint@0 {
+						remote-endpoint = <&crtc2_out_interface>;
+					};
+				};
+
+				parallel2_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					parallel_out_timing2: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel2_in>;
+					};
+				};
+			};
+		};
+
+		parallel3: parallel@3 {
+			compatible = "semidrive, kunlun-display-parallel";
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				parallel3_in: port@0 {
+					parallel_in_crtc3: endpoint@0 {
+						remote-endpoint = <&crtc3_out_interface>;
+					};
+				};
+
+				parallel3_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					parallel_out_timing3: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel3_in>;
+					};
+				};
+			};
+		};
+
+		lvds0: lvds0@30c50000 {
+			compatible = "semidrive, kunlun-display-lvds";
+			reg = <0x0 0x30c40000 0x0 0x50000>;
+			lvds-select = <1>;
+			dual-mode = <0>;
+			lvds-combine = <0>;
+			map-format = <1>;
+			pixel-format = <1>;
+
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				lvds0_in: port@0 {
+					lvds_in_crtc0: endpoint@0 {
+						remote-endpoint = <&crtc0_out_interface>;
+					};
+				};
+
+				lvds0_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					lvds_out_timing0: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel0_in>;
+					};
+				};
+			};
+		};
+
+		lvds1: lvds1@30c60000 {
+			compatible = "semidrive, kunlun-display-lvds";
+			reg = <0x0 0x30c40000 0x0 0x50000>;
+			lvds-select = <2>;
+			dual-mode = <0>;
+			lvds-combine = <0>;
+			map-format = <1>;
+			pixel-format = <1>;
+
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				lvds1_in: port@0 {
+					lvds_in_crtc1: endpoint@0 {
+						remote-endpoint = <&crtc1_out_interface>;
+					};
+				};
+
+				lvds1_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					lvds_out_timing1: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel1_in>;
+					};
+				};
+			};
+		};
+
+		lvds2: lvds2@30680000 {
+			compatible = "semidrive, kunlun-display-lvds";
+			reg = <0x0 0x30c40000 0x0 0x50000>;
+			lvds-select = <3>;
+			dual-mode = <0>;
+			lvds-combine = <0>;
+			map-format = <1>;
+			pixel-format = <1>;
+
+			status = "disabled";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				lvds2_in: port@0 {
+					lvds_in_crtc2: endpoint@0 {
+						remote-endpoint = <&crtc2_out_interface>;
+					};
+				};
+
+				lvds2_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					lvds_out_timing2: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel2_in>;
+					};
+				};
+			};
+		};
+
+		lvds3: lvds3@306a0000 {
+			compatible = "semidrive, kunlun-display-lvds";
+			reg = <0x0 0x30c40000 0x0 0x50000>;
+			lvds-select = <4>;
+			dual-mode = <0>;
+			lvds-combine = <0>;
+			map-format = <1>;
+			pixel-format = <1>;
+
+			status = "disabled";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				lvds3_in: port@0 {
+					lvds_in_crtc3: endpoint@0 {
+						remote-endpoint = <&crtc3_out_interface>;
+					};
+				};
+
+				lvds3_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					lvds_out_timing3: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&parall_panel3_in>;
+					};
+				};
+			};
+		};
+
+		ptimings0: parallel-timings@0 {
+			compatible = "semidrive,panel-simple";
+			status = "disabled";
+
+			port {
+				parall_panel0_in: endpoint {
+					remote-endpoint = <&parallel_out_timing0>;
+				};
+			};
+
+			dtimings0: display-timings {
+			};
+		};
+
+		ptimings1: parallel-timings@1 {
+			compatible = "semidrive,panel-simple";
+			status = "disabled";
+
+			port {
+				parall_panel1_in: endpoint {
+					remote-endpoint = <&parallel_out_timing1>;
+				};
+			};
+
+			dtimings1: display-timings {
+			};
+		};
+
+		ptimings2: parallel-timings@2 {
+			compatible = "semidrive,panel-simple";
+			status = "disabled";
+
+			port {
+				parall_panel2_in: endpoint {
+					remote-endpoint = <&parallel_out_timing2>;
+				};
+			};
+
+			dtimings2: display-timings {
+			};
+		};
+
+		ptimings3: parallel-timings@3 {
+			compatible = "semidrive,panel-simple";
+			status = "disabled";
+
+			port {
+				parall_panel3_in: endpoint {
+					remote-endpoint = <&parallel_out_timing3>;
+				};
+			};
+
+			dtimings3: display-timings {
+			};
+		};
+	};
+};

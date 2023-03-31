@@ -1,0 +1,4 @@
+config VIDEO_SEMIDRIVE_DESERS_ADAPTIVE
+	tristate "self-adaptive semidrive deser driver"
+	depends on VIDEO_SEMIDRIVE_V2
+	

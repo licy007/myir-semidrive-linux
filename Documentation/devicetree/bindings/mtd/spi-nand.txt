@@ -1,0 +1,26 @@
+* SPI NAND flash
+
+Required properties:
+- #address-cells, #size-cells : Must be present if the device has sub-nodes
+  representing partitions.
+- compatible : "sdrv,spi-nor"
+- reg : the base addr of ospi controler
+- cdns,read-delay: the delay clock of read
+- spi-max-frequency: the max clock frequency of spi
+- page-size: NAND's page-size
+- block-size: NAND's block-size
+Example:
+
+	spi-nand@0 {
+		compatible = "spi-nand";
+		cdns,read-delay = <1>;
+		cdns,tshsl-ns = <50>;
+		cdns,tsd2d-ns = <50>;
+		cdns,tchsh-ns = <50>;
+		cdns,tslch-ns = <50>;
+		spi-max-frequency = <100000000>;
+		reg = <0>;
+		page-size = <256>;
+		block-size = <12>;
+		status = "disabled";
+	};

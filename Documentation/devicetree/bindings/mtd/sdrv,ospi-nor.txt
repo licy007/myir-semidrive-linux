@@ -1,0 +1,28 @@
+* SPI NOR flash: ST M25Pxx (and similar) serial flash chips
+
+Required properties:
+- #address-cells, #size-cells : Must be present if the device has sub-nodes
+  representing partitions.
+- compatible : "sdrv,spi-nor"
+- reg : the base addr of ospi controler
+- interrupts : the interrupts no of ospi controler
+- cdns,fifo-depth : the depth of fifo
+- cdns,fifo-width : the width of fifo
+- cdns,trigger-address : the address of ospi controler
+- clocks : the clock soure of ospi controler
+
+Example:
+
+	ospi1: spi@30020000 {
+        	compatible = "sdrv,ospi-nor";
+        	#address-cells = <1>;
+        	#size-cells = <0>;
+        	reg = <0 0x30020000 0 0x10000>,
+                	<0 0x4000000 0 0x4000000>;
+        	interrupts = <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>;
+        	cdns,fifo-depth = <256>;
+        	cdns,fifo-width = <4>;
+        	cdns,trigger-address = <0x3fffe00>;
+        	clocks = <&OSPI1>;
+        	status = "disabled";
+	};

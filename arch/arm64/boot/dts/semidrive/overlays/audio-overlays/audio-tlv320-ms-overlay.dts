@@ -1,0 +1,17 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/soc/sdrv_dt_mapping.h>
+
+/{
+	compatible = "semidrive,kunlun";
+	chip-id = < SDRV_CHIPID_ALL >;
+	board-type = < SDRV_BOARD_TYPE_MS >;
+	board-id = < SDRV_BOARDID_ALL >;
+	fragment@0 {
+		target = <&sound_tlv320aic23>;
+		__overlay__ {
+			semidrive,audio-codec = <&tlv320aic23_ms>;
+		};
+	};
+};

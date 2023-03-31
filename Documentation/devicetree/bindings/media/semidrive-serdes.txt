@@ -1,0 +1,27 @@
+Semidrive adaptive-serdes
+
+Required properties:
+- compatible: should be "sdrv,dvp_deser"
+- reg: slave address for i2c for serdes
+
+Example:
+
+    dvp_deser:dvp_deser@7E {
+        compatible = "sdrv,dvp_deser";
+        clock-frequency = <24000000>;
+        reg = <0x7E>;
+        type = <SERDES_PARALLEL>;
+        pwdn-gpios = <&port4c 19 0>;
+        poc-gpios = <&cam_gpios 8 0>;
+        gpi-gpios = <&cam_gpios 11 0>;
+        port {
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            dvpdeser_to_parallel: endpoint {
+                remote-endpoint = <&csiparallel0_in>;
+            };
+        };
+    };
+
+

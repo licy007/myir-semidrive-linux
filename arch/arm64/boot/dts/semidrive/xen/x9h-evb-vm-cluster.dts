@@ -1,0 +1,100 @@
+/dts-v1/;
+
+#include "x9-vm.dtsi"
+#include "display-xen.dtsi"
+#include "clk-xen.dtsi"
+#include "x9-clk-common-xen.dtsi"
+#include "lcd-timings-xen.dtsi"
+#include "x9-gpu.dtsi"
+#include "x9-import.dtsi"
+
+/ {
+	reserved-memory {
+		   	#address-cells = <0x2>;
+		   	#size-cells = <0x2>;
+		   	ranges;
+
+			linux,cma {
+			    compatible = "shared-dma-pool";
+			    reusable;
+			    size = <0x0 0x2000000>;
+			    linux,cma-default;
+			};
+
+	vm_shmem: vm_shm,cma {
+			  compatible = "shared-dma-pool";
+			  reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+			  status = "okay";
+		  };
+	};
+
+};
+
+&ion {
+	status = "okay";
+};
+
+&dmac2 {
+	status = "disabled";
+};
+
+&dmac3 {
+	status = "disabled";
+};
+
+&pinctrl {
+	reg = <0x0 0x38500000 0x0 0x10000>;
+};
+
+&gpio5 {
+	status = "disabled";
+};
+
+&gpu1 {
+	status = "okay";
+        vm,passthrough;
+        clocks = <&GPU2_0>;
+        clock-names = "gpucoreclk";
+};
+
+&mbox{
+	status = "okay";
+};
+
+&display {
+	sdriv,crtc = <&crtc1>;
+	status = "okay";
+        reg = <0x00 0x38419000 0x00 0x3000>;
+};
+
+&dp2 {
+	status = "okay";
+};
+
+&crtc1 {
+	dpc-master = <&dp2>;
+	status = "okay";
+	vm,passthrough;
+};
+
+&parallel1 {
+	status = "okay";
+};
+
+&dtimings1 {
+	native-mode = <&fhd1920x720_1>;
+};
+
+&ptimings1 {
+	status = "okay";
+};
+
+&vce3 {
+   /*
+ 	* op-mode options:
+ 	* bit 0: rng enable(1) or disable(0)
+ 	* bit 1: ce enable(1) or disable(0)
+ 	*/
+ 	op-mode = <3>;
+	status = "okay";
+};

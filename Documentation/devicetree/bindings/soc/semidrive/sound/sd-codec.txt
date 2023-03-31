@@ -1,0 +1,10 @@
+* Semidrive kunlun codec DTS file
+
+Required properties :
+- compatible : should be "semidrive,x9-msb1-tlv320aic23"
+
+Examples :
+sndb1_tlv320aic23: sndb1@tlv320aic23 {
+	compatible = "semidrive,x9-msb1-tlv320aic23";
+};
+

@@ -1,0 +1,17 @@
+menuconfig SEMIDRIVE_THERMAL
+	bool "Semidrive thermel driver support"
+	depends on ARCH_SEMIDRIVE
+	help
+	  Say Y if you want to enable semidrive sensor and cooling device driver.
+
+if SEMIDRIVE_THERMAL
+
+menu "semidrive thermal cooling device drivers"
+source "drivers/thermal/semidrive/semidrive_cooling/Kconfig"
+endmenu
+
+menu "semidrive thermal pvt sensor drivers"
+source "drivers/thermal/semidrive/semidrive_sensor/Kconfig"
+endmenu
+
+endif

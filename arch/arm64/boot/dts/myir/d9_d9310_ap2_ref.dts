@@ -1,0 +1,972 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/pinctrl/pins-sdx9.h>
+#include <dt-bindings/memmap/d9310/projects/default/image_cfg.h>
+#include <dt-bindings/memory/sdrv_ion.h>
+#include <dt-bindings/rpmsg/sd,d9lite-default.h>
+#include "d9310_ap2.dtsi"
+#include "lcd-timings.dtsi"
+#include "lcd_hsd123_serdes_mipi_1920x720.dtsi"
+#include "lcd_lt9611_bridge_mipi_1920x1080.dtsi"
+
+/ {
+	model = "Semidrive kunlun d9_d9310_ap2_ref Board";
+
+	compatible = "semidrive,kunlun";
+
+	aliases {
+		serial0 = &uart15;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		//serial3 = &uart3;//safety debug uart
+		serial4 = &uart4;
+		serial5 = &uart5;
+		serial6 = &uart6;
+		serial7 = &uart7; /* no use */
+		serial8 = &uart8; /* no use */
+		serial9 = &uart9;
+		//serial10 = &uart10;//sec ssystem debug uart
+		serial11 = &uart11;
+		serial12 = &uart12;
+		serial13 = &uart13;
+		serial14 = &uart14;
+		//serial15 = &uart15;//linux debug uart
+		serial16 = &uart16;
+		ethernet0 = &ethernet1;
+		ethernet1 = &ethernet2;
+		i2c1 = &i2c1;
+		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+		i2c5 = &i2c5;
+		i2c6 = &i2c6;
+		i2c7 = &i2c7;
+		i2c8 = &i2c8;
+		i2c9 = &i2c9;
+		i2c10 = &i2c10;
+		i2c11 = &i2c11;
+		i2c12 = &i2c12;
+		spi0 = &ospi2;
+		spi2 = &spi2;
+		spi5 = &spi5;
+		spi6 = &spi6;
+		spi7 = &spi7;
+		spi8 = &spi8;
+
+	};
+
+	memory@50000000 {
+		device_type = "memory";
+		reg = <HIGH32(AP2_REE_MEMBASE) LOW32(AP2_REE_MEMBASE) HIGH32(AP2_REE_MEMSIZE) LOW32(AP2_REE_MEMSIZE) \
+		       HIGH32(AP2_2ND_MEMBASE) LOW32(AP2_2ND_MEMBASE) HIGH32(AP2_2ND_MEMSIZE) LOW32(AP2_2ND_MEMSIZE) \
+		       0x0 (VDSP_SHARE_MEMBASE+0x4000) 0x0 (VDSP_SHARE_MEMSIZE-0x4000)>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		crashdump {
+			/* reserve preloader mem for crashdump */
+			compatible = "crashdump";
+			reg = <HIGH32(AP2_PRELOADER_MEMBASE) LOW32(AP2_PRELOADER_MEMBASE) 0 AP2_PRELOADER_MEMSIZE>;
+		};
+
+		ramoops {
+			compatible = "ramoops";
+			reg = <HIGH32(AP2_BOARD_RAMDISK_MEMBASE + AP2_BOARD_RAMDISK_MEMSIZE + 0x1000000)
+				LOW32(AP2_BOARD_RAMDISK_MEMBASE + AP2_BOARD_RAMDISK_MEMSIZE + 0x1000000) 0x0 0x100000>;
+			record-size = <0x60000>;
+			console-size = <0x40000>;
+			ftrace-size = <0x20000>;
+			pmsg-size = <0x40000>;
+		};
+
+		/* Default Common CMA Pool */
+		/* QUIRK: Must be kept in the lower 4096 MiBs of DRAM banks for VE */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x10000000>; /* 256MB */
+			/* 4GB maximum in case of 32-bit only capable devices */
+			alloc-ranges = <0x0 0x0 0x0 0xffffffff>;
+			linux,cma-default;
+		};
+
+		rproc_0_safety: rproc@0 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG0_MEM_POOL_BASE 0x0 RPMSG0_MEM_POOL_SIZE>;
+		};
+
+		rproc_1_secure: rproc@1 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG1_MEM_POOL_BASE 0x0 RPMSG1_MEM_POOL_SIZE>;
+		};
+	};
+
+	chosen {
+		// The uboot bootargs will override this bootargs property defined in
+		// current node. if you want to modify the bootargs, Please goto uboot
+		// to modify include/configs/semidrive/<board.h>
+
+		//bootargs = "skip_initramfs noinitrd root=/dev/mmcblk0p4 rootfstype=ext4 rootwait rw init=/sbin/init highres=1 earlycon loglevel=4 nr_uarts=16 console=ttyS0,115200n8 fbcon=map:1 androidboot.mode=normal androidboot.selinux=permissive androidboot.debuggable=0 androidboot.dm_verity=disable psplash=false";
+		stdout-path = "serial0";
+		linux,initrd-start = <AP2_BOARD_RAMDISK_MEMBASE>;
+		linux,initrd-end   = <(AP2_BOARD_RAMDISK_MEMBASE + AP2_BOARD_RAMDISK_MEMSIZE)>;
+	};
+
+	vdd_12: fixed-vdd_12 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd_12v";
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+	};
+
+	vdd_3v3: fixed-vdd_3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+
+	vdd_1v8: fixed-vdd_1v8 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd_1v8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+
+	es7134: codec@es7134 {
+		compatible = "everest,es7134";
+		status = "okay";
+	};
+
+	sound_es7243e: sound@es7243e {
+		compatible = "semidrive,d9-ref-es7243e";
+		semidrive,audio-codec = <&es7243e>;
+		status = "okay";
+	};
+
+	sound_es7144: sound@es7144 {
+		compatible = "semidrive,d9-ref-es7144";
+		semidrive,audio-codec = <&es7134>;
+		semidrive,jack-gpio = <&port5b 29 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		status = "okay";
+		led0: heartbeat {
+			label = "heartbeat";
+			gpios = <&port5a 4 GPIO_ACTIVE_LOW> ;//sch-part-D6<->gpio_a4
+			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
+	};
+
+	gpio-keys {
+		status = "okay";
+		compatible = "gpio-keys";
+		autorepeat;
+		up {
+			label = "GPIO Key POWER";
+			linux,code = <KEY_POWER>;//KEY_POWER
+			gpios = <&port5d 28 GPIO_ACTIVE_LOW> ;//sch-part-J8<->gpio_H2 io124 Y7
+		};
+	};
+
+	adc-keys0 {
+		status = "okay";
+		compatible = "adc-keys";
+		io-channels = <&adc_ap 1>;
+		io-channel-names = "buttons";
+		keyup-threshold-microvolt = <30500000>;
+		poll-interval = <100>;
+
+		button-up {
+			label = "Volume Up";
+			linux,code = <KEY_VOLUMEUP>;
+			press-threshold-microvolt = <28800000>;
+		};
+
+	};
+
+	adc-keys1 {
+		status = "okay";
+		compatible = "adc-keys";
+		io-channels = <&adc_ap 2>;
+		io-channel-names = "buttons";
+		keyup-threshold-microvolt = <59400000>;
+		poll-interval = <100>;
+
+		button-down {
+			label = "Volume Down";
+			linux,code = <KEY_VOLUMEDOWN>;
+			press-threshold-microvolt = <57600000>;
+		};
+
+	};
+
+	adc-keys2 {
+		status = "okay";
+		compatible = "adc-keys";
+		io-channels = <&adc_ap 3>;
+		io-channel-names = "buttons";
+		keyup-threshold-microvolt = <88000000>;
+		poll-interval = <100>;
+
+		button-enter {
+			label = "Enter";
+			linux,code = <KEY_ENTER>;
+			press-threshold-microvolt = <86400000>;
+		};
+	};
+};
+
+&dmac5 {
+	status = "okay";
+};
+&dmac6 {
+	status = "okay";
+};
+&dmac7 {
+	status = "okay";
+};
+
+&afe_i2s_sc3{
+//sch part u19(codec dac es7144)
+	dmas = <&dmac5 X9_DMA_SLV_ID_I2S_SC3_TX>, <&dmac5 X9_DMA_SLV_ID_I2S_SC3_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&afe_i2s_sc4{
+//sch part u20(codec adc es7243)
+	dmas = <&dmac5 X9_DMA_SLV_ID_I2S_SC4_TX>, <&dmac5 X9_DMA_SLV_ID_I2S_SC4_RX>;
+	dma-names = "tx", "rx";
+	semidrive,full-duplex = <0>;
+	status = "okay";
+};
+
+&afe_i2s_sc6{
+	dmas = <&dmac5 X9_DMA_SLV_ID_I2S_SC6_TX>, <&dmac5 X9_DMA_SLV_ID_I2S_SC6_RX>;
+	dma-names = "tx", "rx";
+	status = "disabled";
+};
+
+&afe_i2s_sc8{
+	dmas = <&dmac5 X9_DMA_SLV_ID_I2S_SC8_TX>, <&dmac5 X9_DMA_SLV_ID_I2S_SC8_RX>;
+	dma-names = "tx", "rx";
+	status = "disabled";
+};
+
+&csi0 {
+	mbus-type = "mipi-csi2";
+	pclk-sample = <1>;
+	status = "okay";
+
+	ports {
+		csi0_stream0: port@0 {
+			csi0_stream0_in: endpoint@0 {
+				remote-endpoint = <&csimipi0_0_out>;
+			};
+		};
+		csi0_stream1: port@1 {
+			csi0_stream1_in: endpoint@0 {
+				remote-endpoint = <&csimipi0_1_out>;
+			};
+		};
+		csi0_stream2: port@2 {
+			csi0_stream2_in: endpoint@0 {
+				remote-endpoint = <&csimipi0_2_out>;
+			};
+		};
+		csi0_stream3: port@3 {
+			csi0_stream3_in: endpoint@0 {
+				remote-endpoint = <&csimipi0_3_out>;
+			};
+		};
+	};
+};
+
+&csi2 {
+	mbus-type = "bt656";
+	pclk-sample = <0>;
+	status = "okay";
+
+	ports {
+		csi2_stream0: port@0 {
+			csi2_stream0_in: endpoint@0 {
+				remote-endpoint = <&csiparallel0_out>;
+			};
+		};
+
+	};
+};
+
+&csimipi0 {
+	status = "okay";
+	lanerate = <576000000>;
+	hsa = <10>;
+	hbp = <20>;
+	hsd = <0x60>;
+	output-type = <0x1e>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+			csimipi0_0_in: endpoint@0 {
+				remote-endpoint = <&cam0_to_mipi_0>;
+				reg = <0>;
+			};
+			csimipi0_0_out: endpoint@1 {
+				remote-endpoint = <&csi0_stream0_in>;
+				reg = <0>;
+			};
+		};
+		port@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+			csimipi0_1_in: endpoint@0 {
+				remote-endpoint = <&cam0_to_mipi_1>;
+				reg = <1>;
+			};
+			csimipi0_1_out: endpoint@1 {
+				remote-endpoint = <&csi0_stream1_in>;
+				reg = <1>;
+			};
+		};
+		port@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+			csimipi0_2_in: endpoint@0 {
+				remote-endpoint = <&cam0_to_mipi_2>;
+				reg = <2>;
+			};
+			csimipi0_2_out: endpoint@1 {
+				remote-endpoint = <&csi0_stream2_in>;
+				reg = <2>;
+			};
+		};
+		port@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+			csimipi0_3_in: endpoint@0 {
+				remote-endpoint = <&cam0_to_mipi_3>;
+				reg = <3>;
+			};
+			csimipi0_3_out: endpoint@1 {
+				remote-endpoint = <&csi0_stream3_in>;
+				reg = <3>;
+			};
+		};
+	};
+};
+
+&csiparallel {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	port {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		csiparallel0_in: endpoint@0 {
+			remote-endpoint = <&cam2_to_parallel>;
+		};
+
+		csiparallel0_out: endpoint@1 {
+			remote-endpoint = <&csi2_stream0_in>;
+		};
+	};
+};
+
+&i2c3 {
+        status = "disabled";
+};
+
+&i2c4 {
+//sch part U22(pvt sgm452t)
+	status = "okay";
+	dtt@4f {
+		compatible = "sgmicro,sgm452";
+		reg = <0x4f>;
+	};
+
+	rx8025t: rx8025t@32 {
+		compatible = "epson,rx8025";
+		reg = <0x32>;
+        };
+};
+&i2c5 {
+	status = "okay";
+	ksz9896c:ksz9896c@5f {
+		compatible = "microchip,ksz9896c";
+		ksz9896c,reset-gpio = <&port5b 24 GPIO_ACTIVE_LOW>;
+		ksz9896c,pwdn-gpio =  <&port5b 28 GPIO_ACTIVE_LOW>;
+		//gpios = <&port5d 28 GPIO_ACTIVE_LOW> ;//sch-part-J8<->gpio_H2 io124 Y7
+
+		reg = <0x5f>;
+	};
+};
+
+&i2c6 {
+	status = "okay";
+	es7243e: codec@10 {
+		compatible = "MicArray_0";
+		reg = <0x10>;
+	};
+};
+
+&i2c7 {
+	status = "okay";
+	dvp_tp2850:dvp_tp2850@44 {
+		compatible = "tp,tp2850";
+		reg = <0x44>;
+		sync = <0>;
+		rst-gpios = <&port5c 19 GPIO_ACTIVE_HIGH>;//index(79) gpio D15
+		port {
+			cam2_to_parallel:endpoint@0 {
+				remote-endpoint = <&csiparallel0_in>;
+			};
+		};
+	};
+};
+
+&i2c8 {
+	status = "disabled";
+};
+
+&i2c9 {
+//sch part U3(N4)
+	status = "okay";
+
+	n4:n4@31 {
+		compatible = "nextchip,n4";
+		reg = <0x31>;
+		sync = <0>;
+		pwdn-gpios = <&port5d 27 GPIO_ACTIVE_HIGH>;//index(123) gpio h1
+		rst-gpios = <&port5c 15 GPIO_ACTIVE_HIGH>;//index(79) gpio D15
+		ports {
+			port@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_0: endpoint@0 {
+					remote-endpoint = <&csimipi0_0_in>;
+				};
+			};
+			port@1 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_1: endpoint@0 {
+					remote-endpoint = <&csimipi0_1_in>;
+				};
+			};
+			port@2 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_2: endpoint@0 {
+					remote-endpoint = <&csimipi0_2_in>;
+				};
+			};
+			port@3 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_3: endpoint@0 {
+					remote-endpoint = <&csimipi0_3_in>;
+				};
+			};
+		};
+	};
+};
+
+&i2c11 {
+	status = "okay";
+	lt9611_bridge: bridge@39 {
+		status = "okay";
+		compatible = "semidrive,lt9611";
+		reg = <0x39>;   /* i2c device address */
+		/* GPIO_D9 */
+		lt9611-rst-gpios = <&port5c 9 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&i2c12 {
+	status = "okay";
+
+	gt928: gt9278@5d {
+		compatible = "goodix,gt928";
+		irq-gpios = <&port5d 20 0>;	  /* GPIO_G12 */
+		reset-gpios = <&port5d 24 0>; /* GPIO_G16 */
+		reg = <0x5d>;
+	};
+};
+
+&spi5 {
+	status = "disabled";
+};
+
+&spi6 {
+//sch core part U1502(IS62WVS5128GBL)
+	status = "okay";
+	spi_is62w@0 {
+		compatible = "semidrive,is62w-spi-0";
+		reg = <0>;
+		spi-max-frequency = <30000000>;
+		page_size = <32>;
+		page_num = <0x4000>;
+		die_num = <2>;
+		poll_mode = <0>;
+		type = <0>;
+		enable_dma = <0>;
+	};
+};
+
+&spi7 {
+	status = "disabled";
+};
+
+&spi8 {
+	status = "disabled";
+};
+
+&uart15 {
+//linux debug
+	dmas = <&dmac5 X9_DMA_SLV_ID_UART15_TX>, <&dmac5 X9_DMA_SLV_ID_UART15_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&uart1 {
+//xm1 --need flip
+	status = "disabled";
+};
+
+&uart2 {
+//rs485
+//sch part u28 sit3485
+	snps,dma-not-used;
+	snps,config-as-485-function;
+	snps,485_re_polarity_val = <0>;
+	snps,485_de_polarity_val = <1>;
+
+	/*  0: full duplex
+	 *  1: software half duplex
+	 *  2: hardware half duplex
+	 */
+	snps,485_xfer_mode = <0>; /* sit3485 support full duplex only */
+	snps,485_de_assert_time = <0x32>;
+	snps,485_de_deassert_time = <0xf>;
+	snps,485_de2re_turn_around_time = <0x51>;
+	snps,485_re2de_turn_around_time = <0x38>;
+	status = "okay";
+};
+
+//&uart3 {
+//saf debug uart,we not use for ever
+//	status = "disabled";
+//};
+
+&uart4 {
+	status = "disabled";
+};
+
+&uart5 {
+	status = "disabled";
+};
+
+&uart6 {
+//rs232
+//sch part u29 sit3232
+	snps,dma-not-used;
+	status = "okay";
+};
+
+&uart9 {
+//sch part xm1 --need flip
+	status = "disabled";
+};
+
+&uart10 {
+//sec debug
+	status = "disabled";
+};
+
+&uart11 {
+	status = "disabled";
+};
+
+&uart12 {
+//sch part xm7 --need flip
+	status = "disabled";
+};
+
+&uart13 {
+//sch part xm5 --need flip
+	status = "disabled";
+};
+
+&uart14 {
+//sch part xm6 --need flip
+	status = "disabled";
+};
+
+
+&uart16 {
+//sch part xm8 --need flip
+	status = "disabled";
+};
+
+&generic_timer {
+	status = "okay";
+};
+
+&adc_ap {
+	resolution_value = <0x03>; /*ADC_6_BITS_E0 = 0x00 , ADC_8_BITS_E1 = 0x01 , ADC_10_BITS_E2 = 0x02 , ADC_12_BITS_E3 = 0x03*/
+	clksrc_sel = <0x00>; /*ADC_SRC_CLK_ALT_E0 = 0x00 , ADC_SRC_CLK_PCLK_E1 = 0x01 , ADC_SRC_CLK_EXT_E2 = 0x02*/
+	clk_value = <24000000>;
+	channel_num = <4>;
+	use-adc-fifo;
+	vref-supply = <&vdd_1v8>;
+	status = "okay";
+};
+
+&vpu2 {
+	resets = <&rstgen RSTGEN_MODULE_VPU2>;
+	reset-names = "vpu-reset";
+	status = "disabled";
+};
+
+&g2d {
+	status = "disabled";
+};
+
+&parallel0 {
+	status = "disabled";
+};
+
+&dc1 {
+	status = "okay";
+};
+
+&crtc0 {
+	dpc-master = <&dc1>;
+	status = "okay";
+
+	crtc0_out: port {
+		crtc0_out_interface: endpoint@0 {
+			remote-endpoint = <&dsi0_in>;
+		};
+	};
+};
+
+&dsi1 {
+	status = "okay";
+	panel {
+		compatible = "semidrive,mipi-panel";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		status = "okay";
+		semidrive,lcd-attached = "lcd_lt9611_bridge_mipi_1920x1080";
+	};
+};
+
+&PLL_LVDS1 {
+	sdrv,clk-readonly = <0>;
+};
+
+&display {
+	sdriv,crtc = <&crtc0>;  /* only one dc for d9310 */
+	status = "okay";
+};
+
+&pinctrl {
+	reg = <0x0 0x37000000 0x0 0x10000>;
+	pinctrl-names = "default";
+
+	sdx9-evk {
+		pinctrl_mshc1: mshc1grp {
+		kunlun,pins = <
+			X9_PINCTRL_EMMC1_CLK__MSHC1_CLK_1 		X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_CMD__MSHC1_CMD_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA0__MSHC1_DATA_0_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA1__MSHC1_DATA_1_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA2__MSHC1_DATA_2_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA3__MSHC1_DATA_3_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA4__MSHC1_DATA_4_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA5__MSHC1_DATA_5_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA6__MSHC1_DATA_6_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_DATA7__MSHC1_DATA_7_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC1_STROBE__MSHC1_STB_1		X9_PINCTRL_OPEN_DRAIN_ENABLE
+			X9_PINCTRL_EMMC1_RESET_N__MSHC1_RST_N_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			>;
+		};
+
+		pinctrl_gpiotouch_lvds: touchgrp_lvds {
+		kunlun,pins = <
+			X9_PINCTRL_I2S_MC_SD4__GPIO_MUX2_IO80_1          0x00
+			X9_PINCTRL_I2S_MC_SD5__GPIO_MUX2_IO81_1          0x00
+			X9_PINCTRL_I2S_MC_SD6__GPIO_MUX2_IO82_1          0x00
+			X9_PINCTRL_I2S_MC_SD7__GPIO_MUX2_IO83_1          0x00
+			>;
+		};
+		pinctrl_gpiotouch_mipi: touchgrp_mipi {
+			kunlun,pins = <
+			X9_PINCTRL_EMMC2_CLK__GPIO_MUX2_IO96_1          0x00
+			X9_PINCTRL_EMMC2_CMD__GPIO_MUX2_IO97_1          0x00
+			>;
+		};
+	};
+};
+
+&gpio5 {
+	//pinctrl-names = "default";
+	//pinctrl-0 = <&pinctrl_gpiotouch_lvds &pinctrl_gpiotouch_mipi>;
+	status = "okay";
+};
+&sdhci1 {
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	no-sd;
+	card-is-emmc;
+	disable-wp;
+	cap-mmc-highspeed;
+	keep-power-in-suspend;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+&sdhci3 {
+	#clock-cells = <1>;
+	clocks = <&EMMC3>;
+	clock-names = "core";
+	max-frequency = <100000000>;
+	cd-gpios = <&port5a 1 GPIO_ACTIVE_LOW>;//sch-part-D6<->gpio_a1 io1 Y19
+	pwr-gpios = <&port5b 25 GPIO_ACTIVE_HIGH>;//gpio_c9
+	bus-width = <4>;
+	no-mmc;
+	no-sdio;
+	disable-wp;
+	keep-power-in-suspend;
+	cap-sd-highspeed;
+	sd-uhs-sdr104;
+	status = "okay";
+};
+
+&mbox {
+	status = "okay";
+};
+
+&mbox_test {
+	status = "okay";
+};
+
+&rpmsg0 {
+	memory-region = <&rproc_0_safety>;
+	reg = <0x0 RPMSG0_MEM_HEAD_BASE 0x0 RPMSG0_MEM_HEAD_SIZE>;
+	mboxes = <&mbox 0x16 0x1600>;//for saf<->ap2
+	status = "okay";
+};
+
+&rpmsg1 {
+	memory-region = <&rproc_1_secure>;
+	reg = <0x0 RPMSG1_MEM_HEAD_BASE 0x0 RPMSG1_MEM_HEAD_SIZE>;
+	mboxes = <&mbox 0x17 0x1701>;//for sec<->ap2
+	status = "okay";
+};
+
+&ipcc0 {
+	mboxes = <&mbox 0x36 0x3600>;//for saf<->ap2
+	status = "okay";
+};
+
+&ipcc1 {
+	mboxes = <&mbox 0x37 0x3701>;//for sec<->ap2
+	status = "okay";
+};
+
+&rtc {
+	status = "okay";
+};
+
+&usbdrd3_1 {
+	status = "okay";
+};
+
+&usb3_id1 {
+	id-gpios = <&port5e 3 GPIO_ACTIVE_LOW>;
+};
+
+&usb1 {
+	dr_mode = "otg";
+	status = "okay";
+};
+
+&usbdrd3_2 {
+	status = "okay";
+};
+
+&usb2 {
+	status = "okay";
+};
+
+&ethernet1 {
+	snps,max_dma_cap_quirk = <32>;
+	status = "okay";
+	mdio1: mdio@1 {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reset-gpios = <&port5a 27 GPIO_ACTIVE_LOW> ;//ospidata1 io27 ae24
+		eth_phy1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+		};
+	};
+};
+
+&ethernet2 {
+	status = "okay";
+};
+
+&rstgen {
+	reg = <0x0 0x38467000 0x0 0x1000>,	/* vpu1 */
+		<0x0 0x38468000 0x0 0x1000>,	/* vpu2 */
+		<0x0 0x38462000 0x0 0x1000>,	/* GIC 5 */
+		<0x0 0x38464000 0x0 0x1000>,	/* cssys treset n */
+		<0x0 0x3846e000 0x0 0x1000>,	/* cpu2 ss */
+		<0x0 0x38499000 0x0 0x1000>,	/* dbg reg */
+		<0x0 0x38409000 0x0 0x2000>;	/* cpu2 core */
+	rstgen_resource = <
+		RSTGEN_MODULE_VPU1
+		RSTGEN_MODULE_VPU2
+		RSTGEN_MODULE_GIC5
+		RSTGEN_MODULE_CSSYS_TRESET_N
+		RSTGEN_MODULE_CPU2_SS
+		RSTGEN_MODULE_DBG_REG
+		RSTGEN_CORE_CPU2
+		>;
+	status = "okay";
+};
+
+&regctl {
+	reg = <0x0 0x38415000 0x0 0x1000>,
+		<0x0 0x38418000 0x0 0x1000>,
+		<0x0 0x38419000 0x0 0x1000>,
+		<0x0 0x3841a000 0x0 0x1000>;
+	reg-names = "SDRV_REG_REMAP",
+			"SDRV_REG_BOOTREASON",
+			"SDRV_REG_HWID",
+			"SDRV_REG_STATUS";
+	status = "okay";
+};
+
+&ion {
+	status = "okay";
+};
+
+&hwsema {
+	status = "okay";
+};
+
+&scr_sec {
+	status = "okay";
+};
+
+&watchdog6 {
+	wdt,auto-run = "false";
+	status = "okay";
+};
+
+&pcie1 {
+	status = "okay";
+
+	endpoint {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		brcmf@1 {
+			reg = <1>;
+			compatible = "brcm,bcm4329-fmac";
+		};
+        };
+};
+
+&vce2 {
+	/*
+	 * op-mode options:
+	 * bit 0: rng enable(1) or disable(0)
+	 * bit 1: ce enable(1) or disable(0)
+	 */
+	op-mode = <3>;
+	status = "okay";
+};
+
+&cooling_devices {
+	status = "disabled";
+};
+
+&pvt_sensor {
+	status = "okay";
+};
+
+&flexcan1 {
+	clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	clock-names = "per", "ipg";
+	assigned-clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	assigned-clock-rates = <80000000>, <80000000>;
+	status = "okay";
+};
+
+&flexcan2 {
+	clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	clock-names = "per", "ipg";
+	assigned-clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	assigned-clock-rates = <80000000>, <80000000>;
+	status = "okay";
+};
+
+&flexcan3 {
+	clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	clock-names = "per", "ipg";
+	assigned-clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	assigned-clock-rates = <80000000>, <80000000>;
+	status = "okay";
+};
+
+&flexcan4 {
+	clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	clock-names = "per", "ipg";
+	assigned-clocks = <&CAN5_TO_20>, <&CAN5_TO_20>;
+	assigned-clock-rates = <80000000>, <80000000>;
+	status = "okay";
+};

@@ -1,0 +1,170 @@
+/*
+* Semidrive V9 DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "v9.dtsi"
+#include "v9-reset-base.dtsi"
+#include "gic4_int_diff.dtsi"
+#include "sdrv-coresight-cpu1-mid.dtsi"
+/{
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <1656000000>;
+		trans-delay-us = <200000>;
+		start-time = <10>; /*second*/
+		status = "okay";
+	};
+        cpus {
+                #address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP1 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU1A_0_CORE0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_0>;
+		};
+
+                cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x100>;
+			clocks = <&CPU1A_0_CORE1>;
+			clock-names = "cpu1";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_1>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x200>;
+			clocks = <&CPU1A_0_CORE2>;
+			clock-names = "cpu2";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x300>;
+			clocks = <&CPU1A_0_CORE3>;
+			clock-names = "cpu3";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_3>;
+		};
+
+		l2_0: l2-cache0 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_1: l2-cache1 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_2: l2-cache2 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_3: l2-cache3 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l3: l3-cache {
+			compatible = "cache";
+			cache-size = <0x100000>;
+			cache-line-size = <64>;
+			cache-sets = <0x400>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 9 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 10 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 11 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
+	};
+
+        gic: interrupt-controller@35431000 {
+		compatible = "arm,gic-400";
+		reg = <0 0x35431000 0 0x1000>,
+		      <0 0x35432000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+		interrupt-parent = <&gic>;
+	};
+
+        soc{
+
+		watchdog5: watchdog@0x30a20000 {    //AP1 watchdog
+			compatible = "semidrive,watchdog";
+			reg = <0x0 0x30a20000 0x0 0x1000>;
+			#interrupt-cells = <1>;
+			interrupts = <0 190 4>;
+			interrupt-parent = <&gic>;
+			wdt,clock-source = "main-clk";
+			wdt,clock-divider = <0>;
+			timeout-sec = <2>;
+			wdt,min-hw-hearbeat = <800>;
+			wdt,max-hw-hearbeat = <2000>;
+			wdt,dying-delay;
+			wdt,sig-rstgen = "false";
+			wdt,auto-run = "true";
+			regctl = <&regctl SDRV_REG_BOOTREASON>;
+			status = "disabled";
+		};
+        };
+};

@@ -1,0 +1,3 @@
+obj-$(CONFIG_SERDES_DS90UB9XX) += ds90ub9xx.o
+obj-$(CONFIG_BRIDGE_LT9611) += lt9611.o
+

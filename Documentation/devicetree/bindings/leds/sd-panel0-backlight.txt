@@ -1,0 +1,11 @@
+* Semidrive kunlun panel backlight DTS file
+
+Required properties :
+- compatible : should be "sd,rpmsg-bl"
+- status : enable or disable device node
+
+Examples :
+	semidrive_bl0: panel0-backlight {
+		model = "sd,rpmsg-bl";
+		status = "okay";
+	};

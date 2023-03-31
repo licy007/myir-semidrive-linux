@@ -1,0 +1,10 @@
+* Semidrive kunlun vi2s_unilink DTS file
+
+Required properties :
+- compatible : should be "semidrive,sdrv-i2s-unilink"
+
+Examples :
+vi2s_unilinkX: vi2s_unilink@X{
+	compatible = "semidrive,sdrv-i2s-unilink";
+};
+

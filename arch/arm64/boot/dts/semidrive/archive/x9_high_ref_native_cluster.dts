@@ -1,0 +1,241 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "../x9_high_ecockpit.dtsi"
+#include "../x9_high_ref_cluster-clk-ctrl.dtsi"
+#include "../lcd-timings.dtsi"
+#include <dt-bindings/pinctrl/pins-sdx9.h>
+#include <dt-bindings/memmap/x9_high/projects/default/image_cfg.h>
+#include <dt-bindings/rpmsg/sd,x9h-default.h>
+
+/ {
+	model = "Semidrive kunlun x9 REF Board";
+
+	compatible = "semidrive,kunlun";
+
+	aliases {
+		serial0 = &uart14;
+	};
+
+	memory@50000000 {
+		device_type = "memory";
+		reg = <HIGH32(AP1_KERNEL_MEMBASE-0x80000) LOW32(AP1_KERNEL_MEMBASE-0x80000) HIGH32(AP1_KERNEL_MEMSIZE) LOW32(AP1_KERNEL_MEMSIZE) >;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		/* Default Common CMA Pool */
+		/* QUIRK: Must be kept in the lower 4096 MiBs of DRAM banks for VE */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x20000000>;
+			/* 4GB maximum in case of 32-bit only capable devices */
+			alloc-ranges = <0x0 0x0 0x0 0xffffffff>;
+			linux,cma-default;
+		};
+
+		rproc_0_safety: rproc@0 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG0_MEM_POOL_BASE 0x0 RPMSG0_MEM_POOL_SIZE>;
+		};
+
+		rproc_1_secure: rproc@1 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG1_MEM_POOL_BASE 0x0 RPMSG1_MEM_POOL_SIZE>;
+		};
+	};
+
+	chosen {
+		bootargs = "skip_initramfs noinitrd root=/dev/mmcblk0p4 rootfstype=ext4 rootwait rw init=/sbin/init highres=1 earlycon loglevel=4 console=ttyS0,115200n8 fbcon=map:1 androidboot.mode=normal androidboot.selinux=permissive androidboot.debuggable=0 androidboot.dm_verity=disable ";
+		stdout-path = "serial0";
+	};
+
+};
+
+&dmac2 {
+	status = "okay";
+};
+&dmac3 {
+	status = "okay";
+};
+
+&uart14 {
+	dmas = <&dmac2 X9_DMA_SLV_ID_UART15_TX>, <&dmac2 X9_DMA_SLV_ID_UART15_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&generic_timer {
+	status = "okay";
+};
+
+&g2d {
+	status = "okay";
+};
+
+&display {
+	sdriv,crtc = <&crtc0>;
+	status = "okay";
+};
+
+&gpu1 {
+	status = "okay";
+};
+&dp2 {
+	status = "okay";
+};
+
+&crtc0 {
+	dpc-master = <&dp2>;
+	status = "okay";
+};
+
+&parallel0 {
+	status = "okay";
+};
+
+&dtimings0 {
+	native-mode = <&fhd1920x720>;
+};
+
+&ptimings0 {
+	status = "okay";
+};
+
+&sdhci1 {
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	no-sd;
+	card-is-emmc;
+	disable-wp;
+	cap-mmc-highspeed;
+	keep-power-in-suspend;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+&mbox {
+	status = "okay";
+};
+
+&mbox_test {
+	status = "okay";
+};
+
+&rpmsg0 {
+	memory-region = <&rproc_0_safety>;
+	reg = <0x0 RPMSG0_MEM_HEAD_BASE 0x0 RPMSG0_MEM_HEAD_SIZE>;
+	status = "okay";
+};
+
+&rpmsg1 {
+	memory-region = <&rproc_1_secure>;
+	reg = <0x0 RPMSG1_MEM_HEAD_BASE 0x0 RPMSG1_MEM_HEAD_SIZE>;
+	status = "okay";
+};
+
+&ipcc0 {
+	status = "okay";
+};
+
+&ipcc1 {
+	status = "okay";
+};
+
+&pinctrl {
+	reg = <0x0 0x37010000 0x0 0x10000>;
+};
+
+&gpio5 {
+	status = "okay";
+};
+
+&rstgen {
+	reg = <0x0 0x38461000 0x0 0x1000>,	/* GIC4 */
+		<0x0 0x38492000 0x0 0x1000>,	/* gpu2 core */
+		<0x0 0x38493000 0x0 0x1000>,	/* gpu2 ss */
+		<0x0 0x38455000 0x0 0x1000>,	/* cpu1 core0 warm */
+		<0x0 0x38456000 0x0 0x1000>,	/* cpu1 core1 warm */
+		<0x0 0x38457000 0x0 0x1000>,	/* cpu1 core2 warm */
+		<0x0 0x38458000 0x0 0x1000>,	/* cpu1 core3 warm */
+		<0x0 0x38459000 0x0 0x1000>,	/* cpu1 core4 warm */
+		<0x0 0x3845a000 0x0 0x1000>,	/* cpu1 core5 warm */
+		<0x0 0x3845b000 0x0 0x1000>,	/* cpu1 scu warm */
+		<0x0 0x3846d000 0x0 0x1000>,	/* cpu1 ss */
+		<0x0 0x38407000 0x0 0x2000>;	/* cpu1 all core */
+	rstgen_resource = <
+		RSTGEN_MODULE_GIC4
+		RSTGEN_MODULE_GPU2_CORE
+		RSTGEN_MODULE_GPU2_SS
+		RSTGEN_MODULE_CPU1_CORE0_WARM
+		RSTGEN_MODULE_CPU1_CORE1_WARM
+		RSTGEN_MODULE_CPU1_CORE2_WARM
+		RSTGEN_MODULE_CPU1_CORE3_WARM
+		RSTGEN_MODULE_CPU1_CORE4_WARM
+		RSTGEN_MODULE_CPU1_CORE5_WARM
+		RSTGEN_MODULE_CPU1_SCU_WARM
+		RSTGEN_MODULE_CPU1_SS
+		RSTGEN_CORE_CPU1_ALL
+	>;
+	status = "okay";
+};
+
+&regctl {
+	reg = <0x0 0x38415000 0x0 0x1000>,
+		<0x0 0x38418000 0x0 0x1000>,
+		<0x0 0x38419000 0x0 0x1000>,
+		<0x0 0x3841a000 0x0 0x1000>;
+	reg-names = "SDRV_REG_REMAP",
+			"SDRV_REG_BOOTREASON",
+			"SDRV_REG_HWID",
+			"SDRV_REG_STATUS";
+	status = "okay";
+};
+
+&hwsema {
+        status = "okay";
+};
+
+&scr_sec {
+        status = "okay";
+};
+
+&watchdog5 {
+	wdt,auto-run = "false";
+	status = "okay";
+};
+
+&pcie1 {
+	status = "okay";
+	brcmf: bcrmf@1 {
+		reg = <1>;
+		compatible = "brcm,bcm4329-fmac";
+	};
+};
+
+&vce3 {
+   /*
+ 	* op-mode options:
+ 	* bit 0: rng enable(1) or disable(0)
+ 	* bit 1: ce enable(1) or disable(0)
+ 	*/
+ 	op-mode = <3>;
+	status = "okay";
+};

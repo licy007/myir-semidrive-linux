@@ -1,0 +1,47 @@
+Semidrive STR components
+=====================
+
+Semidrive Suspend-To-Ram (STR) feature,
+include str sync and str power key modules.
+
+1. STR Sync Node:
+=================
+
+Required properties:
+--------------------
+- compatible :		Should be "sd,str-sync".
+- mboxes :		This is a phandle object consisting of 3 parts. The
+			first is a handle to mailbox node. The second is
+			mailbox local address. The last is an unsigned short
+			with high byte as mailbox remote address and low byte
+			as mailbox remote processor ID. See semidrive-mailbox
+			for details.
+
+Optional properties:
+--------------------
+- host :		indicate if this is a host to send the str request to
+			remote, or client to receive the str request.
+
+Example:
+--------
+	str_sync: str_sync {
+		compatible = "sd,str-sync";
+		mboxes = <&mbox 0x49 0x4904>;
+		host = <0>;
+		status = "disabled";
+	};
+2. STR Power Key Node:
+======================
+android os need handle the power key event to do something.
+Required properties:
+--------------------
+- compatible :		Should be "sd,str-power-key".
+- reg :			the address which store the str resume flag, the driver
+			will check if this is STR resume.
+Example:
+--------
+	str_power_key: str_power_key {
+		compatible = "sd,str-power-key";
+		reg = <0x0 (SAF_AP1_MEMBASE+0x10000000+0x100000) 0x0 0x1000>;
+		status = "okay";
+	};

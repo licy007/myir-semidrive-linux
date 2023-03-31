@@ -1,0 +1,29 @@
+/**
+ * Semidrive GIC4-GI5 INT DIFF DTS file
+ *
+ * Copyright (C) 2019, Semidrive Semiconductor
+ *
+ * All rights reserved.
+ */
+
+/**
+ * This file is maintained by Semidrive. This file contains the gic5 int
+ different with gic4
+ */
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+
+&gpio5 {
+    gpio-controller@1 {
+        interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
+    };
+    gpio-controller@2 {
+        interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+    };
+    gpio-controller@3 {
+        interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+    };
+    gpio-controller@4 {
+        interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
+    };
+};

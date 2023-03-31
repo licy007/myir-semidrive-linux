@@ -1,0 +1,10 @@
+* Semidrive kunlun simulated display  DTS file
+
+Required properties :
+- compatible : should be "sd,sdrv-simu-disp"
+
+Examples :
+simulated_display0: simulated_display {
+	compatible = "sd,sdrv-simu-disp";
+};
+

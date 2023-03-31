@@ -1,0 +1,4 @@
+config G2D_SEMIDRIVE
+	tristate "G2D Support for Semidrive"
+	help
+	  enable semidrive g2d support

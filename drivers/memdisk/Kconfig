@@ -1,0 +1,5 @@
+config MEMDISK
+	tristate "Memory based disk support"
+	help
+	  This option provides the function memory based disk.
+	  For android bootup usage, alloc system,userdata,vendor in memory.

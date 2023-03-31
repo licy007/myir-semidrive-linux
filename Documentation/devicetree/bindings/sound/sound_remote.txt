@@ -1,0 +1,9 @@
+* Semidrive kunlun virtual i2s DTS file
+
+Required properties :
+ - compatible : should be "semidrive,x9-ref-mach-remote"
+
+Examples :
+	/ {
+		compatible = "semidrive,x9-ref-mach-remote";
+	};

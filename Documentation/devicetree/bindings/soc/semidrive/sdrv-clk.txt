@@ -1,0 +1,45 @@
+Semidrive pll&ckgen driver
+-------------------
+
+1.Semidrive pll driver
+
+Required properties:
+- compatible: should be "semidrive,pll".
+- reg: register.
+
+Optional properties:
+- sdrv,pll-diva: have pll diva.
+- sdrv,pll-divb: have pll divb.
+- sdrv,pll-divc: have pll divc.
+- sdrv,pll-divd: have pll divd.
+
+Examples:
+--------
+    PLL_CPU1A: PLL_CPU1A {
+        compatible = "semidrive,pll";
+        reg = <0 0x314A0000 0 0x10000>;
+        #clock-cells = <1>;
+        sdrv,pll-diva = <2>;
+        sdrv,pll-divb = <4>;
+        sdrv,pll-divc = <4>;
+        sdrv,pll-divd = <4>;
+        sdrv,clk-readonly = <1>;
+    };
+
+2.Semidrive ckgen driver
+
+Required properties:
+- compatible: should be "semidrive,clkgen-composite".
+- reg: register.
+- sdrv,type: clk type.
+- clocks: parent list.
+
+Examples:
+--------
+    CPU1A: CPU1A {
+        compatible = "semidrive,clkgen-composite";
+        reg =  <0 0x360c0000 0 0x1000>;
+        #clock-cells = <0>;
+        sdrv,type =<CLK_TYPE_CORE>;
+        clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+    };

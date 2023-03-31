@@ -1,0 +1,17 @@
+Flexcan CAN controller on Semidrive's ARM system-on-a-chip (SOC).
+
+Required properties:
+
+- compatible : Should be "semidrive,flexcan"
+
+- reg : Offset and length of the register set for this device
+- interrupts : Interrupt tuple for this device
+
+Example:
+		flexcan1: can@30030000 {
+			compatible = "semidrive,flexcan";
+			reg = <0x0 0x30030000 0x0 0x10000>;
+			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
+			status = "disabled";
+		};
+

@@ -1,0 +1,25 @@
+Semidrive Watchdog
+
+Required properties:
+- compatible: must be "semidrive,watchdog"
+- reg: physical base address of the controller and length of the register range
+
+Example:
+
+	watchdog6: watchdog@0x30a30000 {
+		compatible = "semidrive,watchdog";
+		reg = <0x0 0x30a30000 0x0 0x1000>;
+		#interrupt-cells = <1>;
+		interrupts = <0 190 4>;
+		interrupt-parent = <&gic5>;
+		wdt,clock-source = "main-clk";
+		wdt,clock-divider = <0>;
+		timeout-sec = <2>;
+		wdt,min-hw-hearbeat = <800>;
+		wdt,max-hw-hearbeat = <2000>;
+		wdt,dying-delay;
+		wdt,sig-rstgen = "false";
+		wdt,auto-run = "true";
+		regctl = <&regctl SDRV_REG_BOOTREASON>;
+		status = "disabled";
+	};

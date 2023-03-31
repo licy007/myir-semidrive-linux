@@ -1,0 +1,10 @@
+Semidrive ES7243E sound card driver for d9 ref
+
+Required properties:
+- compatible : "semidrive,d9-ref-es7243e"
+
+Example:
+
+sound_es7243e: sound@es7243e {
+	compatible = "semidrive,d9-ref-es7243e";
+};

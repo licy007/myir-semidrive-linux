@@ -1,0 +1,44 @@
+/{
+	soc {
+		vdsp:xrp@0 {
+			#address-cells = <2>;
+			#size-cells = <2>;
+			compatible = "cdns,xrp-hw-semidrive,v1";
+			mbox-names = "tx";
+			mboxes = <&mbox 0x07 0x0705>;
+			host-irq = <232>; /* record mu IRQ#, won't register handler */
+			device-irq = <23>;	/* vdsp mu_ready IRQ#, pass to vdsp */
+			device-irq-mode = <1>;    /* level */
+			host-irq-mode = <1>;      /* level */
+
+			reg = <0x0 XEN_RESERVED_VDSP_BASE 0x0 0x1000>, /* DSP memory */
+				<0x0 (XEN_RESERVED_VDSP_BASE+0x4000) 0x0 (XEN_RESERVED_VDSP_SIZE-0x4000)>, /* DSP shared memory */
+				<0x0 0x34040000 0x0 0x1000>, /* vdsp mu base address, pass to vdsp, won't map */
+				<0x0 0x38316000 0x0 0x1000>, /* scr 0x458 */
+				<0x0 0x3839e000 0x0 0x1000>, /* scr 0x678 */
+				<0x0 0x38401000 0x0 0x2000>, /* rstgen core 0 */
+				<0x0 0x38466000 0x0 0x1000>, /* rstgen module 38 */
+				<0x0 0x00a00000 0x0 0x00020000>, /* data ram0 */
+				<0x0 0x00a20000 0x0 0x00020000>, /* data ram1 */
+				<0x0 VDSP_MEMBASE 0x0 VDSP_MEMSIZE>; /* system ram */
+
+			firmware-name = "xtensa.elf";
+			firmware-entry = <VDSP_MEMBASE>;
+			/*data ram0, data ram1, system ram, shared ram*/
+			ranges = <0x0 0x00a00000 0x0 0x00a00000 0x0 0x00020000
+				0x0 0x00a20000 0x0 0x00a20000 0x0 0x00020000
+				0x0 VDSP_MEMBASE 0x0 VDSP_MEMBASE 0x0 VDSP_MEMSIZE
+				0x0 XEN_RESERVED_VDSP_BASE 0x0 XEN_RESERVED_VDSP_BASE 0x0 XEN_RESERVED_VDSP_SIZE>;
+
+			status = "disabled";
+
+			dsp@0 { /* only 1 dsp core */ };
+		};
+
+		vdsp_ipc: vdsp@0 {
+			compatible = "sd,vdsp-ipc";
+			mboxes = <&mbox 0x07 0x0705>;
+			status = "disabled";
+		};
+	};
+};

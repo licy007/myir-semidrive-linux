@@ -1,0 +1,13 @@
+Semidrive Crashdump
+
+Required properties:
+- compatible: must be "crashdump"
+- reg: physical base address of the controller and length of the register range
+
+Example:
+
+	crashdump {
+		/* reserve preloader mem for crashdump */
+		compatible = "crashdump";
+		reg = <HIGH32(AP2_PRELOADER_MEMBASE) LOW32(AP2_PRELOADER_MEMBASE) 0 AP2_PRELOADER_MEMSIZE>;
+	};

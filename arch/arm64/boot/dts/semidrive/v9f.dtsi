@@ -1,0 +1,116 @@
+/*
+* Semidrive V9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "v9.dtsi"
+#include "v9-reset-base.dtsi"
+#include "gic5_int_diff.dtsi"
+#include "sdrv-coresight-cpu2.dtsi"
+/{
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <1496000000>;
+		trans-delay-us = <200000>;
+		start-time = <10>; /*second*/
+		status = "okay";
+	};
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+		/* AP2 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU2_0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2>;
+		};
+		l2: l2-cache {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts =    <GIC_SPI 8 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>;
+	};
+
+	gic: interrupt-controller@35441000 {
+		compatible = "arm,gic-400";
+		reg = <0 0x35441000 0 0x1000>,
+		<0 0x35442000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_HIGH)>;
+		interrupt-parent = <&gic>;
+	};
+
+	soc{
+		gpu0:gpu0@34c00000 {/*should remove later!*/
+			compatible = "imagination,pvr-rogue";
+			reg = <0x0 0x34c00000 0x0 0x80000>;
+			interrupts = <0 149 4>;
+			clocks = <&GPU1_0>;
+			clock-names = "gpucoreclk";
+			operating-points-v2 = <&gpu0_opp_table>;
+			resets = <&rstgen RSTGEN_MODULE_GPU1_CORE>, <&rstgen RSTGEN_MODULE_GPU1_SS>;
+			reset-names = "gpucore-reset", "gpusys-reset";
+			status = "disabled";
+		};
+
+		/* V9F overwrite the common definition in v9.dtsi */
+		rpmsg0: rpmsg@0 {
+			compatible = "sd,rpmsg-vq,rp_saf";
+			mboxes = <&mbox 0x16 0x1600>;
+			status = "disabled";
+		};
+
+		rpmsg1: rpmsg@1 {
+			compatible = "sd,rpmsg-vq,rp_sec";
+			mboxes = <&mbox 0x17 0x1701>;
+			status = "disabled";
+		};
+
+		rpmsg2: rpmsg@2 {
+			compatible = "sd,rpmsg-vq,rp_mp";
+			mboxes = <&mbox 0x18 0x1802>;
+			status = "disabled";
+		};
+
+		ipcc0: ipcc@0 {
+			compatible = "sd,rpmsg-ipcc";
+			mboxes = <&mbox 0x36 0x3600>;
+			status = "disabled";
+		};
+
+		ipcc1: ipcc@1 {
+			compatible = "sd,rpmsg-ipcc";
+			mboxes = <&mbox 0x37 0x3701>;
+			status = "disabled";
+		};
+
+		ipcc2: ipcc@2 {
+			compatible = "sd,rpmsg-ipcc";
+			mboxes = <&mbox 0x38 0x3802>;
+			status = "disabled";
+		};
+
+	};
+};

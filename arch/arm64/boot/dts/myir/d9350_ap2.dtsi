@@ -1,0 +1,43 @@
+/*
+* Semidrive D9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "d9310_ap2.dtsi"
+/{
+	soc {
+		rpmsg3: rpmsg@3 {
+			compatible = "sd,rpmsg-vq,rp_ap";
+			mboxes = <&mbox 0x19 0x1903>;
+			status = "disabled";
+		};
+
+		ipcc3: ipcc@3 {
+			compatible = "sd,rpmsg-ipcc";
+			mboxes = <&mbox 0x39 0x3903>;
+			status = "disabled";
+		};
+
+		str_sync: str_sync {
+			compatible = "sd,str-sync";
+			mboxes = <&mbox 0x49 0x4903>;
+			status = "disabled";
+		};
+	};
+
+	ulink_channel1: ulink_channel1 {
+		compatible = "sd,ulink-channel";
+		mboxes = <&mbox 0xb4 0xb403>;
+		rproc = <3>;
+		status = "disabled";
+	};
+
+	ulink_net: ulink_net {
+		compatible = "sd,ulink-net";
+		default_rproc = <3>;
+		status = "disabled";
+	};
+};

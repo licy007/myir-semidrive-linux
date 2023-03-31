@@ -1,0 +1,355 @@
+/*
+ * Semidrive G9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "g9v_ap.dtsi"
+#include "g9v_ref-clk-ctrl.dtsi"
+#include <dt-bindings/pinctrl/pins-sdx9.h>
+#include <dt-bindings/memmap/g9v/projects/hybrid/image_cfg.h>
+#include <dt-bindings/rpmsg/sd,g9v-hybrid.h>
+
+/ {
+	model = "Semidrive kunlun G9V REF Board";
+
+	compatible = "semidrive,kunlun";
+
+	aliases {
+		serial0 = &uart12;
+		serial1 = &uart11;
+		ethernet1 = &ethernet1;
+		ethernet2 = &ethernet2;
+	};
+
+	memory@50000000 {
+		device_type = "memory";
+		reg = <HIGH32(AP1_REE_MEMBASE + DTB_MEMSIZE) LOW32(AP1_REE_MEMBASE + DTB_MEMSIZE) HIGH32(AP1_KERNEL_MEMSIZE) LOW32(AP1_KERNEL_MEMSIZE)>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		crashdump {
+			/* reserve preloader mem for crashdump */
+			compatibel = "crashdump";
+			reg = <HIGH32(AP1_PRELOADER_MEMBASE) LOW32(AP1_PRELOADER_MEMBASE) 0 AP1_PRELOADER_MEMSIZE>;
+		};
+
+		/* Default Common CMA Pool */
+		/* QUIRK: Must be kept in the lower 4096 MiBs of DRAM banks for VE */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x1bc00000>;
+			/* 4GB maximum in case of 32-bit only capable devices */
+			alloc-ranges = <0x0 0x0 0x0 0xffffffff>;
+			linux,cma-default;
+		};
+
+		rproc_0_safety: rproc@0 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG0_MEM_POOL_BASE 0x0 RPMSG0_MEM_POOL_SIZE>;
+		};
+
+		rproc_1_secure: rproc@1 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG1_MEM_POOL_BASE 0x0 RPMSG1_MEM_POOL_SIZE>;
+		};
+
+		rproc_2_mpc: rproc@2 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 RPMSG2_MEM_POOL_BASE 0x0 RPMSG2_MEM_POOL_SIZE>;
+		};
+	};
+
+	chosen {
+		bootargs = "skip_initramfs noinitrd root=/dev/mmcblk0p8 rootfstype=ext4 rootwait rw init=/sbin/init highres=1 earlycon loglevel=11 console=ttyS0,115200n8";
+		stdout-path = "serial0";
+	};
+
+	vdd_3v3: fixed-vdd_3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+
+	codec_dvdd: fixed-dvdd {
+		compatible = "regulator-fixed";
+		regulator-name = "codec_dvdd_fixed";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+
+	sound: sound {
+		compatible = "semidrive,g9-tlv320aic3104";
+		semidrive,hp-spk-amp-warmup-time-us = <1>;
+		semidrive,hp-spk-amp-shutdown-time-us = <800>;
+		semidrive,audio-codec = <&tlv320aic3104>;
+		status = "okay";
+	};
+};
+
+&dmac6 {
+	status = "okay";
+};
+&dmac7 {
+	status = "okay";
+};
+
+
+&afe_i2s_sc3{
+	dmas = <&dmac7 X9_DMA_SLV_ID_I2S_SC4_TX>, <&dmac7 X9_DMA_SLV_ID_I2S_SC4_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&i2c7 {
+	status = "okay";
+};
+
+&i2c8 {
+	status = "okay";
+};
+
+&i2c9 {
+	status = "okay";
+	tlv320aic3104: codec@18 {
+		compatible = "ti,tlv320aic3104";
+		reg = <0x18>;
+		ai3x-micbias-vg = <2>;		/* 2.5V */
+		AVDD-supply = <&vdd_3v3>;
+		IOVDD-supply = <&vdd_3v3>;
+		DRVDD-supply = <&vdd_3v3>;
+		DVDD-supply = <&codec_dvdd>;
+	};
+};
+
+&spi4 {
+	status = "okay";
+	//pinctrl-names = "default";
+	//pinctrl-0 = <&pinctrl_spi5>;
+	/*spi-test@0 {
+	 *	compatible = "spi-loopback-test";
+	 *	reg = <0>;
+	 *	spi-max-frequency = <1000000>;
+	 *	status = "okay";
+	};*/
+};
+
+&spi5 {
+	status = "disabled";
+};
+
+&spi6 {
+	status = "disabled";
+};
+
+&spi7 {
+	status = "disabled";
+};
+
+&uart11 {
+	dmas = <&dmac6 X9_DMA_SLV_ID_UART12_TX>, <&dmac6 X9_DMA_SLV_ID_UART12_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&uart12 {
+	dmas = <&dmac6 X9_DMA_SLV_ID_UART13_TX>, <&dmac6 X9_DMA_SLV_ID_UART13_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&generic_timer {
+	interrupts = <1 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
+	status = "okay";
+};
+
+&timer2 {
+	/*
+	* op-mode options:
+	* 0 or No such item : timer
+	* 1 : pwm-capture
+	*/
+	op-mode = <1>;
+	sd,capture-num-chan = <1>;     //pwm capture channel
+	status = "okay";
+};
+
+&pinctrl {
+	pinctrl-names = "default";
+
+	sdx9-evk {
+		pinctrl_spi5: spi5grp {
+		kunlun,pins = <
+			X9_PINCTRL_EMMC2_DATA4__SPI5_SCLK_3	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC2_DATA5__SPI5_MISO_3	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC2_DATA6__SPI5_MOSI_3	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			X9_PINCTRL_EMMC2_DATA7__SPI5_SS_3	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			>;
+		};
+		pinctrl_mshc1: mshc1grp {
+			kunlun,pins = <
+				X9_PINCTRL_EMMC1_CLK__MSHC1_CLK_1 		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_CMD__MSHC1_CMD_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA0__MSHC1_DATA_0_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA1__MSHC1_DATA_1_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA2__MSHC1_DATA_2_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA3__MSHC1_DATA_3_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA4__MSHC1_DATA_4_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA5__MSHC1_DATA_5_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA6__MSHC1_DATA_6_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA7__MSHC1_DATA_7_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_STROBE__MSHC1_STB_1		X9_PINCTRL_OPEN_DRAIN_ENABLE
+				X9_PINCTRL_EMMC1_RESET_N__MSHC1_RST_N_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+			>;
+		};
+	};
+};
+
+&sdhci1 {
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	no-sd;
+	card-is-emmc;
+	disable-wp;
+	cap-mmc-highspeed;
+	keep-power-in-suspend;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+&ospi1 {
+	status = "okay";
+
+	flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "micron,mt35xu512cba", "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <66000000>;
+
+		m25p,fast-read;
+		cdns,page-size = <256>;
+		cdns,block-size = <16>;
+		cdns,read-delay = <1>;
+		cdns,tshsl-ns = <50>;
+		cdns,tsd2d-ns = <50>;
+		cdns,tchsh-ns = <4>;
+		cdns,tslch-ns = <4>;
+	};
+};
+
+&mbox {
+	status = "okay";
+};
+
+&rpmsg0 {
+	memory-region = <&rproc_0_safety>;
+	reg = <0x0 RPMSG0_MEM_HEAD_BASE 0x0 RPMSG0_MEM_HEAD_SIZE>;
+	mboxes = <&mbox 0x13 0x1300>;
+	status = "okay";
+};
+
+&rpmsg1 {
+	memory-region = <&rproc_1_secure>;
+	reg = <0x0 RPMSG1_MEM_HEAD_BASE 0x0 RPMSG1_MEM_HEAD_SIZE>;
+	mboxes = <&mbox 0x14 0x1401>;
+};
+
+&rpmsg2 {
+	memory-region = <&rproc_2_mpc>;
+	reg = <0x0 RPMSG2_MEM_HEAD_BASE 0x0 RPMSG2_MEM_HEAD_SIZE>;
+	mboxes = <&mbox 0x15 0x1502>;
+	status = "okay";
+};
+
+&ipcc0 {
+	status = "okay";
+};
+
+&ipcc1 {
+	status = "okay";
+};
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usbdrd3_1 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&ethernet1 {
+	status = "okay";
+};
+
+&eth_phy2 {
+	maximum-speed = "1000M-speed";
+};
+
+&ethernet2 {
+	status = "disabled";
+};
+
+&hwsema {
+	status = "okay";
+};
+
+&scr_sec {
+	status = "okay";
+};
+
+&pcie1 {
+	status = "okay";
+};
+
+&regctl {
+	status = "okay";
+};
+
+&watchdog {
+	wdt,auto-run = "false";
+	status = "okay";
+};
+
+&rtc {
+	status = "okay";
+};
+
+&vce2 {
+	/*
+	 * op-mode options:
+	 * bit 0: rng enable(1) or disable(0)
+	 * bit 1: ce enable(1) or disable(0)
+	 */
+	op-mode = <3>;
+	status = "okay";
+};
+

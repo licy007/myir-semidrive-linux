@@ -1,0 +1,21 @@
+Semidrive rpmsg-vq rp_ap
+=====================
+
+Semidrive rpmsg-vq rp_ap, based on Semidrive
+Mailbox Controller, is designed for inter-core communication.
+
+rpmsg-vq rp_ap Node:
+=================
+
+Required properties:
+--------------------
+- compatible :
+- mboxes :
+
+Example:
+--------
+	rpmsg4: rpmsg@4 {
+		compatible = "sd,rpmsg-vq,rp_ap";
+		mboxes = <&mbox 0x19 0x1904>;
+		status = "disabled";
+	};

@@ -1,0 +1,12 @@
+/*
+ * Semidrive G9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "g9_ap1.dtsi"
+#include "g9-reset-base_ap1.dtsi"
+#include "gic4_int_diff.dtsi"
+#include "sdrv-coresight-cpu1-mid.dtsi"

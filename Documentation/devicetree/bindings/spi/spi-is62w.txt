@@ -1,0 +1,22 @@
+iram is62w spi sensors drivers.
+
+Required properties:
+- compatible : "semidrive,is62w-spi-0"
+
+Example:
+
+spi6 {
+	dmas = <&dmac5 X9_DMA_SLV_ID_SPI6_TX>, <&dmac5 X9_DMA_SLV_ID_SPI6_RX>;
+	dma-names = "tx", "rx";
+	spi_is62w@0 {
+		compatible = "semidrive,is62w-spi-0";
+		reg = <0>;
+		spi-max-frequency = <30000000>;
+		page_size = <32>;
+		page_num = <0x4000>;
+		die_num = <2>;
+		poll_mode = <0>;
+		type = <0>;
+		enable_dma = <0>;
+	};
+};

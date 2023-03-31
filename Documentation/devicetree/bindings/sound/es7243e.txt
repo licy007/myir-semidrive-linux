@@ -1,0 +1,13 @@
+ES7243E i2s DA converter
+
+Required properties:
+- compatible : "MicArray_0"
+
+Example:
+
+i2c6 {
+	es7243e: codec@10 {
+		compatible = "MicArray_0";
+		reg = <0x10>;
+	};
+};

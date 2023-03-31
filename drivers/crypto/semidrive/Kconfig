@@ -1,0 +1,6 @@
+
+config CRYPTO_DEV_SEMIDRIVE
+	tristate "Support for semidrive crypto"
+	help
+          This enables support for the crypto hw accelerator which can be found
+	  on semidrive SOC.

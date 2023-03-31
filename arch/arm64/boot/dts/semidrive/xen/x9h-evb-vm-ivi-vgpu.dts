@@ -1,0 +1,385 @@
+/dts-v1/;
+
+#include "x9-vm.dtsi"
+#include "display-xen.dtsi"
+#include "clk-xen.dtsi"
+#include "lcd-timings-xen.dtsi"
+#include "x9-clk-common-xen.dtsi"
+#include "x9-reset-common.dtsi"
+#include "vdsp-xen.dtsi"
+#include "x9-gpu.dtsi"
+#include "x9-import.dtsi"
+
+
+/ {
+
+        reserved-memory {
+		   	#address-cells = <0x2>;
+		   	#size-cells = <0x2>;
+		   	ranges;
+
+			linux,cma {
+			    compatible = "shared-dma-pool";
+			    reusable;
+			    size = <0x0 0x1bc00000>;
+			    linux,cma-default;
+			};
+
+                        vm_reserved: vm_shm {
+                                            compatible = "shared-dma-pool";
+                                            reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+                                            status = "disabled";
+                        };
+
+	};
+};
+
+&sound {
+       status = "okay";
+       semidrive,audio-codec = <&tlv320aic23>;
+};
+
+&rtc {
+	status = "okay";
+};
+
+&dmac4 {
+	status = "okay";
+        vm,passthrough;
+};
+
+&dmac5 {
+	status = "okay";
+        vm,passthrough;
+};
+
+&dmac6 {
+	status = "okay";
+        vm,passthrough;
+};
+
+&afe_i2s_sc4 {
+	status = "okay";
+};
+
+&afe_i2s_sc5{
+	dmas = <&dmac4 X9_DMA_SLV_ID_I2S_SC6_TX>, <&dmac4 X9_DMA_SLV_ID_I2S_SC6_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&afe_i2s_sc7{
+	dmas = <&dmac4 X9_DMA_SLV_ID_I2S_SC8_TX>, <&dmac4 X9_DMA_SLV_ID_I2S_SC8_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&i2c5 {
+        status = "okay";
+	tlv320aic23: codec@1a {
+		compatible = "ti,tlv320aic23";
+		reg = <0x1a>;
+	};
+	/*
+	tlv320aic23: codec@1b {
+		compatible = "ti,tlv320aic23";
+		reg = <0x1b>;
+	}; */
+};
+
+&i2c8 {
+        status = "okay";
+};
+
+&i2c9 {
+        status = "okay";
+};
+
+
+&i2c10 {
+        status = "disabled";
+	gt9271_11_j2003:gt9271_11_j2003@5d {
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&pinctrl_gpiotouch_mipi>;
+		compatible = "goodix,gt9271";
+		irq-gpios = <&port4d 8 0>;	/*io56*/
+		reset-gpios = <&tp_gpio 1 0>;	/*index 1*/
+		reg = <0x5d>;
+	};
+};
+
+&i2c11 {
+        status = "okay";
+	ext_gpio: gpio@75 {
+		compatible = "ti,tca9539";
+		reg = <0x75>;
+		#gpio-cells = <2>;
+		gpio-controller;
+	};
+	tp_gpio: gpio@74 {
+		compatible = "ti,tca9539";
+		reg = <0x74>;
+		#gpio-cells = <2>;
+		gpio-controller;
+	};
+};
+
+&i2c12 {
+	status = "disabled";
+};
+
+&i2c13 {
+        status = "okay";
+	gt9271_14_j1805:gt9271_14_j1805@5d {
+                //pinctrl-names = "default";
+                //pinctrl-0 = <&pinctrl_gpiotouch_lvds>;
+                compatible = "goodix,gt9271";
+		irq-gpios = <&port4e 0 0>;	/*io80*/
+                reset-gpios = <&tp_gpio 2 0>;	/*index 2*/
+                reg = <0x5d>;
+                dev_type = <0>;	/* 0: main device, 1: aux device */
+        };
+
+};
+
+&i2c14 {
+	status = "okay";
+	gt9271_15_j1805:gt9271_15_j1805@5d {
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&pinctrl_gpiotouch_lvds>;
+		compatible = "goodix,gt9271";
+		irq-gpios = <&port4e 1 0>;	/*io81*/
+		reset-gpios = <&tp_gpio 3 0>;		/*index 3*/
+		reg = <0x5d>;
+                dev_type = <1>;	/* 0: main device, 1: aux device */
+	};
+};
+
+&i2c15 {
+	status = "disabled";
+	gt9271_16_j2003:gt9271_16_j2003@5d {
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&pinctrl_gpiotouch_mipi>;
+		compatible = "goodix,gt9271";
+		irq-gpios = <&port4d 9 0>;	/*io57*/
+		reset-gpios = <&tp_gpio 8 0>;	/*index 8*/
+		reg = <0x5d>;
+	};
+};
+
+&mbox{
+	status = "okay";
+};
+
+&vpu1 {
+	resets = <&rstgen RSTGEN_MODULE_VPU1>;
+	reset-names = "vpu-reset";
+	status = "okay";
+        vm,passthrough;
+};
+
+&vpu2 {
+	resets = <&rstgen RSTGEN_MODULE_VPU2>;
+	reset-names = "vpu-reset";
+	status = "okay";
+        vm,passthrough;
+};
+
+&gpu0_2 {
+        status = "okay";
+};
+
+&pinctrl {
+	reg = <0x0 0x38500000 0x0 0x10000>;
+	pinctrl-names = "default";
+
+	sdx9-evk {
+
+		pinctrl_gpiotouch_lvds: touchgrp_lvds {
+                        kunlun,pins = <
+			X9_PINCTRL_I2S_MC_SD4__GPIO_MUX2_IO80_1          0x00
+			X9_PINCTRL_I2S_MC_SD5__GPIO_MUX2_IO81_1          0x00
+                        X9_PINCTRL_I2S_MC_SD6__GPIO_MUX2_IO82_1          0x00
+                        X9_PINCTRL_I2S_MC_SD7__GPIO_MUX2_IO83_1          0x00
+                        >;
+                };
+		pinctrl_gpiotouch_mipi: touchgrp_mipi {
+                        kunlun,pins = <
+			X9_PINCTRL_I2S_SC3_SCK__GPIO_MUX2_IO56_1          0x00
+			X9_PINCTRL_I2S_SC3_WS__GPIO_MUX2_IO57_1          0x00
+                        >;
+                };
+		pinctrl_sddetect: sddetect {
+			kunlun,pins = <
+			X9_PINCTRL_EMMC2_DATA1__GPIO_MUX2_IO99_1	X9_PINCTRL_OPEN_DRAIN_ENABLE
+			>;
+		};
+	};
+};
+
+&gpio4 {
+	//pinctrl-names = "default";
+	//pinctrl-0 = <&pinctrl_gpiotouch_lvds &pinctrl_gpiotouch_mipi>;
+	status = "okay";
+};
+
+
+&sdhci3 {
+	#clock-cells = <1>;
+	clocks = <&EMMC3>;
+	clock-names = "core";
+	max-frequency = <25000000>;
+	//pinctrl-names = "default";
+	//pinctrl-0 = <&pinctrl_sddetect>;
+	cd-gpios = <&port4e 19 GPIO_ACTIVE_LOW>;
+	bus-width = <4>;
+	no-1-8-v;
+	no-mmc;
+	no-sdio;
+	disable-wp;
+	keep-power-in-suspend;
+	status = "okay";
+        vm,passthrough;
+};
+
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+        vm,passthrough;
+};
+
+&usbdrd_phy0 {
+             status = "okay";
+
+};
+
+&usbdrd3_1 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+        vm,passthrough;
+};
+
+&usbdrd_phy1 {
+             status = "okay";
+
+};
+
+&rstgen {
+	reg = <0x0 0x38467000 0x0 0x1000>,	/* vpu1 */
+		<0x0 0x38468000 0x0 0x1000>;	/* vpu2 */
+	rstgen_resource = <
+		RSTGEN_MODULE_VPU1
+		RSTGEN_MODULE_VPU2
+		>;
+	status = "okay";
+};
+
+&regctl {
+	reg = <0x0 0x38415000 0x0 0x1000>,
+              <0x0 0x38418000 0x0 0x1000>,
+              <0x0 0x38419000 0x0 0x1000>;
+	reg-names = "SDRV_REG_REMAP",
+			"SDRV_REG_BOOTREASON",
+                        "SDRV_REG_HWID";
+	status = "disabled";
+};
+
+&ion {
+	status = "disabled";
+};
+
+&hwsema {
+        status = "disabled";
+};
+
+&scr_sec {
+        status = "okay";
+};
+
+&display1 {
+	sdriv,crtc = <&crtc0 &crtc2>;
+	status = "okay";
+        reg = <0x00 0x38419000 0x00 0x3000>;
+
+};
+
+&dp1 {
+	status = "okay";
+};
+
+&dp3 {
+	status = "okay";
+};
+
+&crtc0 {
+	dpc-master = <&dp1>;
+	status = "okay";
+        vm,passthrough;
+};
+
+
+&crtc2 {
+	dpc-master = <&dp3>;
+	status = "okay";
+        vm,passthrough;
+};
+
+&parallel0 {
+	status = "okay";
+};
+
+&parallel2 {
+	status = "okay";
+};
+
+&dtimings0 {
+	native-mode = <&hd1280x800>;
+
+};
+
+
+&dtimings2 {
+	native-mode = <&hd1280x800_2>;
+
+};
+
+&ptimings0 {
+	status = "okay";
+};
+
+
+&ptimings2 {
+	status = "okay";
+};
+
+&vce2 {
+   /*
+ 	* op-mode options:
+ 	* bit 0: rng enable(1) or disable(0)
+ 	* bit 1: ce enable(1) or disable(0)
+ 	*/
+ 	op-mode = <3>;
+	status = "okay";
+};
+
+&g2d {
+     status = "okay";
+     vm,passthrough;
+};
+
+&adc_ap {
+	resolution_value = <0x03>; /*ADC_6_BITS_E0 = 0x00 , ADC_8_BITS_E1 = 0x01 , ADC_10_BITS_E2 = 0x02 , ADC_12_BITS_E3 = 0x03*/
+	clksrc_sel = <0x00>; /*ADC_SRC_CLK_ALT_E0 = 0x00 , ADC_SRC_CLK_PCLK_E1 = 0x01 , ADC_SRC_CLK_EXT_E2 = 0x02*/
+	clk_value = <24000000>;
+	channel_num = <4>;
+	use-adc-fifo;
+	vref-supply = <&vdd_1v8>;
+	status = "okay";
+};

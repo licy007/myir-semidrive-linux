@@ -1,0 +1,36 @@
+menuconfig ROGUE_KM
+	tristate "rogue gpu support"
+	help
+	  Choose this if you have a rogue gpu.
+
+if ROGUE_KM
+config PVR_SYSTEM
+	string "pvr system used"
+	help
+	  choose correct gpu type.
+
+config PVRSRV_VZ_NUM_OSID
+	int "pvr virtualisation os number"
+	range 0 8
+	default 0
+	help
+	  choose correct pvr virtualisation os number.
+
+config VMM_TYPE
+	string "gpu virtualisation manager type"
+	help
+	  choose correct gpu vmm type
+
+config BUFFER_SYNC
+	bool "gpu buffer sync"
+	default n
+	help
+	  use buffer sync function,GNU/Linux requires it.
+	  But Android doesn't need this, set default=n
+
+config PVR_KMD_DEBUG
+	bool "debug version"
+	default y
+	help
+	  choose debug or release version
+endif

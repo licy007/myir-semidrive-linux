@@ -1,0 +1,6 @@
+config SEMIDRIVE_PVT_SENSOR
+	tristate "Thermal sensor driver for SEMIDRIVE platform"
+	depends on REGMAP_MMIO
+	help
+	Temperature pvt sensor on semidrive soc platform. The pvt thermal sensor driver used to
+	get temp.

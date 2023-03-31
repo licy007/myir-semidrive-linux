@@ -1,0 +1,10 @@
+* Semidrive kunlun simulated imu DTS file
+
+Required properties :
+- compatible : should be "st,asm330lhh"
+
+Examples :
+asm330lhh:asm330lhh@6a {
+	compatible = "st,asm330lhh";
+};
+

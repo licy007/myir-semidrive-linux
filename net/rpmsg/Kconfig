@@ -1,0 +1,9 @@
+#
+# Rpmsg proto socket
+#
+
+config RPMSG_PROTO
+	tristate "Rpmsg Socket protocol"
+	select RPMSG
+	help
+	  API socket for rpmsg communications

@@ -1,0 +1,11 @@
+* Semidrive kunlun virtual secure core DTS file
+
+Required properties :
+- compatible : should be "sd,virtio-service"
+- status : enable or disable device node
+
+Examples :
+	secure_virtio {
+		model = "sd,virtio-service";
+		status = "disabled";
+	};

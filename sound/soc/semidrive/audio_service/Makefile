@@ -1,0 +1,1 @@
+obj-$(CONFIG_SEMIDRIVE_AUDIO_SERVICE) += sdrv-audio-service.o

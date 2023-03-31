@@ -1,0 +1,66 @@
+Semidrive camera use external sensors drivers.
+
+Required properties:
+- compatible : one of
+		"tp,tp2850"
+		"nextchip,n4"
+
+Example:
+
+i2c7 {
+	dvp_tp2850:dvp_tp2850@44 {
+		compatible = "tp,tp2850";
+		reg = <0x44>;
+		sync = <0>;
+		rst-gpios = <&port4c 19 GPIO_ACTIVE_HIGH>;//index(79) gpio D15
+		port {
+			cam2_to_parallel:endpoint {
+				remote-endpoint = <&csiparallel0_in>;
+			};
+		};
+	};
+};
+
+i2c9 {
+	n4:n4@31 {
+		compatible = "nextchip,n4";
+		reg = <0x31>;
+		sync = <0>;
+		pwdn-gpios = <&port4d 27 GPIO_ACTIVE_HIGH>;//index(123) gpio h1
+		rst-gpios = <&port4c 15 GPIO_ACTIVE_HIGH>;//index(79) gpio D15
+		ports {
+			port@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_0: endpoint {
+					remote-endpoint = <&csimipi0_0_in>;
+				};
+			};
+			port@1 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_1: endpoint {
+					remote-endpoint = <&csimipi0_1_in>;
+				};
+			};
+			port@2 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_2: endpoint {
+					remote-endpoint = <&csimipi0_2_in>;
+				};
+			};
+			port@3 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				cam0_to_mipi_3: endpoint {
+					remote-endpoint = <&csimipi0_3_in>;
+				};
+			};
+		};
+	};
+};

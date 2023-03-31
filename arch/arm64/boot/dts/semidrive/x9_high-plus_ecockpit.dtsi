@@ -1,0 +1,241 @@
+/*
+* Semidrive X9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "x9_high-plus.dtsi"
+#include "x9_high-plus_ecockpit-import.dtsi"
+#include "gic4_int_diff.dtsi"
+#include "sdrv-coresight-cpu1.dtsi"
+#include "x9_high-plus-sid.dtsi"
+
+/{
+        interrupt-parent=<&gic4>;
+
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <0xffffffff>; /* driver will using the minimum value between this value and pll capability */
+		trans-delay-us = <200000>;
+		start-time = <20>; /*second*/
+		status = "okay";
+	};
+
+        cpus {
+                #address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP1 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU1A_0_CORE0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_0>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x100>;
+			clocks = <&CPU1A_0_CORE1>;
+			clock-names = "cpu1";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_1>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x200>;
+			clocks = <&CPU1A_0_CORE2>;
+			clock-names = "cpu2";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x300>;
+			clocks = <&CPU1A_0_CORE3>;
+			clock-names = "cpu3";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_3>;
+		};
+
+		cpu4: cpu@4 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x400>;
+			clocks = <&CPU1A_0_CORE4>;
+			clock-names = "cpu4";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_4>;
+		};
+
+		cpu5: cpu@5 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x500>;
+			clocks = <&CPU1A_0_CORE5>;
+			clock-names = "cpu5";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_5>;
+		};
+
+		l2_0: l2-cache0 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_1: l2-cache1 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_2: l2-cache2 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_3: l2-cache3 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_4: l2-cache4 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_5: l2-cache5 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l3: l3-cache {
+			compatible = "cache";
+			cache-size = <0x100000>;
+			cache-line-size = <64>;
+			cache-sets = <0x400>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 9 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 10 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 11 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 12 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 13 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>, <&cpu4>, <&cpu5>;
+	};
+
+	str_sync: str_sync {
+		compatible = "sd,str-sync";
+		mboxes = <&mbox 0x49 0x4904>;
+		status = "disabled";
+	};
+
+        /delete-node/interrupt-controller@35411000;/*gic2*/
+        /delete-node/interrupt-controller@35421000;/*gic3*/
+        /delete-node/interrupt-controller@35441000;/*gic5*/
+        soc {
+                /delete-node/ gpu1@34e00000;/*gpu1*/
+                /delete-node/ gpio@30400000;/*gpio2*/
+                /delete-node/ gpio@30410000;/*gpio3*/
+                /delete-node/ gpio@30430000;/*gpio5*/
+                /delete-node/ i2c@30ac0000;/*HW I2C5*/
+                /*/delete-node/ i2c@30b50000; HW I2C14, should remove later*/
+                /delete-node/ dma@35510000;/*HW DMAC2*/
+                /delete-node/ dma@35530000;/*HW DMAC4*/
+		/delete-node/ dma@35570000;/*HW DMAC8*/
+                /delete-node/ timer@0x30900000;/*HW timer8 */
+                /delete-node/ i2s@30610000;/*HW I2S_SC4*/
+                /*/delete-node/ xrp@0; vdsp should remove later*/
+                /delete-node/ watchdog@0x30a00000;/*watchdog3*/
+                /delete-node/ watchdog@0x30a10000;/*watchdog4*/
+		/delete-node/ watchdog@0x30a30000;/*watchdog6*/
+        };
+
+	ulink_channel0: ulink_channel0 {
+		compatible = "sd,ulink-channel";
+		mboxes = <&mbox 0xb0 0xb000>;
+		rproc = <0>;
+		status = "okay";
+	};
+
+	ulink_channel1: ulink_channel1 {
+		compatible = "sd,ulink-channel";
+		mboxes = <&mbox 0xb4 0xb404>;
+		rproc = <4>;
+		status = "okay";
+	};
+
+	ulink_net: ulink_net {
+		compatible = "sd,ulink-net";
+		default_rproc = <4>;
+		status = "okay";
+	};
+};

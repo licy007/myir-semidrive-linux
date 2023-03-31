@@ -1,0 +1,19 @@
+* Semidrive kunlun ak7738  DTS file
+
+Required properties :
+- compatible : should be "semidrive,x9-ms-mach"
+- status : enable or disable device node
+
+Examples :
+/ {
+    sound_ak7738: sound@ak7738 {
+        model = "semidrive,x9-ms-mach";
+	status = "okay";
+    };
+
+    &i2c5 {
+        ak7738:codec@1c {
+	    compatible = "akm,ak7738";
+        }
+    }
+}

@@ -1,0 +1,75 @@
+diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+index ae3cd92..bb3a6af 100644
+--- a/drivers/i2c/busses/i2c-designware-master.c
++++ b/drivers/i2c/busses/i2c-designware-master.c
+@@ -57,6 +57,8 @@ static int i2c_dw_init_master(struct dw_i2c_dev *dev)
+ 	u32 reg, comp_param1;
+ 	u32 sda_falling_time, scl_falling_time;
+ 	int ret;
++        u32 cur_valid_lcnt, st_lcnt, fs_lcnt, hs_lcnt;        
++
+ 
+ 	ret = i2c_dw_acquire_lock(dev);
+ 	if (ret)
+@@ -101,9 +103,13 @@ static int i2c_dw_init_master(struct dw_i2c_dev *dev)
+ 					scl_falling_time,
+ 					0);	/* No offset */
+ 	}
+-	dw_writel(dev, hcnt, DW_IC_SS_SCL_HCNT);
+-	dw_writel(dev, lcnt, DW_IC_SS_SCL_LCNT);
++	//dw_writel(dev, hcnt, DW_IC_SS_SCL_HCNT);
++	//dw_writel(dev, lcnt, DW_IC_SS_SCL_LCNT);
++	dw_writel(dev, 0x60, DW_IC_SS_SCL_HCNT);
++	dw_writel(dev, 0x80, DW_IC_SS_SCL_LCNT);
+ 	dev_dbg(dev->dev, "Standard-mode HCNT:LCNT = %d:%d\n", hcnt, lcnt);
++        st_lcnt = lcnt;
++	printk("hsy irq:%d read standard-mode HCNT:LCNT = %d:%d\n", dev->irq,dw_readl(dev, DW_IC_SS_SCL_HCNT),dw_readl(dev, DW_IC_SS_SCL_LCNT));
+ 
+ 	/* Set SCL timing parameters for fast-mode or fast-mode plus */
+ 	if ((dev->clk_freq == 1000000) && dev->fp_hcnt && dev->fp_lcnt) {
+@@ -126,6 +132,8 @@ static int i2c_dw_init_master(struct dw_i2c_dev *dev)
+ 	dw_writel(dev, hcnt, DW_IC_FS_SCL_HCNT);
+ 	dw_writel(dev, lcnt, DW_IC_FS_SCL_LCNT);
+ 	dev_dbg(dev->dev, "Fast-mode HCNT:LCNT = %d:%d\n", hcnt, lcnt);
++        fs_lcnt = lcnt;
++	printk("hsy Fast-mode HCNT:LCNT = %d:%d\n", hcnt, lcnt);
+ 
+ 	if ((dev->master_cfg & DW_IC_CON_SPEED_MASK) ==
+ 		DW_IC_CON_SPEED_HIGH) {
+@@ -141,9 +149,27 @@ static int i2c_dw_init_master(struct dw_i2c_dev *dev)
+ 			dw_writel(dev, lcnt, DW_IC_HS_SCL_LCNT);
+ 			dev_dbg(dev->dev, "HighSpeed-mode HCNT:LCNT = %d:%d\n",
+ 				hcnt, lcnt);
++                        hs_lcnt = lcnt;
+ 		}
+ 	}
+ 
++        switch(dev->clk_freq) {
++        case 100000:
++               cur_valid_lcnt = st_lcnt;
++               break;
++        case 400000:
++        case 1000000:
++               cur_valid_lcnt = fs_lcnt;
++               break;
++
++        default:
++               if (dev->hs_lcnt)
++                       cur_valid_lcnt = hs_lcnt;
++               else
++                       cur_valid_lcnt = st_lcnt;
++               break;
++        }
++
+ 	/* Configure SDA Hold Time if required */
+ 	reg = dw_readl(dev, DW_IC_COMP_VERSION);
+ 	if (reg >= DW_IC_SDA_HOLD_MIN_VERS) {
+@@ -151,7 +177,7 @@ static int i2c_dw_init_master(struct dw_i2c_dev *dev)
+ 			/* Keep previous hold time setting if no one set it */
+ 			//dev->sda_hold_time = dw_readl(dev, DW_IC_SDA_HOLD);
+ 			//add sda hold check, sda hold to lcnt/2 and should small than lcnt -2
+-			tmp = min(lcnt/2, (lcnt - 2));
++			tmp = min(cur_valid_lcnt/2, (cur_valid_lcnt - 2));
+ 			dev->sda_hold_time = (tmp << DW_IC_SDA_HOLD_RX_SHIFT) + tmp;
+ 		}
+ 		/*

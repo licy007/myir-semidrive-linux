@@ -1,0 +1,10 @@
+* Semidrive kunlun camera cs DTS file
+
+Required properties :
+- compatible : should be "sd,sdrv_dummy"
+
+Examples :
+semidrive_cs:semidrive_cs{
+	compatible = "sd,sdrv_dummy";
+};
+

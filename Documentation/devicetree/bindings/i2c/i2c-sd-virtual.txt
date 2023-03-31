@@ -1,0 +1,19 @@
+* Semidrive Virtual I2C
+
+Required properties :
+
+ - compatible : should be "sd,virtual-i2c"
+ - phy-num : /bits/ 8 <xxx>; xxx should be the physical adapter num 0 or 1 ...or 15
+
+Examples :
+
+	i2c5:i2c@30ad0000 {
+		compatible = "sd,virtual-i2c";
+		phy-num = /bits/ 8 <5>;
+	};
+
+	i2c15:i2c@30b70000 {
+		compatible = "sd,virtual-i2c";
+		phy-num = /bits/ 8 <15>;
+	}
+

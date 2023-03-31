@@ -1,0 +1,17 @@
+menuconfig SD_DISPLAY_MISC
+	tristate "Semidrive display bridge/serdes IC driver"
+	depends on OF
+	default y
+	help
+	  This is misc driver for display.
+
+
+config SERDES_DS90UB9XX
+	tristate "TI serdes ds90ub9xx driver"
+	depends on SD_DISPLAY_MISC && I2C
+	default y
+
+config BRIDGE_LT9611
+	tristate "bridge lt9611 driver"
+	depends on SD_DISPLAY_MISC && I2C
+	default n

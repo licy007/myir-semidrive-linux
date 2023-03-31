@@ -1,0 +1,9 @@
+* Semidrive kunlun memdisk DTS file
+
+Required properties :
+ - compatible : should be "semidrive,memdisk"
+
+Examples :
+	memdisk: memdisk@0 {
+		compatible = "semidrive,memdisk";
+	};

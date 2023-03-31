@@ -1,0 +1,71 @@
+#
+# Semidrive SoC drivers
+#
+menu "Semidrive SoC drivers"
+
+config SEMIDRIVE_IPCC
+	tristate "Semidrive Inter-Processor Communication Channel"
+	depends on ARCH_SEMIDRIVE
+	depends on MAILBOX
+	depends on RPMSG_SEMIDRIVE
+	help
+	  This enables support for the shared memory regions for inter-processor communication
+
+config SEMIDRIVE_SCR
+	tristate "Semidrive SCR driver"
+	depends on ARCH_SEMIDRIVE
+	select HWSEM_SEMIDRIVE
+	default n
+	help
+	  SemiDrive System Control Register driver.
+
+config SEMIDRIVE_VCE
+	tristate "Semidrive VCE driver"
+	depends on ARCH_SEMIDRIVE
+	default n
+	help
+	  SemiDrive virtual crypto eng driver.
+
+config SEMIDRIVE_PFM
+	tristate "Semidrive ddr pfm driver"
+	depends on ARCH_SEMIDRIVE
+	default n
+	help
+	  SemiDrive ddr performance monitor driver.
+
+config SEMIDRIVE_SDPE_RPC
+	tristate "Semidrive SDPE Communication Channel"
+	depends on ARCH_SEMIDRIVE
+	depends on MAILBOX
+	depends on RPMSG_SEMIDRIVE
+	help
+	  This enables support for the shared memory regions for sdpe communication
+
+config SEMIDRIVE_ULINK
+	tristate "Semidrive ulink module"
+	depends on ARCH_SEMIDRIVE
+	depends on MAILBOX
+	default n
+	help
+	  This enables support for Semidrive ulink module between side A/B
+
+config SEMIDRIVE_REGCTL
+	tristate "Semidrive generic register programming driver"
+	depends on ARCH_SEMIDRIVE
+	default n
+	help
+	  This adds support for Semidriver SOC generic register programming.
+
+config SEMIDRIVE_TIME_SYNC
+        tristate "Semidrive time sync module"
+        depends on ARCH_SEMIDRIVE
+        depends on MAILBOX
+        depends on PTP_1588_CLOCK_SD
+        default n
+        help
+          This enables support for Semidrive time(RTC and gPTP) sync
+
+source "drivers/soc/semidrive/logbuf/Kconfig"
+source "drivers/soc/semidrive/ramdump/Kconfig"
+
+endmenu

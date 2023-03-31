@@ -1,0 +1,34 @@
+Semidrive X9 time_sync components
+=====================
+time-sync uses a C/S architecture to deliver time information through mailbox. That means server can
+send time to client
+
+Required properties :
+ - compatible : should be "sd,time-sync"
+ - mboxes ：    This is a phandle object consisting of 3 parts. The
+ 		first is a handle to mailbox node. The second is
+                mailbox local address. The last is an unsigned short
+                with high byte as mailbox remote address and low byte
+                as mailbox remote processor ID. See semidrive-mailbox
+                for details.
+ - rproc ：     should be it own domain ID,where domain ID enum is,
+ 		safety:0
+                sec:1
+                mpc:2
+                AP1:3
+                AP2:4
+ - sendto :     this consists 5 node,when the node is 1,it means the mailbox channel
+		to remote domain is enable.otherwise,the channel is disable
+ - master :     when master is 1,it will be a server,otherwise,it will be a client.
+
+Examples :
+	time_sync: time_sync {
+		compatible = "sd,time-sync";
+		mboxes = <&mbox 0xbd 0xbd00>,<&mbox 0xbd 0xbd01>,
+				<&mbox 0xbd 0xbd02>,<&mbox 0xbd 0xbd03>,
+				<&mbox 0xbd 0xbd04>;
+		rproc = <3>;
+		sendto = <1 0 0 0 1>;
+		master = <1>;
+		status = "okay";
+	};

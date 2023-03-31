@@ -1,0 +1,33 @@
+semidrive virtulization specific node properties:
+================================================================================
+
+Optional:
+
+- xen,passthrough : any device with this property, will not
+  be exposed to DOM0 and therefore no driver will be loaded in hypervisor.
+
+- xen,dom0-iommus : this device will be loaded in hypersior as a iommu master.
+  also `xen,mids' and `sid' are MUST required properties. 
+
+- xen,mids : master id list of this device, should be <id1, id2, ...>,
+  hypervisor will set this master's stream id as `sid'
+
+- sid : this device's stream id, refer `dt-bindings/soc/sdrv-xen.h'
+
+- vm,passthrough : this prop is for dtb-to-xl-cfg tool, this node will be treated
+  as a dtdev cfg. this property is only used in vm dts.
+
+Examples:
+
+gpu0_0@34c00000 {
+                        compatible = "imagination,pvr-9446";
+                        reg = <0x00 0x34c00000 0x00 0x80000>;
+                        interrupts = <0x00 0x96 0x04>;
+                        clock-frequency = <0x2faf0800>;
+                        osid = <0x00>;
+                        status = "okay";
+                        xen,dom0-iommus; // or xen,passthrough;
+                        xen,mids = <0x38>;
+                        sid = <SDRV_SID_GPU0_0>;
+};
+

@@ -1,0 +1,22 @@
+Semidrive Dcf Property Driver
+=====================
+
+Semidrive dcf device driver, based on Semidrive
+domain communication framework, is designed for
+remote manipulation of property values.
+
+Dcf Device Node:
+=================
+
+Required properties:
+--------------------
+- compatible :		Should be "sd,property".
+- endpoint :		endpoint for create rpmsg channel.
+
+Example:
+--------
+	dcf_property:property@0 {
+		compatible = "sd,property";
+		endpoint = <13>;
+		status = "disabled";
+	};

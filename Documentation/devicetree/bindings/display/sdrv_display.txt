@@ -1,0 +1,20 @@
+Generic device tree bindings for semidrive's display
+===========================================
+
+This document describes generic bindings which can be used to describe semidrive's display
+busses in a device tree.
+
+Required properties
+-------------------
+- compatible
+    should contain "semdrive,display-subsystem"
+
+- status:
+    "okay" or "disabled"
+
+Example:
+display: display@0 {
+	compatible = "semdrive,display-subsystem";
+	sdriv,crtc = <&crtc0>;
+	status = "disabled";
+};

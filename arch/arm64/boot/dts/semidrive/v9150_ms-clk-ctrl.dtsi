@@ -1,0 +1,296 @@
+/*
+ * Semidrive V9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+&clk_cpu1 {
+	status = "okay";
+};
+
+&clk_cpu2 {
+	status = "disabled";
+};
+
+&clk_gpu1 {
+	status = "okay";
+};
+
+&clk_gpu2 {
+	status = "disabled";
+};
+
+&clk_vsn {
+	status = "disabled";
+};
+
+&clk_vpumjpeg {
+	status = "okay";
+};
+
+&clk_hpi {
+	status = "disabled";
+};
+
+&clk_ddr {
+	status = "disabled";
+};
+
+&clk_his {
+	status = "okay";
+};
+/* disp */
+&PLL_DISP {
+	status = "okay";
+};
+
+&PLL_LVDS1 {
+	status = "okay";
+};
+
+&MIPI_CSI1_PIX {
+	status = "okay";
+};
+&MIPI_CSI2_PIX {
+	status = "okay";
+};
+&MIPI_CSI3_PIX {
+	status = "okay";
+};
+&CSI1 {
+	status = "okay";
+};
+&CSI2 {
+	status = "okay";
+};
+&CSI3 {
+	status = "okay";
+};
+&DC1 {
+	status = "okay";
+};
+&DISP_BUS {
+	status = "okay";
+};
+
+&clk_extaud {
+	status = "disabled";
+};
+
+/*ckgen sec */
+&PLL3 {
+	status = "okay";
+};
+&PLL4 {
+	status = "okay";
+};
+&PLL5 {
+	status = "okay";
+};
+&PLL6 {
+	status = "okay";
+};
+&PLL7 {
+	status = "okay";
+};
+
+&CE2 {
+	status = "disabled";
+};
+
+&ADC {
+	status = "disabled";
+};
+
+&I2C_SEC0 {
+	status = "okay";
+};
+
+&I2C_SEC0_5 {
+	status = "okay";
+};
+&I2C_SEC0_7 {
+	status = "disabled";
+};
+&I2C_SEC0_9 {
+	status = "okay";
+};
+&I2C_SEC0_11 {
+	status = "okay";
+};
+&I2C_SEC0_13 {
+	status = "disabled";
+};
+&I2C_SEC0_15 {
+	status = "okay";
+};
+
+&I2C_SEC1 {
+	status = "okay";
+};
+
+&I2C_SEC1_6 {
+	status = "okay";
+};
+&I2C_SEC1_8 {
+	status = "disabled";
+};
+&I2C_SEC1_10 {
+	status = "okay";
+};
+&I2C_SEC1_12 {
+	status = "okay";
+};
+&I2C_SEC1_14 {
+	status = "okay";
+};
+&I2C_SEC1_16 {
+	status = "okay";
+};
+
+&SPI_SEC0 {
+	status = "disabled";
+};
+
+&SPI_SEC1 {
+	status = "disabled";
+};
+
+&SPI_SEC0_5 {
+	status = "disabled";
+};
+&SPI_SEC0_7 {
+	status = "disabled";
+};
+&SPI_SEC1_6 {
+	status = "disabled";
+};
+&SPI_SEC1_8 {
+	status = "disabled";
+};
+&UART_SEC0 {
+	status = "okay";
+};
+
+&UART_SEC0_9 {
+	status = "disabled";
+};
+&UART_SEC0_11 {
+	status = "disabled";
+};
+&UART_SEC0_13 {
+	status = "okay";
+};
+&UART_SEC0_15 {
+	status = "okay";
+};
+&UART_SEC1_10 {
+	status = "okay";
+};
+&UART_SEC1_12 {
+	status = "disabled";
+};
+&UART_SEC1_14 {
+	status = "disabled";
+};
+&UART_SEC1_16 {
+	status = "okay";
+};
+
+&UART_SEC1 {
+	status = "okay";
+};
+
+&EMMC1 {
+	status = "okay";
+};
+
+&EMMC2 {
+	status = "disabled";
+};
+
+&EMMC3 {
+	status = "okay";
+};
+
+&ETH2_TX {
+	status = "okay";
+};
+
+&ETH2_RMII {
+	status = "okay";
+};
+
+&ETH2_PHY_REF {
+	status = "okay";
+};
+
+&ETH2_TIMER_SEC {
+	status = "okay";
+};
+
+&OSPI2 {
+	status = "disabled";
+};
+
+&TIMER5 {
+	status = "disabled";
+};
+
+&TIMER6 {
+	status = "disabled";
+};
+
+&PWM3 {
+	status = "okay";
+};
+
+&PWM5 {
+	status = "okay";
+};
+
+&PWM6 {
+	status = "okay";
+};
+
+&I2S_MCLK2 {
+	status = "okay";
+};
+
+&I2S_MCLK3 {
+	status = "okay";
+};
+
+&I2S_SC3 {
+	status = "okay";
+};
+
+&I2S_SC4 {
+	status = "okay";
+};
+
+&CSI_MCLK1 {
+	status = "okay";
+};
+
+&CSI_MCLK2 {
+	status = "okay";
+};
+
+&CAN5_TO_20 {
+	status = "disabled";
+};
+
+&TRACE {
+	status = "okay";
+};
+
+&SYS_CNT {
+	status = "disabled";
+};
+
+&MSHC_TIMER {
+	status = "disabled";
+};

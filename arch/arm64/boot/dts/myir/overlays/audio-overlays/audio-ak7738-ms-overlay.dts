@@ -1,0 +1,20 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/soc/sdrv_dt_mapping.h>
+
+/{
+	compatible = "semidrive,kunlun";
+	chip-id = < SDRV_CHIPID_ALL >;
+	board-type = < SDRV_BOARD_TYPE_MS >;
+	board-id = < SDRV_BOARDID_ALL >;
+
+	fragment@0 {
+		target = <&i2c5>;
+		__overlay__ {
+			ak7738:codec@1c{
+				ak7738,pdn-gpio = <&port4b 26 0>;
+			};
+		};
+	};
+};

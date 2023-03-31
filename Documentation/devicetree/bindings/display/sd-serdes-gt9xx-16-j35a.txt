@@ -1,0 +1,9 @@
+* Semidrive kunlun serdes_gt9xx_16_j35a touch DTS file
+
+Required properties :
+- compatible : should be "sdrv,ds941_ds948_gt9xx"
+
+Examples :
+	serdes_gt9xx_16_j35a:touch@14 {
+		model = "sdrv,ds941_ds948_gt9xx";
+	};

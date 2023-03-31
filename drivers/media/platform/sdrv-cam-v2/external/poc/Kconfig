@@ -1,0 +1,3 @@
+config POWER_POC_DRIVER
+	tristate "deser poc driver"
+	depends on VIDEO_SEMIDRIVE_V2

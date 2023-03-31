@@ -1,0 +1,107 @@
+/dts-v1/;
+
+#include "x9-vm.dtsi"
+#include "display-xen.dtsi"
+#include "clk-xen.dtsi"
+#include "x9-clk-common-xen.dtsi"
+#include "lcd-timings-xen.dtsi"
+#include "x9-gpu.dtsi"
+#include "x9-import.dtsi"
+
+/ {
+	reserved-memory {
+		   	#address-cells = <0x2>;
+		   	#size-cells = <0x2>;
+		   	ranges;
+
+			linux,cma {
+			    compatible = "shared-dma-pool";
+			    reusable;
+			    size = <0x0 0x2000000>;
+			    linux,cma-default;
+			};
+
+			vm_shmem: vm_shm,cma {
+				compatible = "shared-dma-pool";
+				reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+				status = "okay";
+			};
+	};
+
+};
+
+&pinctrl {
+	reg = <0x0 0x38500000 0x0 0x10000>;
+};
+
+&i2c14 {
+	status = "okay";
+
+	gt9271_15_j33:touch@5d {
+		compatible = "goodix,gt9271";
+		irq-gpios = <&port3e 3 0>;	/*io83*/
+		//reset-gpios = <&ext_gpio 7 0>;		/*index 7*/
+		reg = <0x5d>;
+	};
+
+	/*ext_gpio: gpio@75 {
+		compatible = "ti,tca9539";
+		reg = <0x75>;
+		#gpio-cells = <2>;
+		gpio-controller;
+	};*/
+};
+
+&gpio3 {
+	status = "okay";
+};
+
+&display3 {
+	sdriv,crtc = <&crtc3>;
+	status = "okay";
+};
+
+&dc3 {
+	status = "okay";
+};
+
+&crtc3 {
+	dpc-master = <&dc3>;
+	status = "okay";
+        vm,passthrough;
+
+	crtc3_out: port {
+		crtc3_out_interface: endpoint@0 {
+			remote-endpoint = <&lvds_in_crtc3>;
+		};
+	};
+};
+
+&lvds3 {
+	lvds-select = <4>;
+	status = "okay";
+};
+
+&dtimings3 {
+	native-mode = <&hd1280x800_3>;
+};
+
+&ptimings3 {
+	status = "okay";
+
+	port {
+		parall_panel3_in: endpoint {
+			remote-endpoint = <&lvds_out_timing3>;
+		};
+			};
+};
+
+&regctl {
+	reg = <0x0 0x38415000 0x0 0x1000>,
+              <0x0 0x38418000 0x0 0x1000>,
+              <0x0 0x38419000 0x0 0x1000>;
+	reg-names = "SDRV_REG_REMAP",
+			"SDRV_REG_BOOTREASON",
+                        "SDRV_REG_HWID";
+	status = "okay";
+};

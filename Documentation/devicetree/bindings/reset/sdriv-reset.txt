@@ -1,0 +1,128 @@
+Semidrive Reset Generation (rstgen)
+========================================
+
+Please also refer to reset.txt in this directory for common reset
+controller binding usage.
+
+Required properties:
+- compatible: Should be "semidrive,rstgen"
+- reg: register base and length for each consumer
+- rstgen_mudule_base: rstgen module base address
+- rstgen_core_base: rstgen core base address
+- rstgen_resource: arrary of rstgen index
+- rstgen_resource_num: the sum of resource arrary
+- #reset-cells: should be 1
+
+See table below for valid peripheral reset numbers.
+
+Reset id	Name			Peripheral
+0	RSTGEN_MODULE_OSPI2		ospi2
+1	RSTGEN_MODULE_I2S_SC3		i2s_sc3
+2	RSTGEN_MODULE_I2S_SC4		i2s_sc4
+3	RSTGEN_MODULE_I2S_SC5		i2s_sc5
+4	RSTGEN_MODULE_I2S_SC6		i2s_sc6
+5	RSTGEN_MODULE_I2S_SC7		i2s_sc7
+6	RSTGEN_MODULE_I2S_SC8		i2s_sc8
+7	RSTGEN_MODULE_I2S_MC1		i2s_mc1
+8	RSTGEN_MODULE_I2S_MC2		i2s_mc2
+9	RSTGEN_MODULE_CANFD5		canfd5
+10	RSTGEN_MODULE_CANFD6		canfd6
+11	RSTGEN_MODULE_CANFD7		canfd7
+12	RSTGEN_MODULE_CANFD8		canfd8
+13	RSTGEN_MODULE_ENET2		enet2
+14	RSTGEN_MODULE_MSHC1		mshc1
+15	RSTGEN_MODULE_MSHC2		mshc2
+16	RSTGEN_MODULE_MSHC3		mshc3
+17	RSTGEN_MODULE_MSHC4		mshc4
+18	RSTGEN_MODULE_ADSP		adsp
+19	RSTGEN_MODULE_GIC2		gic2
+20	RSTGEN_MODULE_GIC3		gic3
+21	RSTGEN_MODULE_CPU1_CORE0_WARM	core0 warm
+22	RSTGEN_MODULE_CPU1_CORE1_WARM	core1 warm
+23	RSTGEN_MODULE_CPU1_CORE2_WARM	core2 warm
+24	RSTGEN_MODULE_CPU1_CORE3_WARM	core3 warm
+25	RSTGEN_MODULE_CPU1_CORE4_WARM	core4 warm
+26	RSTGEN_MODULE_CPU1_CORE5_WARM	core5 varm
+27	RSTGEN_MODULE_CPU1_SCU_WARM	core1 scu warm
+29	RSTGEN_MODULE_DDR_SS		ddr ss
+30	RSTGEN_MODULE_DDR_SW1		ddr sw1
+31	RSTGEN_MODULE_DDR_SW2		ddr sw2
+32	RSTGEN_MODULE_DDR_SW3		ddr sw3
+33	RSTGEN_MODULE_GIC4		gic4
+34	RSTGEN_MODULE_GIC5		gic5
+36	RSTGEN_MODULE_CSSYS_TRESET_N	cssys treset
+37	RSTGEN_MODULE_NNA		nna
+38	RSTGEN_MODULE_VDSP_DRESET	vdsp dreset
+39	RSTGEN_MODULE_VPU1		vpu1
+40	RSTGEN_MODULE_VPU2		vpu2
+41	RSTGEN_MODULE_MJPEG		mjpeg
+45	RSTGEN_MODULE_CPU1_SS		cpu1 ss
+46	RSTGEN_MODULE_CPU2_SS		cpu2 ss
+56	RSTGEN_MODULE_MIPI_CSI1		mipi csi1
+57	RSTGEN_MODULE_MIPI_CSI2		mipi csi2
+58	RSTGEN_MODULE_MIPI_CSI3		mipi csi3
+59	RSTGEN_MODULE_MIPI_DSI1		dsi1
+60	RSTGEN_MODULE_MIPI_DSI2		dsi2
+61	RSTGEN_MODULE_DC1		dc1
+62	RSTGEN_MODULE_DC2		dc2
+63	RSTGEN_MODULE_DC3		dc3
+64	RSTGEN_MODULE_DC4		dc4
+65	RSTGEN_MODULE_DC5		dc5
+66	RSTGEN_MODULE_DP1		dp1
+67	RSTGEN_MODULE_DP2		dp2
+68	RSTGEN_MODULE_DP3		dp3
+69	RSTGEN_MODULE_LVDS_SS		lvds ss
+70	RSTGEN_MODULE_CSI1		csi1
+71	RSTGEN_MODULE_CSI2		csi2
+72	RSTGEN_MODULE_CSI3		csi3
+73	RSTGEN_MODULE_DISP_MUX		disp mux
+74	RSTGEN_MODULE_G2D1		g2d1
+75	RSTGEN_MODULE_G2D2		g2d2
+80	RSTGEN_MODULE_GPU1_CORE		gpu1 core
+81	RSTGEN_MODULE_GPU1_SS		gpu1 ss
+82	RSTGEN_MODULE_GPU2_CORE		gpu2 core
+83	RSTGEN_MODULE_GPU2_SS		gpu2 ss
+89	RSTGEN_MODULE_DBG_REG		debug reg
+90	RSTGEN_MODULE_CANFD9		canfd9
+91	RSTGEN_MODULE_CANFD10		canfd10
+92	RSTGEN_MODULE_CANFD11		canfd11
+93	RSTGEN_MODULE_CANFD12		canfd12
+94	RSTGEN_MODULE_CANFD13		canfd13
+95	RSTGEN_MODULE_CANFD14		canfd14
+96	RSTGEN_MODULE_CANFD15		canfd15
+97	RSTGEN_MODULE_CANFD16		canfd16
+98	RSTGEN_MODULE_CANFD17		canfd17
+99	RSTGEN_MODULE_CANFD18		canfd18
+100	RSTGEN_MODULE_CANFD19		canfd19
+101	RSTGEN_MODULE_CANFD20		canfd20
+1000	RSTGEN_CORE_VDSP		vdsp core
+1001	RSTGEN_CORE_SEC			sec core
+1002	RSTGEN_CORE_MP			mp core
+1003	RSTGEN_CORE_CPU1_ALL		ap1
+1004	RSTGEN_CORE_CPU2		ap2
+1005	RSTGEN_CORE_ADSP		adsp core
+
+Reset provider example:
+rstgen: reset@38400000 {
+	compatible = "semidrive,rstgen";
+	reg = <0x0 0x38467000 0x0 0x1000>,
+		<0x0 0x38468000 0x0 0x1000>;
+	rstgen_resource = <
+		RSTGEN_MODULE_VPU1
+		RSTGEN_MODULE_VPU2
+		>;
+	rstgen_resource_num = <2>;
+	rstgen_module_base = <0x38440000>;
+	rstgen_core_base = <0x38401000>;
+	#reset-cells = <1>;
+	status = "okay";
+};
+
+Reset consumer example:
+ vpu1:wave412@31440000 {
+	compatible = "wave412";
+	reg = <0x0 0x31440000 0x0 0x4000>;
+	interrupts = <0 167 4>;
+	resets = <&rstgen RSTGEN_MODULE_VPU1>;
+	reset-names = "vpu-reset";
+};

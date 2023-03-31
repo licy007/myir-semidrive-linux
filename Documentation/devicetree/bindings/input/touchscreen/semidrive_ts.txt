@@ -1,0 +1,11 @@
+Semidrive touchscreen, based on Semidrive Mailbox Controller,
+is designed for inter-core communication.
+
+Required properties:
+- compatible : "sd,safetouch"
+
+Example:
+
+semidrive_ts0:semidrive_ts@0 {
+	compatible = "sd,safetouch";
+};

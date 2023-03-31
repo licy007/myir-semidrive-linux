@@ -1,0 +1,27 @@
+Semidrive cpufreq driver
+-------------------
+
+Semidrive SoC cpufreq driver for CPU frequency scaling.
+
+Required properties:
+- compatible: should be "semidrive,sdrv-cpufreq".
+- trans-delay-us: the delay time(us) for next scaling.
+- start-time: the time which start after kernel boot (seconds).
+
+Optional properties:
+- frequency-list: define the freq table.
+- min-freq: define the min freq.
+- max-freq: define the max freq.
+if no frequency-list, will use the min-freq and max-freq to calcurate the freqs.
+
+Examples:
+--------
+    sdrvcpufreq: cpufreq {
+                compatible = "semidrive,sdrv-cpufreq";
+                min-freq = <100000000>; /* hz */
+                max-freq = <0xffffffff>; /* driver will using the minimum value between this value and pll capability */
+                frequency-list = <100000000 300000000 1100000000 1600000000>;
+                trans-delay-us = <200000>;
+                start-time = <10>; /*second*/
+                status = "okay";
+    };

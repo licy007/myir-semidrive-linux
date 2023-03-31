@@ -1,0 +1,22 @@
+
+config VIDEO_SEMIDRIVE_OV5640
+	tristate "Ov5640 for Semidrive"
+	depends on VIDEO_SEMIDRIVE_V2
+
+config VIDEO_SEMIDRIVE_AR0132_AP0101
+	tristate "AR0132 for Semidrive"
+	depends on VIDEO_SEMIDRIVE_V2
+
+config VIDEO_SEMIDRIVE_NEXTCHIP_N4
+	tristate "nextchip n4 for Semidrive"
+	depends on VIDEO_SEMIDRIVE_V2
+	default n
+
+
+config VIDEO_SEMIDRIVE_ARK7116
+	tristate "ARK7116 for Semidrive"
+	depends on VIDEO_SEMIDRIVE_V2
+
+config VIDEO_SEMIDRIVE_TP2850
+	tristate "tech point tp2850 for Semidrive"
+	depends on VIDEO_SEMIDRIVE_V2

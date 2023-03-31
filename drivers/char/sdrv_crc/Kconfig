@@ -1,0 +1,4 @@
+config DISP_CRC_SEMIDRIVE
+	tristate "Display CRC Support for Semidrive"
+	help
+	  enable semidrive display crc support

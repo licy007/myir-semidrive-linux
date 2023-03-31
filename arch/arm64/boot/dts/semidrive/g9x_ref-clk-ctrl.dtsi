@@ -1,0 +1,292 @@
+/*
+ * Semidrive G9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+&clk_cpu2 {
+	status = "okay";
+};
+
+&clk_hpi {
+	status = "disabled";
+};
+
+&clk_ddr {
+	status = "disabled";
+};
+
+&clk_his {
+        status = "okay";
+};
+
+&clk_extaud {
+	status = "okay";
+};
+
+/*ckgen sec */
+&PLL3 {
+	status = "okay";
+};
+
+&PLL4 {
+	status = "okay";
+};
+
+&PLL5 {
+	status = "okay";
+};
+
+&PLL6 {
+	status = "okay";
+};
+
+&PLL7 {
+	status = "okay";
+};
+
+&CE2 {
+	status = "disabled";
+};
+
+&ADC {
+	status = "okay";
+};
+
+&I2C_SEC0 {
+	status = "okay";
+};
+
+&I2C_SEC0_5 {
+	status = "okay";
+};
+
+&I2C_SEC0_7 {
+	status = "okay";
+};
+
+&I2C_SEC0_9 {
+	status = "okay";
+};
+
+&I2C_SEC0_11 {
+	status = "okay";
+};
+
+&I2C_SEC0_13 {
+	status = "okay";
+};
+
+&I2C_SEC0_15 {
+	status = "okay";
+};
+
+&I2C_SEC1 {
+	status = "okay";
+};
+
+&I2C_SEC1_6 {
+	status = "okay";
+};
+
+&I2C_SEC1_8 {
+	status = "okay";
+};
+
+&I2C_SEC1_10 {
+	status = "okay";
+};
+
+&I2C_SEC1_12 {
+	status = "okay";
+};
+
+&I2C_SEC1_14 {
+	status = "okay";
+};
+
+&I2C_SEC1_16 {
+	status = "okay";
+};
+
+&SPI_SEC0 {
+	status = "okay";
+};
+
+&SPI_SEC1 {
+	status = "okay";
+};
+
+&SPI_SEC0_5 {
+	status = "okay";
+};
+
+&SPI_SEC0_7 {
+	status = "okay";
+};
+
+&SPI_SEC1_6 {
+	status = "okay";
+};
+
+&SPI_SEC1_8 {
+	status = "okay";
+};
+
+&UART_SEC0 {
+	status = "okay";
+};
+
+&UART_SEC0_9 {
+	status = "okay";
+};
+
+&UART_SEC0_11 {
+	status = "okay";
+};
+
+&UART_SEC0_13 {
+	status = "okay";
+};
+
+&UART_SEC0_15 {
+	status = "okay";
+};
+
+&UART_SEC1_10 {
+	status = "okay";
+};
+
+&UART_SEC1_12 {
+	status = "okay";
+};
+
+&UART_SEC1_14 {
+	status = "okay";
+};
+
+&UART_SEC1_16 {
+	status = "okay";
+};
+
+&UART_SEC1 {
+	status = "okay";
+};
+
+&EMMC1 {
+	status = "okay";
+};
+
+&EMMC2 {
+	status = "okay";
+};
+
+&EMMC3 {
+	status = "okay";
+};
+
+&ETH2_TX {
+	status = "okay";
+};
+
+&ETH2_RMII {
+	status = "okay";
+};
+
+&ETH2_PHY_REF {
+	status = "okay";
+};
+
+&ETH2_TIMER_SEC {
+	status = "okay";
+};
+
+&OSPI1 {
+	status = "okay";
+};
+
+&TIMER3 {
+	status = "okay";
+};
+
+&TIMER4 {
+	status = "okay";
+};
+
+&TIMER5 {
+	status = "okay";
+};
+
+&TIMER6 {
+	status = "okay";
+};
+
+&TIMER7 {
+	status = "disabled";
+};
+
+&TIMER8 {
+	status = "disabled";
+};
+
+&PWM3 {
+	status = "okay";
+};
+
+&PWM4 {
+	status = "okay";
+};
+
+&PWM5 {
+	status = "okay";
+};
+
+&PWM6 {
+	status = "okay";
+};
+
+&PWM7 {
+	status = "okay";
+};
+
+&PWM8 {
+	status = "okay";
+};
+
+&I2S_MCLK2 {
+	status = "okay";
+};
+
+&I2S_MCLK3 {
+	status = "okay";
+};
+
+&I2S_SC3 {
+	status = "okay";
+};
+
+&I2S_SC4 {
+	status = "okay";
+};
+
+&I2S_SC7 {
+	status = "okay";
+};
+
+&CAN5_TO_20 {
+	status = "okay";
+};
+
+&TRACE {
+	status = "disabled";
+};
+
+&SYS_CNT {
+	status = "disabled";
+};
+
+&MSHC_TIMER {
+	status = "disabled";
+};

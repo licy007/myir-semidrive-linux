@@ -1,0 +1,21 @@
+config VIDEO_SEMIDRIVE_PARALLEL
+	tristate "Semidrive Camera parallel interface"
+	depends on VIDEO_SEMIDRIVE_V2
+
+config VIDEO_SEMIDRIVE_MIPICSI2
+	tristate "Semidrive Camera MIPI-CSI2 interface"
+	depends on VIDEO_SEMIDRIVE_V2
+
+config VIDEO_SEMIDRIVE_SRV
+	tristate "Semidrive Camera Dummy Driver"
+	depends on VIDEO_SEMIDRIVE_V2
+	depends on ARCH_SEMIDRIVE
+	depends on RPMSG_SEMIDRIVE
+
+source "drivers/media/platform/sdrv-cam-v2/external/sensor/Kconfig"
+
+source "drivers/media/platform/sdrv-cam-v2/external/serdes/Kconfig"
+
+source "drivers/media/platform/sdrv-cam-v2/external/adaptive-serdes/Kconfig"
+
+source "drivers/media/platform/sdrv-cam-v2/external/poc/Kconfig"

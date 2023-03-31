@@ -1,0 +1,27 @@
+Generic device tree bindings for dp
+===========================================
+
+This document describes generic bindings which can be used to describe dp
+busses in a device tree.
+
+Required properties
+-------------------
+- compatible
+    should contain "sdrv,dp"
+
+- status:
+    "okay" or "disabled"
+
+- sdrv,ip
+    select different dp operation
+
+Example:
+
+dp1: dp1@30d80000 {
+	compatible = "sdrv,dp";
+	reg = <DP1_BASE DPU_RANGE>;
+	interrupts = <0 DP1_IRQ 4>;
+	status = "disabled";
+	mlc-select = <0>;
+	sdrv,ip = "dp-r0p1";
+};

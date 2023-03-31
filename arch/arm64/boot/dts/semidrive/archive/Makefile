@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: GPL-2.0
+#dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_z1.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_z1-cpu1.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_V9) += v9f_ref_7inch.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_V9) += v9ts_ref_a.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_V9) += v9ts_ref_b.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_evb_native_cluster.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_evb_native_cluster_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_evb_native_ivi.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_evb_native_ivi_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_3sin1_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_3sin1_8g_bt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_4k_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_4k_8g_bt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_8g_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_8g_4kin1.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_8g_4kin1_bt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_cluster_bt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi_4k_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi_8g_4kin1.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi_serdes.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi_serdes_3sin1_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high-plus_ref_native_ivi_serdes_8g.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_evb_memdisk.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_evb_native_cluster.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_evb_native_controlpanel.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_evb_native_ivi.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_evb_native_ivi_avm.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_cluster.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_cluster_serdes_cockpit.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_controlpanel.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_controlpanel_serdes_cockpit.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_4k.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_avm.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_serdes_avm.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_serdes_cockpit.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_serdes_csisrv.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_high_ref_native_ivi_serdes_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_mid_ref_native_cluster.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_mid_ref_native_controlpanel.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_mid_ref_native_ivi_serdes.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_8g_a_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_8g_b_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_a_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_b_nobt.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_a.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_cluster_b.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_ivi_a.dtb
+dtb-$(CONFIG_ARCH_SEMIDRIVE_X9) += x9_ultra_ref_native_ivi_b.dtb
+
+always		:= $(dtb-y)
+clean-files	:= *.dtb
+
+# Add __symbols__ node
+ifeq ($(CONFIG_ARCH_SEMIDRIVE),y)
+	DTC_FLAGS ?= -@
+endif

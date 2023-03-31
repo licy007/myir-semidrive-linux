@@ -1,0 +1,10 @@
+#
+# Phy drivers for Semidrive devices
+#
+config PHY_SEMIDRIVE_USB
+    tristate "Semidrive USB PHY Driver"
+    depends on ARCH_SEMIDRIVE && OF
+    select GENERIC_PHY
+    help
+      Say 'Y' here to add support for Semidrive USB PHY driver,
+      it supports usb2.0, usb3.0.

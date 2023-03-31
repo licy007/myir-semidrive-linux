@@ -1,0 +1,10 @@
+* Semidrive kunlun ulink pcie DTS file
+
+Required properties :
+- compatible : should be "sd,ulink-pcie-rc" or "sd,ulink-pcie-ep"
+
+Examples :
+ulink_pcie: ulink_pcie{
+	compatible = "sd,ulink-pcie-rc";
+};
+

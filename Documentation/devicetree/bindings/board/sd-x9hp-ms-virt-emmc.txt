@@ -1,0 +1,14 @@
+* Semidrive kunlun platform DTS file
+
+Required properties :
+ - compatible : should be "semidrive,kunlun"
+
+Optional:
+ - model : The name of the board
+
+Examples :
+
+		/ {
+			model = "Semidrive kunlun x9 MS Board";
+			compatible = "semidrive,kunlun";
+		};

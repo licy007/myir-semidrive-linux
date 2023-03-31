@@ -1,0 +1,52 @@
+ * Bindings for the Cadence Xtensa Remote Processing Semidrive HW-specific driver.
+
+Required properties:
+- compatible: shall be "cdns,xrp-hw-semidrive,v1".
+- reg: register locations of the DSP shared memory (first entry, same as in
+       cdns,xrp,v1) and DSP MMIO block (second entry).
+
+Optional properties:
+- device-irq: 1 32-bit cells:
+    DSP IRQ number (normal core IRQ number, not external IRQ number)
+  controlled by this register/bit.
+
+- device-irq-mode: 0 for none (polling), 1 for IRQ mode
+
+- host-irq: 1 32-bit cells:
+    host IRQ number
+
+- host-irq-mode: 0 for none (polling), 1 for IRQ mode
+
+- firmware-name: string identifying firmware name. If missing the driver
+  doesn't load the firmware.
+
+- ranges: standard ranges property. Provides mapping of DSP physical addresses
+  to host physical addresses. Arbitrary number of groups with the following
+  structure:
+  - cells with DSP physical address of the region;
+  - cells with the corresponding host physical address of the
+    region;
+  - cells with the size of the region.
+
+Example:
+
+	xrp@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "cdns,xrp-hw-simple,v1";
+		reg = <0xf0000000 0x01000000   /* DSP shared memory */
+		       0xfd001000 0x00000200>; /* DSP MMIO */
+		device-irq = <23>; /* IRQ# */
+		device-irq-mode = <1>;
+		host-irq = <232>; /* IRQ# */
+		host-irq-mode = <1>;
+		firmware-name = "xrp0.elf";
+		ranges = <0x00000000 0x00000000 0x10000000
+			  0x3ffc0000 0xc0000000 0x00020000
+			  0x3ffe0000 0xc0020000 0x00020000
+			  0x50000000 0x50000000 0x01000000
+			  0x60000000 0x60000000 0x20000000
+			  0xf0000000 0xf0000000 0x0d000000>;
+		dsp@0 {
+		};
+	};

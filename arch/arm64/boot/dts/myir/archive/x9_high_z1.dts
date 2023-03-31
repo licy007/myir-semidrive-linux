@@ -1,0 +1,357 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "x9_high_z1.dtsi"
+#include "x9_high_z1-clk-ctrl.dtsi"
+#include "lcd-timings.dtsi"
+#include <dt-bindings/pinctrl/pins-sdx9.h>
+
+/ {
+	model = "Semidrive kulun x9 z1 Board";
+
+	compatible = "semidrive,kunlun";
+
+	aliases {
+		serial0 = &uart8;
+	};
+
+	memory@50000000 {
+		device_type = "memory";
+		reg = <0x0 0x50000000 0x0 0x30000000 0x1 0x0 0x1 0x40000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		/* Default Common CMA Pool */
+		/* QUIRK: Must be kept in the lower 4096 MiBs of DRAM banks for VE */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x18000000>; /* 384MB */
+			/* 4GB maximum in case of 32-bit only capable devices */
+			alloc-ranges = <0x0 0x0 0x0 0xffffffff>;
+			linux,cma-default;
+		};
+	};
+
+	chosen {
+		bootargs = "root=/dev/ram0 rootfstype=ramfs highres=0 earlycon console=ttyS0,4000000n8 nr_cpus=1 loglevel=11 androidboot.mode=normal androidboot.selinux=permissive androidboot.debuggable=0 androidboot.dm_verity=disable init=/init";
+		stdout-path = "serial0";
+		linux,initrd-start = <0x5c000000>;
+		linux,initrd-end   = <0x5c28cba2>;
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		user_button1 {
+			label = "user_button1";
+			gpios = <&port4c 8 GPIO_ACTIVE_LOW>;
+			linux,code = <116>;
+			debounce-interval = <0>;
+		};
+
+		user_button2 {
+			label = "user_button2";
+			gpios = <&port4b 8 GPIO_ACTIVE_LOW>;
+			linux,code = <117>;
+			debounce-interval = <0>;
+		};
+
+	};
+
+	leds {
+        compatible = "gpio-leds";
+
+		user_led1 {
+			label = "user_led1";
+			gpios = <&port4c 0 0>;
+			linux,default-trigger = "heartbeat";
+			default-state = "on";
+		};
+
+		user_led2 {
+			label = "user_led2";
+			gpios = <&port4b 0 0>;
+			linux,default-trigger = "heartbeat";
+			default-state = "on";
+		};
+
+	};
+
+};
+
+&cpu0 {
+	clocks = <&CPU2_0>;
+	clock-names = "cpu0";
+	next-level-cache = <&l2>;
+	status = "okay";
+};
+
+&generic_timer {
+	interrupts = <1 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
+		<1 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
+	status = "okay";
+};
+
+&dmac1 {
+	status = "okay";
+};
+&dmac2 {
+	status = "okay";
+};
+&dmac3 {
+	status = "okay";
+};
+&dmac4 {
+	status = "okay";
+};
+&dmac5 {
+	status = "okay";
+};
+&dmac6 {
+	status = "okay";
+};
+&dmac7 {
+	status = "okay";
+};
+/* some plls just disabled because the emu not include the module, if you confirm it's included, you can enabled it */
+&PLL_CPU2 {
+	status = "okay";
+};
+&PLL_GPU1 {
+	status = "okay";
+};
+&PLL_GPU2 {
+	status = "disabled";
+};
+&PLL_VPU {
+	status = "okay";
+};
+&PLL_VSN {
+	status = "disabled";
+};
+&PLL_HPI {
+	status = "disabled";
+};
+&PLL_HIS {
+	status = "disabled";
+};
+&PLL_DDR {
+	status = "disabled";
+};
+&PLL3 {
+	status = "okay";
+};
+&PLL4 {
+	status = "okay";
+};
+&PLL5 {
+	status = "okay";
+};
+&PLL6 {
+	status = "okay";
+};
+&PLL7 {
+	status = "okay";
+};
+&PLL_DISP {
+	status = "okay";
+};
+&PLL_LVDS1 {
+	status = "okay";
+};
+&PLL_LVDS2 {
+	status = "okay";
+};
+&PLL_LVDS3 {
+	status = "okay";
+};
+&PLL_LVDS4 {
+	status = "okay";
+};
+
+&uart8 {
+	dmas = <&dmac1 X9_DMA_SLV_ID_UART9_TX>, <&dmac1 X9_DMA_SLV_ID_UART9_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&i2c13 {
+        status = "okay";
+};
+
+&i2c15 {
+        status = "okay";
+};
+
+&pinctrl {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_dp>;
+
+	sdx9-evk {
+		pinctrl_dp: dpgrp {
+			kunlun,pins = <
+				X9_PINCTRL_I2S_SC3_SCK__DISP_CLK_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC3_WS__DISP_HSYNC_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC3_SD__DISP_VSYNC_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC4_SCK__DISP_ENABLE_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC4_WS__DISP_DATA0_CANFD9_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC4_SD__DISP_DATA1_CANFD9_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC5_SCK__DISP_DATA2_CANFD10_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC5_WS__DISP_DATA3_CANFD10_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC5_SD__DISP_DATA4_CANFD11_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC6_SCK__DISP_DATA5_CANFD11_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC6_WS__DISP_DATA6_CANFD12_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC6_SD__DISP_DATA7_CANFD12_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC7_SCK__DISP_DATA8_CANFD13_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC7_WS__DISP_DATA9_CANFD13_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC7_SD__DISP_DATA10_CANFD14_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC8_SCK__DISP_DATA11_CANFD14_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC8_WS__DISP_DATA12_CANFD15_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_SC8_SD__DISP_DATA13_CANFD15_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SCK__DISP_DATA14_CANFD16_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_WS__DISP_DATA15_CANFD16_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD0__DISP_DATA16_CANFD17_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD1__DISP_DATA17_CANFD17_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD2__DISP_DATA18_CANFD18_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD3__DISP_DATA19_CANFD18_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD4__DISP_DATA20_CANFD19_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD5__DISP_DATA21_CANFD19_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD6__DISP_DATA22_CANFD20_TX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_I2S_MC_SD7__DISP_DATA23_CANFD20_RX_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+			>;
+		};
+
+		pinctrl_mshc1: mshc1grp {
+            		kunlun,pins = <
+                		X9_PINCTRL_EMMC1_CLK__MSHC1_CLK_1 		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_CMD__MSHC1_CMD_1		X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA0__MSHC1_DATA_0_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA1__MSHC1_DATA_1_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA2__MSHC1_DATA_2_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA3__MSHC1_DATA_3_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA4__MSHC1_DATA_4_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA5__MSHC1_DATA_5_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA6__MSHC1_DATA_6_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_DATA7__MSHC1_DATA_7_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_EMMC1_STROBE__MSHC1_STB_1		X9_PINCTRL_OPEN_DRAIN_ENABLE
+				X9_PINCTRL_EMMC1_RESET_N__MSHC1_RST_N_1	X9_PINCTRL_OPEN_DRAIN_DISABLE
+            		>;
+        	};
+
+		pinctrl_gpioc: gpiocgrp {
+			kunlun,pins = <
+				X9_PINCTRL_GPIO_C0__GPIO_MUX2_IO0_1     	X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_GPIO_C8__GPIO_MUX2_IO8_1     	X9_PINCTRL_OPEN_DRAIN_ENABLE
+
+			>;
+		};
+
+		pinctrl_gpiod: gpiodgrp {
+			kunlun,pins = <
+				X9_PINCTRL_GPIO_D0__GPIO_MUX2_IO16_1     X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_RESERVED 						X9_PINCTRL_OPEN_DRAIN_DISABLE
+				X9_PINCTRL_GPIO_D8__GPIO_MUX2_IO24_1     X9_PINCTRL_OPEN_DRAIN_ENABLE
+
+			>;
+		};
+
+
+	};
+};
+
+&sdhci1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_mshc1>;
+	#clock-cells = <1>;
+	clocks = <&EMMC1>;
+	clock-names = "core";
+	max-frequency = <100000000>;
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	no-sd;
+	cap-mmc-highspeed;
+	disable-wp;
+	keep-power-in-suspend;
+	mmc-ddr-1_8v;
+	status = "okay";
+};
+
+&gpio4 {
+	pinctrl-names = "default";
+    	pinctrl-0 = <&pinctrl_gpioc &pinctrl_gpiod>;
+    	status = "okay";
+};
+
+&timer0 {
+	status = "okay";
+};
+
+&vpu1 {
+    status = "okay";
+};
+
+&vpu2 {
+    status = "okay";
+};
+
+&gpu0 {
+ status = "okay";
+};
+
+&g2d {
+	status = "okay";
+};
+
+&display {
+	status = "okay";
+};
+
+&crtc0 {
+	status = "okay";
+};
+
+&parallel0 {
+	status = "okay";
+};
+
+&dtimings0 {
+	native-mode = <&fhd1920x1080>;
+};
+
+&ptimings0 {
+	status = "okay";
+};
+
+&smmu {
+	status = "disabled";
+};

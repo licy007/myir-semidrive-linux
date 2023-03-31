@@ -1,0 +1,3675 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/display/dpu-sdx9.h>
+#include <dt-bindings/clk/x9-clk.h>
+#include <dt-bindings/dma/x9-dmac-slave-id.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/soc/sdrv-common-reg.h>
+#include <dt-bindings/soc/sdrv,scr_signal.h>
+#include <dt-bindings/soc/sdrv,scr.h>
+#define R_OFFSET_H 0x5
+#define R_OFFSET_L 0x50000000
+
+/ {
+	compatible = "semidrive,kunlun remote";
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	r_RC_24M: r_RC_24M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	r_RC_RTC: r_RC_RTC {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <2000000>;
+	};
+
+	r_XTAL_24M: r_XTAL_24M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	r_XTAL_RTC: r_XTAL_RTC {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32000>;
+	};
+
+	r_PLL1_DIVA: r_PLL1_DIVA {
+		compatible = "fixed-clock";
+
+		#clock-cells = <0>;
+		clock-frequency = <500000000>;
+	};
+
+	r_PLL2_DIVA: r_PLL2_DIVA {
+		compatible = "fixed-clock";
+
+		#clock-cells = <0>;
+		clock-frequency = <399999999>;
+	};
+
+	r_clk_cpu1: r_clk_cpu1 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_CPU1A: r_PLL_CPU1A {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x314A0000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <207>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_PLL_CPU1B: r_PLL_CPU1B {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x314D0000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <166>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		r_CPU1A: r_CPU1A {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c0000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_CPU1B: r_CPU1B {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c1000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_CPU1A_SEL0: r_CPU1A_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_CPU1A>, <&r_PLL_CPU1A PLL_ROOT>;
+		};
+		r_CPU1A_M: r_CPU1A_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_CPU1A_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1A_1: r_CPU1A_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1A_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1A_2: r_CPU1A_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1A_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1A_3: r_CPU1A_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1A_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1A_0: r_CPU1A_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36180000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_CPU1A_M>, <&r_PLL_CPU1A PLL_ROOT>;
+		};
+
+		r_CPU1B_SEL0: r_CPU1B_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_CPU1B>, <&r_PLL_CPU1B PLL_ROOT>;
+		};
+		r_CPU1B_M: r_CPU1B_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_CPU1B_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1B_1: r_CPU1B_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1B_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1B_2: r_CPU1B_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1B_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1B_3: r_CPU1B_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU1B_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+		r_CPU1B_0: r_CPU1B_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36181000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_CPU1B_M>, <&r_PLL_CPU1B PLL_ROOT>;
+		};
+		r_CPU1A_0_CORE0: r_CPU1A_0_CORE0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36136000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+
+		r_CPU1A_0_CORE1: r_CPU1A_0_CORE1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36137000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+
+		r_CPU1A_0_CORE2: r_CPU1A_0_CORE2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36138000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+
+		r_CPU1A_0_CORE3: r_CPU1A_0_CORE3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36139000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+
+		r_CPU1A_0_CORE4: r_CPU1A_0_CORE4 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3613a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+
+		r_CPU1A_0_CORE5: r_CPU1A_0_CORE5 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3613b000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_CPU1A_0>;
+		};
+	};
+
+	r_clk_cpu2: r_clk_cpu2 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_CPU2: r_PLL_CPU2 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x314B0000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <187>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		r_CPU2: r_CPU2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c2000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_CPU2_SEL0: r_CPU2_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_CPU2>, <&r_PLL_CPU2 PLL_ROOT>;
+		};
+
+		r_CPU2_M: r_CPU2_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_CPU2_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_CPU2_1: r_CPU2_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU2_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_CPU2_2: r_CPU2_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU2_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_CPU2_3: r_CPU2_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_CPU2_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_CPU2_0: r_CPU2_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36182000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_CPU2_M>, <&r_PLL_CPU2 PLL_ROOT>;
+		};
+	};
+
+	r_clk_gpu1: r_clk_gpu1 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_GPU1: r_PLL_GPU1 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31480000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <200>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		r_GPU1: r_GPU1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c3000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_GPU1_SEL0: r_GPU1_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_GPU1>, <&r_PLL_GPU1 PLL_ROOT>;
+		};
+
+		r_GPU1_M: r_GPU1_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_GPU1_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU1_1: r_GPU1_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU1_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU1_2: r_GPU1_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU1_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU1_3: r_GPU1_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU1_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU1_0: r_GPU1_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36183000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_GPU1_M>, <&r_PLL_GPU1 PLL_ROOT>;
+			sdrv,max-freq = <800000000>;
+			sdrv,min-freq = <0>;
+		};
+	};
+
+	r_clk_gpu2: r_clk_gpu2 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_GPU2: r_PLL_GPU2 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31490000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <182>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		r_GPU2: r_GPU2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c4000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_GPU2_SEL0: r_GPU2_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_GPU2>, <&r_PLL_GPU2 PLL_ROOT>;
+		};
+
+		r_GPU2_M: r_GPU2_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_GPU2_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU2_1: r_GPU2_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU2_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU2_2: r_GPU2_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU2_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU2_3: r_GPU2_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_GPU2_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_GPU2_0: r_GPU2_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36184000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_GPU2_M>, <&r_PLL_GPU2 PLL_ROOT>;
+		};
+	};
+
+	r_clk_vsn: r_clk_vsn {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_VSN: r_PLL_VSN {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35000000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <187>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+
+		r_VSN_BUS: r_VSN_BUS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36082000) 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_VSN_BUS_SEL0: r_VSN_BUS_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_VSN_BUS>, <&r_PLL_VSN PLL_ROOT>;
+		};
+
+		r_VSN_BUS_M: r_VSN_BUS_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_VSN_BUS_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VSN_BUS_1: r_VSN_BUS_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VSN_BUS_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VSN_BUS_2: r_VSN_BUS_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VSN_BUS_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VSN_BUS_3: r_VSN_BUS_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VSN_BUS_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VSN_BUS_0: r_VSN_BUS_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36188000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_VSN_BUS_M>, <&r_PLL_VSN PLL_ROOT>;
+		};
+	};
+
+	r_clk_vpumjpeg: r_clk_vpumjpeg {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_VPU: r_PLL_VPU {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31450000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <5>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <222>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_VPU1: r_VPU1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36000000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_MJPEG: r_MJPEG {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36001000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_VPU_BUS: r_VPU_BUS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36080000) 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_VPU1_SEL0: r_VPU1_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_VPU1>, <&r_PLL_VPU PLL_DIVB>;
+		};
+
+		r_VPU1_M: r_VPU1_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_VPU1_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU1_1: r_VPU1_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU1_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU1_2: r_VPU1_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU1_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU1_3: r_VPU1_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU1_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU1_0: r_VPU1_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36185000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_VPU1_M>, <&r_PLL_VPU PLL_DIVB>;
+		};
+
+		r_MJPEG_SEL0: r_MJPEG_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_MJPEG>, <&r_PLL_VPU PLL_DIVB>;
+		};
+
+		r_MJPEG_M: r_MJPEG_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_MJPEG_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_MJPEG_1: r_MJPEG_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_MJPEG_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_MJPEG_2: r_MJPEG_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_MJPEG_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_MJPEG_3: r_MJPEG_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_MJPEG_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_MJPEG_0: r_MJPEG_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36186000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_MJPEG_M>, <&r_PLL_VPU PLL_DIVB>;
+		};
+
+		r_VPU_BUS_SEL0: r_VPU_BUS_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_VPU_BUS>, <&r_PLL_VPU PLL_DIVA>;
+		};
+
+		r_VPU_BUS_M: r_VPU_BUS_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_VPU_BUS_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU_BUS_1: r_VPU_BUS_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU_BUS_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU_BUS_2: r_VPU_BUS_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU_BUS_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU_BUS_3: r_VPU_BUS_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_VPU_BUS_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_VPU_BUS_0: r_VPU_BUS_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36187000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_VPU_BUS_M>, <&r_PLL_VPU PLL_DIVA>;
+
+
+		};
+		r_VPU_BUS_0_VPU1: r_VPU_BUS_0_VPU1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36122000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_VPU_BUS_0>;
+		};
+		r_VPU_BUS_0_VPU2: r_VPU_BUS_0_VPU2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36123000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_VPU_BUS_0>;
+		};
+		r_VPU_BUS_0_MJPEG: r_VPU_BUS_0_MJPEG {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36124000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_VPU_BUS_0>;
+		};
+	};
+
+	r_clk_hpi: r_clk_hpi {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_HPI: r_PLL_HPI {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31500000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <237>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		r_NOC: r_NOC {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36084000) 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>, <&r_PLL_HPI PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+	};
+	r_clk_his: r_clk_his {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_HIS: r_PLL_HIS {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x312A0000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <250>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		r_HIS_BUS: r_HIS_BUS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36086000) 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+		r_HIS_BUS_SEL0: r_HIS_BUS_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_HIS_BUS>, <&r_PLL_HIS PLL_ROOT>;
+		};
+
+		r_HIS_BUS_M: r_HIS_BUS_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_HIS_BUS_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_HIS_BUS_1: r_HIS_BUS_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_HIS_BUS_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_HIS_BUS_2: r_HIS_BUS_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_HIS_BUS_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_HIS_BUS_3: r_HIS_BUS_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_HIS_BUS_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_HIS_BUS_0: r_HIS_BUS_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3618a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_HIS_BUS_M>, <&r_PLL_HIS PLL_ROOT>;
+		};
+
+		r_HIS_BUS_2_NOC_HIS: r_HIS_BUS_2_NOC_HIS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612c000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_2>;
+		};
+		r_HIS_BUS_2_PCIE2: r_HIS_BUS_2_PCIE2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612e000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_2>;
+		};
+		r_HIS_BUS_2_PCIE1: r_HIS_BUS_2_PCIE1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612f000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_2>;
+		};
+
+		r_HIS_BUS_2_USB1: r_HIS_BUS_2_USB1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36132000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_2>;
+		};
+		r_HIS_BUS_2_USB2: r_HIS_BUS_2_USB2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36133000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_2>;
+		};
+		r_HIS_BUS_3_NOC_HIS: r_HIS_BUS_3_NOC_HIS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612c000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+		r_HIS_BUS_3_PCIE2: r_HIS_BUS_3_PCIE2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612e000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+		r_HIS_BUS_3_PCIE1: r_HIS_BUS_3_PCIE1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3612f000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+		r_HIS_BUS_3_USB1: r_HIS_BUS_3_USB1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36132000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+
+		r_HIS_BUS_3_USB2: r_HIS_BUS_3_USB2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36133000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+		r_HIS_BUS_3_PCIE_PHY: r_HIS_BUS_3_PCIE_PHY {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36130000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_HIS_BUS_3>;
+		};
+	};
+
+	r_clk_ddr: r_clk_ddr {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_PLL_DDR: r_PLL_DDR {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x33010000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <266>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		r_DDR: r_DDR {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x360c5000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&r_RC_24M>, <&r_XTAL_24M>, <&r_PLL1_DIVA>, <&r_PLL2_DIVA>;
+			sdrv,postdiv = <1>;
+		};
+		r_DDR_SEL0: r_DDR_SEL0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&r_DDR>, <&r_PLL_DDR PLL_ROOT>;
+		};
+
+		r_DDR_M: r_DDR_M {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&r_DDR_SEL0>;
+			sdrv,div-shift = <12>;
+			sdrv,div-width = <4>;
+		};
+
+		r_DDR_1: r_DDR_1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_DDR_SEL0>;
+			sdrv,div-shift = <8>;
+			sdrv,div-width = <4>;
+		};
+
+		r_DDR_2: r_DDR_2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_DDR_SEL0>;
+			sdrv,div-shift = <4>;
+			sdrv,div-width = <4>;
+		};
+
+		r_DDR_3: r_DDR_3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&r_DDR_SEL0>;
+			sdrv,div-shift = <0>;
+			sdrv,div-width = <4>;
+		};
+
+		r_DDR_0: r_DDR_0 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36189000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&r_DDR_M>, <&r_PLL_DDR PLL_ROOT>;
+		};
+	};
+
+	r_clk_disp: r_clk_disp {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+
+		r_PLL_DISP: r_PLL_DISP {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30D30000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <0>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_PLL_LVDS1: r_PLL_LVDS1 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30C00000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <0>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_PLL_LVDS2: r_PLL_LVDS2 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30C10000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <0>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_PLL_LVDS3: r_PLL_LVDS3 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30C20000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <0>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_PLL_LVDS4: r_PLL_LVDS4 {
+			compatible = "semidrive,pll-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30C30000) 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;
+			sdrv,pll-integer = <0>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		r_MIPI_CSI1_PIX: r_MIPI_CSI1_PIX {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36200000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_DISP PLL_DIVB>, <&r_PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_MIPI_CSI2_PIX: r_MIPI_CSI2_PIX {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36201000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_DISP PLL_DIVB>, <&r_PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_MIPI_CSI3_PIX: r_MIPI_CSI3_PIX {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36202000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_DISP PLL_DIVB>, <&r_PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_MIPI_CSI1: r_MIPI_CSI1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3631d000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI1_PIX>;
+		};
+		r_MIPI_CSI2: r_MIPI_CSI2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3631e000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI2_PIX>;
+		};
+		r_MIPI_CSI3: r_MIPI_CSI3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3631f000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI3_PIX>;
+		};
+		r_CSI1: r_CSI1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36319000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI1_PIX>;
+		};
+		r_CSI2: r_CSI2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3631a000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI2_PIX>;
+		};
+		r_CSI3: r_CSI3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3631b000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&r_MIPI_CSI3_PIX>;
+		};
+		r_DC1: r_DC1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36207000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_DISP PLL_DIVA>, <&r_PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+		r_DISP_BUS: r_DISP_BUS {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36280000) 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_DISP PLL_DIVB>, <&r_PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+	};
+
+	r_clk_extaud: r_clk_extaud {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		r_EXT_AUD1: r_EXT_AUD1 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3620d000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_LVDS1 PLL_ROOT>, <&r_PLL_LVDS2 PLL_ROOT>, <&r_PLL_LVDS3 PLL_ROOT>, <&r_PLL_LVDS4 PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_EXT_AUD2: r_EXT_AUD2 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3620e000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_LVDS1 PLL_ROOT>, <&r_PLL_LVDS2 PLL_ROOT>, <&r_PLL_LVDS3 PLL_ROOT>, <&r_PLL_LVDS4 PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_EXT_AUD3: r_EXT_AUD3 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x3620f000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_LVDS1 PLL_ROOT>, <&r_PLL_LVDS2 PLL_ROOT>, <&r_PLL_LVDS3 PLL_ROOT>, <&r_PLL_LVDS4 PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+
+		r_EXT_AUD4: r_EXT_AUD4 {
+			compatible = "semidrive,clkgen-composite-remote";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x36210000) 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL_LVDS1 PLL_ROOT>, <&r_PLL_LVDS2 PLL_ROOT>, <&r_PLL_LVDS3 PLL_ROOT>, <&r_PLL_LVDS4 PLL_ROOT>;
+			sdrv,prediv = <1>;
+			sdrv,postdiv = <1>;
+		};
+	};
+
+	r_PLL3: r_PLL3 {
+		compatible = "semidrive,pll-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x30800000) 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <12>;
+		sdrv,pll-divc = <15>;
+		sdrv,pll-divd = <5>;
+		sdrv,clk-readonly = <1>;
+		sdrv,pll-integer = <1>;
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <150>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	r_PLL4: r_PLL4 {
+		compatible = "semidrive,pll-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x30810000) 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <4>;
+		sdrv,pll-divb = <6>;
+		sdrv,pll-divc = <8>;
+		sdrv,pll-divd = <10>;
+		sdrv,clk-readonly = <1>;
+		sdrv,pll-integer = <1>;
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <3>;
+		sdrv,pll-fbdiv = <250>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	r_PLL5: r_PLL5 {
+		compatible = "semidrive,pll-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x30820000) 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <4>;
+		sdrv,pll-divb = <6>;
+		sdrv,pll-divc = <8>;
+		sdrv,pll-divd = <10>;
+		sdrv,clk-readonly = <1>;
+		sdrv,pll-integer = <1>;
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <3>;
+		sdrv,pll-fbdiv = <199>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	r_PLL6: r_PLL6 {
+		compatible = "semidrive,pll-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x30830000) 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <4>;
+		sdrv,pll-divc = <5>;
+		sdrv,pll-divd = <6>;
+		sdrv,clk-readonly = <1>;
+		sdrv,pll-integer = <0>;
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <122>;
+		sdrv,pll-frac = <14763950>;
+		sdrv,pll-postdiv = <5 1>;
+		status = "disabled";
+	};
+	r_PLL7: r_PLL7 {
+		compatible = "semidrive,pll-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x30840000) 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <4>;
+		sdrv,pll-divc = <5>;
+		sdrv,pll-divd = <6>;
+		sdrv,clk-readonly = <1>;
+		sdrv,pll-integer = <0>;
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <90>;
+		sdrv,pll-frac = <5315022>;
+		sdrv,pll-postdiv = <4 1>;
+		status = "disabled";
+	};
+
+	r_CE2: r_CE2 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38000000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_ROOT>, <&r_PLL4 PLL_ROOT>, <&r_PLL3 PLL_ROOT>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_ADC: r_ADC {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38001000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_ROOT>, <&r_PLL4 PLL_ROOT>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_ROOT>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2C_SEC0: r_I2C_SEC0 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38003000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,clk-readonly = <1>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2C_SEC0_5: r_I2C_SEC0_5 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3811e000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC0_7: r_I2C_SEC0_7 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38120000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC0_9: r_I2C_SEC0_9 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38122000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC0_11: r_I2C_SEC0_11 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38124000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC0_13: r_I2C_SEC0_13 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38126000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC0_15: r_I2C_SEC0_15 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38128000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC0>;
+		status = "disabled";
+	};
+	r_I2C_SEC1: r_I2C_SEC1 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38004000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,clk-readonly = <1>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_6: r_I2C_SEC1_6 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3811f000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_8: r_I2C_SEC1_8 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38121000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_10: r_I2C_SEC1_10 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38123000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_12: r_I2C_SEC1_12 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38125000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_14: r_I2C_SEC1_14 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38127000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+	r_I2C_SEC1_16: r_I2C_SEC1_16 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38129000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_I2C_SEC1>;
+		status = "disabled";
+	};
+
+	r_SPI_SEC0: r_SPI_SEC0 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38005000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_SPI_SEC1: r_SPI_SEC1 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38006000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+	r_SPI_SEC0_5: r_SPI_SEC0_5 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3812a000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_SPI_SEC0>;
+		status = "disabled";
+	};
+	r_SPI_SEC0_7: r_SPI_SEC0_7 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3812c000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_SPI_SEC0>;
+		status = "disabled";
+	};
+	r_SPI_SEC1_6: r_SPI_SEC1_6 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3812b000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_SPI_SEC1>;
+		status = "disabled";
+	};
+	r_SPI_SEC1_8: r_SPI_SEC1_8 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3812d000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_SPI_SEC1>;
+		status = "disabled";
+	};
+	r_UART_SEC0: r_UART_SEC0 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38007000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		sdrv,clk-readonly = <1>;
+		status = "disabled";
+	};
+	r_UART_SEC0_9: r_UART_SEC0_9 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_H+0x3812e000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC0>;
+		status = "disabled";
+	};
+	r_UART_SEC0_11: r_UART_SEC0_11 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38130000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC0>;
+		status = "disabled";
+	};
+	r_UART_SEC0_13: r_UART_SEC0_13 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38132000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC0>;
+		status = "disabled";
+	};
+	r_UART_SEC0_15: r_UART_SEC0_15 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38134000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC0>;
+		status = "disabled";
+	};
+	r_UART_SEC1_10: r_UART_SEC1_10 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3812f000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC1>;
+		status = "disabled";
+	};
+	r_UART_SEC1_12: r_UART_SEC1_12 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38131000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC1>;
+		status = "disabled";
+	};
+	r_UART_SEC1_14: r_UART_SEC1_14 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38133000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC1>;
+		status = "disabled";
+	};
+	r_UART_SEC1_16: r_UART_SEC1_16 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38135000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&r_UART_SEC1>;
+		status = "disabled";
+	};
+	r_UART_SEC1: r_UART_SEC1 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38008000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL3 PLL_DIVD>, <&r_PLL5 PLL_DIVD>, <&r_PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		sdrv,clk-readonly = <1>;
+		status = "disabled";
+	};
+
+	r_EMMC1: r_EMMC1 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38009000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL4 PLL_DIVB>, <&r_PLL5 PLL_DIVC>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_EMMC2: r_EMMC2 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3800a000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL4 PLL_DIVB>, <&r_PLL5 PLL_DIVC>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_EMMC3: r_EMMC3 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3800b000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL4 PLL_DIVB>, <&r_PLL5 PLL_DIVC>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_ETH2_TX: r_ETH2_TX {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3800d000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_ETH2_RMII: r_ETH2_RMII {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3800e000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_ETH2_PHY_REF: r_ETH2_PHY_REF {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3800f000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_ETH2_TIMER_SEC: r_ETH2_TIMER_SEC {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38010000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVA>, <&r_PLL5 PLL_ROOT>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_OSPI2: r_OSPI2 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38015000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVB>, <&r_PLL5 PLL_DIVB>, <&r_PLL5 PLL_DIVC>, <&r_PLL5 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER3: r_TIMER3 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38016000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER4: r_TIMER4 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38017000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER5: r_TIMER5 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38018000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER6: r_TIMER6 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38019000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER7: r_TIMER7 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801a000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TIMER8: r_TIMER8 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801b000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM3: r_PWM3 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801c000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM4: r_PWM4 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801d000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM5: r_PWM5 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801e000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM6: r_PWM6 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3801f000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM7: r_PWM7 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38020000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_PWM8: r_PWM8 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38021000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_DIVA>, <&r_PLL7 PLL_DIVC>, <&r_PLL3 PLL_DIVA>, <&r_PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2S_MCLK2: r_I2S_MCLK2 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38022000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_EXT_AUD1>, <&r_PLL6 PLL_ROOT>, <&r_PLL7 PLL_ROOT>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2S_MCLK3: r_I2S_MCLK3 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38023000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_EXT_AUD3>, <&r_PLL6 PLL_ROOT>, <&r_PLL7 PLL_ROOT>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2S_SC3: r_I2S_SC3 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38026000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_EXT_AUD1>, <&r_PLL6 PLL_ROOT>, <&r_PLL7 PLL_ROOT>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_I2S_SC4: r_I2S_SC4 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38027000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_EXT_AUD2>, <&r_PLL6 PLL_ROOT>, <&r_PLL7 PLL_ROOT>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_CSI_MCLK1: r_CSI_MCLK1 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3802c000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVB>, <&r_PLL6 PLL_DIVB>, <&r_PLL5 PLL_ROOT>, <&r_PLL4 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_CSI_MCLK2: r_CSI_MCLK2 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3802d000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVB>, <&r_PLL6 PLL_DIVB>, <&r_PLL5 PLL_ROOT>, <&r_PLL4 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_CAN5_TO_20: r_CAN5_TO_20 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x3802f000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVC>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>, <&r_PLL5 PLL_DIVD>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_TRACE: r_TRACE {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38030000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_DIVB>, <&r_PLL5 PLL_DIVA>, <&r_PLL3 PLL_DIVA>, <&r_PLL4 PLL_ROOT>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_SYS_CNT: r_SYS_CNT {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38031000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL4 PLL_ROOT>, <&r_PLL5 PLL_ROOT>, <&r_PLL3 PLL_ROOT>, <&r_PLL6 PLL_ROOT>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_MSHC_TIMER: r_MSHC_TIMER {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38032000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_HPI_CLK600: r_HPI_CLK600 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38033000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL3 PLL_DIVA>, <&r_PLL3 PLL_ROOT>, <&r_PLL4 PLL_ROOT>, <&r_PLL5 PLL_ROOT>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_HPI_CLK800: r_HPI_CLK800 {
+		compatible = "semidrive,clkgen-composite-remote";
+		reg = <R_OFFSET_H (R_OFFSET_L+0x38034000) 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&r_RC_24M>, <&r_RC_RTC>, <&r_XTAL_24M>, <&r_XTAL_RTC>, <&r_PLL5 PLL_ROOT>, <&r_PLL3 PLL_ROOT>, <&r_PLL4 PLL_ROOT>, <&r_PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;
+		sdrv,postdiv = <1>;
+		status = "disabled";
+	};
+
+	r_gpu0_opp_table: r_opp-table0 {
+		compatible = "operating-points-v2";
+
+		opp00 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <800000>;
+		};
+		opp01 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000>;
+		};
+		opp02 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <825000>;
+		};
+		opp03 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <1100000>;
+		};
+	};
+
+	r_gpu1_opp_table: r_opp-table1 {
+		compatible = "operating-points-v2";
+
+		opp00 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <800000>;
+		};
+		opp01 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000>;
+		};
+		opp02 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <825000>;
+		};
+		opp03 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <1100000>;
+		};
+	};
+
+	soc {
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		r_uart8: r_serial@304c0000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x304c0000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC0_9>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart9: r_serial@304d0000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x304d0000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC1_10>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart10: r_serial@304e0000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x304e0000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC0_11>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart11: r_serial@304f0000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x304f0000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC1_12>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart12: r_serial@30500000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30500000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC0_13>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart13: r_serial@30510000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30510000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC1_14>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart14: r_serial@30520000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30520000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC0_15>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_uart15: r_serial@30530000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30530000) 0 0x100>;
+			reg-shift=<2>;
+			reg-io-width=<4>;
+			interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency=<60000000>;
+			clocks = <&r_UART_SEC1_16>;
+			clock-names = "baudclk";
+			status = "disabled";
+		};
+
+		r_timer2: r_timer@0x308b0000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x308B0000) 0 0x10000>;
+			interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER3>;
+			status = "disabled";
+		};
+
+		r_timer3: r_timer@0x308c0000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x308C0000) 0 0x10000>;
+			interrupts = <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER4>;
+			status = "disabled";
+		};
+
+		r_timer4: r_timer@0x308d0000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x308D0000) 0 0x10000>;
+			interrupts = <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER5>;
+			status = "disabled";
+		};
+
+		r_timer5: r_timer@0x308e0000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x308E0000) 0 0x10000>;
+			interrupts = <GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER6>;
+			status = "disabled";
+		};
+
+		r_timer6: r_timer@0x308f0000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x308F0000) 0 0x10000>;
+			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER7>;
+			status = "disabled";
+		};
+
+		r_timer7: r_timer@0x30900000 {
+			compatible = "sd,sd-timer", "sd,sd-pwm-capture";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30900000) 0 0x10000>;
+			interrupts = <GIC_SPI 207 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clock-frequency = <24000000>;
+			clocks = <&r_TIMER8>;
+			status = "disabled";
+		};
+
+		r_i2c4:r_i2c@30ac0000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30ac0000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_5>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c5:r_i2c@30ad0000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30ad0000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_6>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c6:r_i2c@30ae0000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30ae0000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_7>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c7:r_i2c@30af0000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30af0000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_8>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c8:r_i2c@30b00000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b00000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_9>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c9:r_i2c@30b10000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b10000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_10>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c10:r_i2c@30b20000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b20000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_11>;
+			clock-names = "i2c-clk";
+			clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c11:r_i2c@30b30000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b30000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_12>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c12:r_i2c@30b40000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b40000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_13>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c13:r_i2c@30b50000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b50000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_14>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c14:r_i2c@30b60000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b60000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC0_15>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_i2c15:r_i2c@30b70000 {
+			compatible = "snps,designware-i2c";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30b70000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks=<&r_I2C_SEC1_16>;
+			clock-names = "i2c-clk";
+			#clock-frequency = <100000>;
+			status = "disabled";
+		};
+
+		r_usbdrd3_0: r_usb3@31220000 {
+			compatible = "semidrive,dwc3";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+			clocks = <&r_HIS_BUS_2_USB1>, <&r_HIS_BUS_3_USB1>;
+			clock-names = "axi_clk", "apb_clk";
+			status = "disabled";
+
+			r_usb0: r_dwc3 {
+				compatible = "snps,dwc3";
+				reg = <R_OFFSET_H (R_OFFSET_L+0x31220000) 0x0 0x20000>;
+				interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+				dr_mode = "peripheral";
+				phy_type = "utmi_wide";
+				phys = <&r_usbdrd_phy0 0>;
+				phy-names = "usb3-phy";
+				snps,dis_u3_susphy_quirk;
+				maximum-speed = "high-speed";
+				status = "disabled";
+			};
+		};
+
+		r_usbdrd_phy0: r_phy@31240000 {
+			compatible = "semidrive,usb-phy";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31240000) 0x0 0x20000>;
+			#phy-cells = <1>;
+			status = "disabled";
+		};
+
+		r_dmac1: r_dma@35510000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35510000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30440000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac2: r_dma@35520000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35520000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30450000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac3: r_dma@35530000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35530000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30460000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac4: r_dma@35540000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35540000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30470000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac5: r_dma@35550000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35550000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30480000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac6: r_dma@35560000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35560000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x30490000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_dmac7: r_dma@35570000 {
+			compatible = "snps,axi-dma-1.01a";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35570000) 0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x304a0000) 0 0x10000>;
+			#dma-cells = <1>;
+			clocks = <&r_HIS_BUS_2>, <&r_HIS_BUS_2>;
+			clock-names = "core-clk", "cfgr-clk";
+			interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			dma-channels = <8>;
+			snps,dma-masters = <1>;
+			snps,data-width = <3>;
+			snps,block-size = <0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000 0x10000>;
+			snps,priority = <0 1 2 3 4 5 6 7>;
+			snps,axi-max-burst-len = <4>;
+			status = "disabled";
+		};
+
+		r_afe_i2s_sc2: r_i2s@30600000 {
+			compatible = "semidrive,x9-i2s-sc";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30600000) 0 0x200>;
+			interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clocks=<&r_I2S_SC3>,<&r_I2S_MCLK3>;
+			clock-names = "i2s-clk","i2s-mclk";
+			semidrive,full-duplex = <1>;
+			status = "disabled";
+		};
+
+		r_afe_i2s_sc3: r_i2s@30610000 {
+			compatible = "semidrive,x9-i2s-sc";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30610000) 0 0x200>;
+			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clocks=<&r_I2S_SC4>,<&r_I2S_MCLK3>;
+			clock-names = "i2s-clk","i2s-mclk";
+			semidrive,full-duplex = <1>;
+			status = "disabled";
+		};
+
+		r_pinctrl: r_pinctrl@38500000 {
+			compatible = "semidrive,kunlun-pinctrl";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x38500000) 0x0 0x10000>;
+			status = "disabled";
+		};
+/*
+		r_sram: r_soc_sram {
+			compatible = "soc-sram";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <0x0 0x140000 0x0 0x40000>,
+			<0x0 0x180000 0x0 0x40000>,
+			<0x0 0x1c0000 0x0 0x40000>;
+			reg-names = "sram2", "sram3", "sram4";
+		};
+*/
+
+		r_vpu2: r_coda988@31430000 {
+			compatible = "semidrive,coda988";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31430000) 0x0 0x4000>,
+			<R_OFFSET_H (R_OFFSET_L+0xD00000) 0x0 0x2A000>;
+			reg-names = "register", "inter_sram";
+			clocks = <&r_VPU_BUS_0_VPU2>;
+			clock-names = "core-clk";
+			clock-frequency = <666000000>;
+			interrupts = <GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			sdrv,scr_signal = <SCR_SEC__vpu2_i_linebuffer_cfg_1_0>;
+			status = "disabled";
+		};
+
+		r_jpu: r_codaj12@31420000 {
+			compatible = "semidrive,codaj12";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31420000) 0x0 0x1000>;
+			reg-names = "register";
+			clocks = <&r_VPU_BUS_0_MJPEG>,<&r_MJPEG_0>;
+			clock-names = "core-aclk","core-cclk";
+			clock-frequency = <666000000>,<532800000>;
+			interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+		};
+
+/*
+		r_vdsp: r_xrp@0 {
+			#address-cells = <2>;
+			#size-cells = <2>;
+			compatible = "cdns,xrp-hw-semidrive,v1";
+			mbox-names = "tx";
+			mboxes = <&r_mbox 0x07 0x0705>;
+			host-irq = <232>;
+			device-irq = <23>;
+			device-irq-mode = <1>;
+			host-irq-mode = <1>;
+			status = "disabled";
+			dsp@0 {
+			};
+		};
+*/
+		regulators {
+			compatible = "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			r_emmc_vmmc: r_regulator@0{
+				compatible = "regulator-fixed";
+				reg = <0>;
+				regulator-name = "VMEM_VDD_3.3V";
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
+			};
+
+			r_emmc_vqmmc: r_regulator@1{
+				compatible = "regulator-fixed";
+				reg = <1>;
+				regulator-name = "VMEM_VDD_1.8V";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+			};
+		};
+
+		r_sdhci1: r_sdhci@34180000 {
+			compatible = "snps,dwcmshc-sdhci";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34180000) 0 0x10000>;
+			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			sdrv,scr_signals_ddr = <SCR_SEC__mshc1_ddr_mode>;
+			#clock-cells = <1>;
+			clocks = <&r_EMMC1>;
+			clock-names = "core";
+			max-frequency = <200000000>;
+			status = "disabled";
+		};
+
+		r_sdhci2: r_sdhci@34190000 {
+			compatible = "snps,dwcmshc-sdhci";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34190000) 0 0x10000>;
+			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			sdrv,scr_signals_ddr = <SCR_SEC__mshc2_ddr_mode>;
+			#clock-cells = <1>;
+			clocks = <&r_EMMC2>;
+			clock-names = "core";
+			max-frequency = <200000000>;
+			status = "disabled";
+		};
+
+		r_sdhci3: r_sdhci@341a0000 {
+			compatible = "snps,dwcmshc-sdhci";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x341a0000) 0 0x10000>;
+			interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			sdrv,scr_signals_ddr = <SCR_SEC__mshc3_ddr_mode>;
+			status = "disabled";
+		};
+
+		r_csi0: r_csi@30cc0000 {
+			compatible = "semidrive,sdrv-csi";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30CC0000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			host_id = <0>;
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_csi0_stream0: r_port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					r_csi0_stream0_in: r_endpoint@0 {
+						reg = <0>;
+					};
+				};
+
+				r_csi0_stream1: r_port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					r_csi0_stream1_in: r_endpoint@0 {
+						reg = <1>;
+					};
+				};
+
+				r_csi0_stream2: r_port@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					r_csi0_stream2_in: r_endpoint@0 {
+						reg = <2>;
+					};
+				};
+
+				r_csi0_stream3: r_port@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					r_csi0_stream3_in: r_endpoint@0 {
+						reg = <3>;
+					};
+				};
+			};
+		};
+
+		r_csi1: r_csi@30cd0000 {
+			compatible = "semidrive,sdrv-csi";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30CD0000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			host_id = <1>;
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_csi1_stream0: r_port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					r_csi1_stream0_in: r_endpoint@0 {
+						reg = <0>;
+					};
+				};
+
+				r_csi1_stream1: r_port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					r_csi1_stream1_in: r_endpoint@0 {
+						reg = <1>;
+					};
+				};
+
+				r_csi1_stream2: r_port@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					r_csi1_stream2_in: r_endpoint@0 {
+						reg = <2>;
+					};
+				};
+
+				r_csi1_stream3: r_port@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					r_csi1_stream3_in: r_endpoint@0 {
+						reg = <3>;
+					};
+				};
+			};
+		};
+
+		r_csi2: r_csi@30ce0000 {
+			compatible = "semidrive,sdrv-csi";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30CE0000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			host_id = <2>;
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_csi2_stream0: r_port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					r_csi2_stream0_in: r_endpoint@0 {
+						reg = <0>;
+					};
+				};
+
+				r_csi2_stream1: r_port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					r_csi2_stream1_in: r_endpoint@0 {
+						reg = <1>;
+					};
+				};
+
+				r_csi2_stream2: r_port@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					r_csi2_stream2_in: r_endpoint@0 {
+						reg = <2>;
+					};
+				};
+
+				r_csi2_stream3: r_port@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					r_csi2_stream3_in: r_endpoint@0 {
+						reg = <3>;
+					};
+				};
+			};
+		};
+
+		r_csimipi0: r_csi-mipi@30d00000 {
+			compatible = "semidrive,sdrv-csi-mipi";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30d00000) 0x0 0x10000>, <R_OFFSET_H (R_OFFSET_L+0x30d50000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			host_id = <0>;
+			status = "disabled";
+		};
+
+		r_csimipi1: r_csi-mipi@30d10000 {
+			compatible = "semidrive,sdrv-csi-mipi";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30d10000) 0x0 0x10000>, <R_OFFSET_H (R_OFFSET_L+0x30d50000) 0x0 0x1000>;
+			interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			host_id = <1>;
+			status = "disabled";
+		};
+
+		r_csiparallel0: r_csi-parallel@0 {
+			compatible = "semidrive,sdrv-csi-parallel";
+			status = "disabled";
+
+			port {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_csiparallel0_in: r_endpoint@0 {
+					reg = <0>;
+				};
+
+				r_csiparalle0_out: r_endpoint@1 {
+					reg = <1>;
+				};
+			};
+		};
+
+		r_csiparallel1: r_csi-parallel@1 {
+			compatible = "semidrive,sdrv-csi-parallel";
+			status = "disabled";
+
+			port {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_csiparallel1_in: r_endpoint@0 {
+					reg = <0>;
+				};
+
+				r_csiparalle1_out: r_endpoint@1 {
+					reg = <1>;
+				};
+			};
+		};
+
+		r_mbox: r_mbox@34040000 {
+			compatible = "semidrive,sd-mailbox";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34040000) 0x0 0x200>,
+			<R_OFFSET_H (R_OFFSET_L+0x34041000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x34042000) 0x0 0x8000>;
+			interrupts = <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			#mbox-cells = <2>;
+			status = "disabled";
+		};
+
+		r_hwsema: r_hwspinlock@34040200 {
+			compatible = "semidrive,hwsemaphore";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34040000) 0x0 0x1000>;
+			#hwlock-cells = <1>;
+			status = "disabled";
+		};
+		r_dc1: r_dc1@30db0000 {
+			compatible = "sdrv,dc";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30db0000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			locks = <&r_PLL_LVDS1 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};
+
+		r_ethernet2: r_eth@306A0000 {
+			compatible = "semidrive,dwc-qos-ethernet";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x306A0000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clocks = <&r_ETH2_TX>;
+			clock-names = "stmmaceth";
+			phy-handle = <&r_eth_phy2>;
+			phy-mode = "rgmii";
+			snps,force_sf_dma_mode;
+			snps,force_disable_asp;
+			rx-fifo-depth = <0x2000>;
+			tx-fifo-depth = <0x2000>;
+			status = "disabled";
+
+			r_mdio2: r_mdio@2 {
+				compatible = "snps,dwmac-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				r_eth_phy2: r_ethernet-phy@2 {
+					compatible = "ethernet-phy-ieee802.3-c45";
+					reg = <7>;
+				};
+			};
+		};
+
+		r_gpio2: r_gpio@30400000 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "semidrive,sdrv-gpio";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30400000) 0x0 0x10000>;
+			status = "disabled";
+
+			r_port2a: r_gpio-controller@0 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 0 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <0>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port2b: r_gpio-controller@1 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 32 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <1>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port2c: r_gpio-controller@2 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 64 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <2>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+			r_port2d: r_gpio-controller@3 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 96 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <3>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port2e: r_gpio-controller@4 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 128 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <4>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+		};
+
+		r_gpio3: r_gpio@30410000 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "semidrive,sdrv-gpio";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30410000) 0x0 0x10000>;
+			status = "disabled";
+
+			r_port3a: r_gpio-controller@0 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 0 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <0>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port3b: r_gpio-controller@1 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 32 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <1>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port3c: r_gpio-controller@2 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 64 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <2>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+			r_port3d: r_gpio-controller@3 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 96 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <3>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port3e: r_gpio-controller@4 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 128 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <4>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+		};
+
+		r_gpio4: r_gpio@580420000 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "semidrive,sdrv-gpio";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30420000) 0x0 0x10000>;
+			status = "disabled";
+
+			r_port4a: r_gpio-controller@0 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 0 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <0>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port4b: r_gpio-controller@1 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 32 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <1>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port4c: r_gpio-controller@2 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 64 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <2>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+			r_port4d: r_gpio-controller@3 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 96 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <3>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port4e: r_gpio-controller@4 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 128 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <4>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+		};
+
+		r_gpio5: r_gpio@30430000 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "semidrive,sdrv-gpio";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30430000) 0x0 0x10000>;
+			status = "disabled";
+
+			r_port5a: r_gpio-controller@0 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 0 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <0>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port5b: r_gpio-controller@1 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 32 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <1>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port5c: r_gpio-controller@2 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 64 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <2>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+			r_port5d: r_gpio-controller@3 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 96 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <3>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+			r_port5e: r_gpio-controller@4 {
+				compatible = "semidrive,sdrv-gpio-port";
+				gpio-controller;
+				gpio-ranges = <&r_pinctrl 0 128 32>;
+				#gpio-cells = <2>;
+				nr-gpios = <32>;
+				reg = <4>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&r_gic>;
+			};
+
+		};
+
+		r_vce1: r_vce@34001000 {
+			compatible = "semidrive,vce";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34001000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x00522000) 0x0 0x2000>;
+			reg-names = "ctrl_reg", "sram_base";
+			ce_id = <1>;
+			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+		};
+		r_vce2: r_vce@34002000 {
+			compatible = "semidrive,vce";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34002000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x00524000) 0x0 0x2000>;
+			reg-names = "ctrl_reg", "sram_base";
+			ce_id = <2>;
+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+		};
+		r_vce3: r_vce@34003000 {
+			compatible = "semidrive,vce";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34003000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x00526000) 0x0 0x2000>;
+			reg-names = "ctrl_reg", "sram_base";
+			ce_id = <3>;
+			interrupts = <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+		};
+
+		r_rstgen: r_reset@38400000  {
+			compatible = "semidrive,rstgen";
+			#reset-cells = <2>;
+			rstgen_module_base = <R_OFFSET_H (R_OFFSET_L+0x38440000)>;
+			rstgen_core_base = <R_OFFSET_H (R_OFFSET_L+0x38401000)>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x38440000) 0x0 0x1000>,      /* ospi2 */
+				<R_OFFSET_H (R_OFFSET_L+0x38441000) 0x0 0x1000>,    /* i2s_sc3 */
+				<R_OFFSET_H (R_OFFSET_L+0x38442000) 0x0 0x1000>,    /* i2s_sc4 */
+				<R_OFFSET_H (R_OFFSET_L+0x38449000) 0x0 0x1000>,    /* canfd5 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844a000) 0x0 0x1000>,    /* canfd6 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844b000) 0x0 0x1000>,    /* canfd7 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844c000) 0x0 0x1000>,    /* canfd8 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844d000) 0x0 0x1000>,    /* eth2 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844e000) 0x0 0x1000>,    /* mshc1 */
+				<R_OFFSET_H (R_OFFSET_L+0x3844f000) 0x0 0x1000>,    /* mshc2 */
+				<R_OFFSET_H (R_OFFSET_L+0x38450000) 0x0 0x1000>,    /* msch3 */
+				<R_OFFSET_H (R_OFFSET_L+0x38455000) 0x0 0x1000>,    /* cpu1 core0 warm */
+				<R_OFFSET_H (R_OFFSET_L+0x38456000) 0x0 0x1000>,    /* cpu1 core1 warm */
+				<R_OFFSET_H (R_OFFSET_L+0x38457000) 0x0 0x1000>,    /* cpu1 core2 warm */
+				<R_OFFSET_H (R_OFFSET_L+0x38458000) 0x0 0x1000>,    /* cpu1 core3 warm */
+				<R_OFFSET_H (R_OFFSET_L+0x3845b000) 0x0 0x1000>,    /* cpu1 scu warm */
+				<R_OFFSET_H (R_OFFSET_L+0x38461000) 0x0 0x1000>,    /* GIC 4 */
+				<R_OFFSET_H (R_OFFSET_L+0x38462000) 0x0 0x1000>,    /* GIC 5 */
+				<R_OFFSET_H (R_OFFSET_L+0x38464000) 0x0 0x1000>,    /* cssys treset n */
+				<R_OFFSET_H (R_OFFSET_L+0x38466000) 0x0 0x1000>,    /* vdsp.DReset */
+				<R_OFFSET_H (R_OFFSET_L+0x38468000) 0x0 0x1000>,    /* vpu2 */
+				<R_OFFSET_H (R_OFFSET_L+0x38469000) 0x0 0x1000>,    /* mjpeg */
+				<R_OFFSET_H (R_OFFSET_L+0x3846d000) 0x0 0x1000>,    /* cpu1 ss */
+				<R_OFFSET_H (R_OFFSET_L+0x3846e000) 0x0 0x1000>,    /* cpu2 ss */
+				<R_OFFSET_H (R_OFFSET_L+0x38478000) 0x0 0x1000>,    /* mipi csi1 */
+				<R_OFFSET_H (R_OFFSET_L+0x38479000) 0x0 0x1000>,    /* mipi csi2 */
+				<R_OFFSET_H (R_OFFSET_L+0x3847a000) 0x0 0x1000>,    /* mipi csi3 */
+				<R_OFFSET_H (R_OFFSET_L+0x3847b000) 0x0 0x1000>,    /* mipi dsi1 */
+				<R_OFFSET_H (R_OFFSET_L+0x3847d000) 0x0 0x1000>,    /* dc1 */
+				<R_OFFSET_H (R_OFFSET_L+0x38486000) 0x0 0x1000>,    /* csi1 */
+				<R_OFFSET_H (R_OFFSET_L+0x38487000) 0x0 0x1000>,    /* csi2 */
+				<R_OFFSET_H (R_OFFSET_L+0x38488000) 0x0 0x1000>,    /* csi3 */
+				<R_OFFSET_H (R_OFFSET_L+0x38489000) 0x0 0x1000>,    /* disp mux */
+				<R_OFFSET_H (R_OFFSET_L+0x3848b000) 0x0 0x1000>,    /* g2d2 */
+				<R_OFFSET_H (R_OFFSET_L+0x38490000) 0x0 0x1000>,    /* gpu1 core */
+				<R_OFFSET_H (R_OFFSET_L+0x38491000) 0x0 0x1000>,    /* gpu1 ss */
+				<R_OFFSET_H (R_OFFSET_L+0x38492000) 0x0 0x1000>,    /* gpu2 core */
+				<R_OFFSET_H (R_OFFSET_L+0x38493000) 0x0 0x1000>,    /* gpu2 ss */
+				<R_OFFSET_H (R_OFFSET_L+0x38499000) 0x0 0x1000>,    /* dbg reg */
+				<R_OFFSET_H (R_OFFSET_L+0x3849a000) 0x0 0x1000>,    /* canfd9 */
+				<R_OFFSET_H (R_OFFSET_L+0x3849b000) 0x0 0x1000>,    /* canfd10 */
+				<R_OFFSET_H (R_OFFSET_L+0x3849c000) 0x0 0x1000>,    /* canfd11 */
+				<R_OFFSET_H (R_OFFSET_L+0x3849d000) 0x0 0x1000>,    /* canfd12 */
+				<R_OFFSET_H (R_OFFSET_L+0x3849e000) 0x0 0x1000>,    /* canfd13 */
+				<R_OFFSET_H (R_OFFSET_L+0x3849f000) 0x0 0x1000>,    /* canfd14 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a0000) 0x0 0x1000>,    /* canfd15 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a1000) 0x0 0x1000>,    /* canfd16 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a2000) 0x0 0x1000>,    /* canfd17 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a3000) 0x0 0x1000>,    /* canfd18 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a4000) 0x0 0x1000>,    /* canfd19 */
+				<R_OFFSET_H (R_OFFSET_L+0x384a5000) 0x0 0x1000>,    /* canfd20 */
+				<R_OFFSET_H (R_OFFSET_L+0x38401000) 0x0 0x2000>,    /* vdsp core */
+				<R_OFFSET_H (R_OFFSET_L+0x38407000) 0x0 0x2000>,    /* cpu1 all core */
+				<R_OFFSET_H (R_OFFSET_L+0x38409000) 0x0 0x2000>;    /* cpu2 core */
+			rstgen_resource = <RSTGEN_MODULE_OSPI2
+				RSTGEN_MODULE_I2S_SC3
+				RSTGEN_MODULE_I2S_SC4
+				RSTGEN_MODULE_CANFD5
+				RSTGEN_MODULE_CANFD6
+				RSTGEN_MODULE_CANFD7
+				RSTGEN_MODULE_CANFD8
+				RSTGEN_MODULE_ETH2
+				RSTGEN_MODULE_MSHC1
+				RSTGEN_MODULE_MSHC2
+				RSTGEN_MODULE_MSHC3
+				RSTGEN_MODULE_CPU1_CORE0_WARM
+				RSTGEN_MODULE_CPU1_CORE1_WARM
+				RSTGEN_MODULE_CPU1_CORE2_WARM
+				RSTGEN_MODULE_CPU1_CORE3_WARM
+				RSTGEN_MODULE_CPU1_SCU_WARM
+				RSTGEN_MODULE_GIC4
+				RSTGEN_MODULE_GIC5
+				RSTGEN_MODULE_CSSYS_TRESET_N
+				RSTGEN_MODULE_VDSP_DRESET
+				RSTGEN_MODULE_VPU2
+				RSTGEN_MODULE_MJPEG
+				RSTGEN_MODULE_CPU1_SS
+				RSTGEN_MODULE_CPU2_SS
+				RSTGEN_MODULE_MIPI_CSI1
+				RSTGEN_MODULE_MIPI_CSI2
+				RSTGEN_MODULE_MIPI_CSI3
+				RSTGEN_MODULE_MIPI_DSI1
+				RSTGEN_MODULE_DC1
+				RSTGEN_MODULE_CSI1
+				RSTGEN_MODULE_CSI2
+				RSTGEN_MODULE_CSI3
+				RSTGEN_MODULE_DISP_MUX
+				RSTGEN_MODULE_G2D2
+				RSTGEN_MODULE_GPU1_CORE
+				RSTGEN_MODULE_GPU1_SS
+				RSTGEN_MODULE_GPU2_CORE
+				RSTGEN_MODULE_GPU2_SS
+				RSTGEN_MODULE_DBG_REG
+				RSTGEN_MODULE_CANFD9
+				RSTGEN_MODULE_CANFD10
+				RSTGEN_MODULE_CANFD11
+				RSTGEN_MODULE_CANFD12
+				RSTGEN_MODULE_CANFD13
+				RSTGEN_MODULE_CANFD14
+				RSTGEN_MODULE_CANFD15
+				RSTGEN_MODULE_CANFD16
+				RSTGEN_MODULE_CANFD17
+				RSTGEN_MODULE_CANFD18
+				RSTGEN_MODULE_CANFD19
+				RSTGEN_MODULE_CANFD20
+				RSTGEN_CORE_VDSP
+				RSTGEN_CORE_CPU1_ALL
+				RSTGEN_CORE_CPU2
+				>;
+			status = "disabled";
+		};
+		r_regctl: r_regctl@0x38414000 {
+			compatible = "semidrive,reg-ctl";
+			#regctl-cells = <1>;
+			reg = <R_OFFSET_H (R_OFFSET_L+0x38414000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x38415000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x38416000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x38417000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x38418000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x38419000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x3841a000) 0x0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x3841b000) 0x0 0x1000>;
+			reg-names = "SDRV_REG_ROM",
+			"SDRV_REG_REMAP",
+			"SDRV_REG_SDPE",
+			"SDRV_REG_MCAL",
+			"SDRV_REG_BOOTREASON",
+			"SDRV_REG_HWID",
+			"SDRV_REG_STATUS",
+			"SDRV_REG_EXCEPTION";
+			common_reg_base = <R_OFFSET_H (R_OFFSET_L+0x38414000)>;
+			status = "disable";
+		};
+
+		r_scr_sec: r_scr@0x38200000 {
+			#scr-cells = <1>;
+			compatible = "semidrive,scr";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x38200000) 0x0 0x200000>;
+			sdrv,scr_id = <SCR_SEC>;
+			status = "disabled";
+			sdrv,hwsem = <1>;
+			sdrv,scr_signals =
+				<SCR_SIGNAL(SCR_SEC__spi5_i_opmode)>,
+				<SCR_SIGNAL(SCR_SEC__spi6_i_opmode)>,
+				<SCR_SIGNAL(SCR_SEC__spi7_i_opmode)>,
+				<SCR_SIGNAL(SCR_SEC__spi8_i_opmode)>,
+				<SCR_SIGNAL(SCR_SEC__pio_i2s_sc_sdo_sdi_ctrl_5_0)>,
+				<SCR_SIGNAL(SCR_SEC__mshc1_ddr_mode)>,
+				<SCR_SIGNAL(SCR_SEC__mshc2_ddr_mode)>,
+				<SCR_SIGNAL(SCR_SEC__mshc3_ddr_mode)>,
+				<SCR_SIGNAL(SCR_SEC__mshc4_ddr_mode)>,
+				<SCR_SIGNAL(SCR_SEC__vpu2_i_linebuffer_cfg_1_0)>;
+		};
+
+		r_watchdog: r_watchdog@0x30a30000 {
+			compatible = "semidrive,watchdog";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30a30000) 0x0 0x1000>;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			wdt,clock-source = "main-clk";
+			wdt,clock-divider = <0>;
+			timeout-sec = <2>;
+			wdt,min-hw-hearbeat = <800>;
+			wdt,max-hw-hearbeat = <2000>;
+			wdt,dying-delay;
+			wdt,domain-reset = "false";
+			wdt,auto-run = "true";
+			regctl = <&r_regctl SDRV_REG_BOOTREASON>;
+			status = "disable";
+		};
+
+		r_gic: r_interrupt-controller@585441000 {
+			compatible = "semidrive,remote_gic";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x35441000) 0 0x1000>,
+			<R_OFFSET_H (R_OFFSET_L+0x35442000) 0 0x2000>;
+			int-id = <R_OFFSET_H (R_OFFSET_L+0x3841b000)>;
+			attached-pci-dev = /bits/ 16 <1>;
+			#interrupt-cells = <3>;
+			interrupt-controller;
+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&gic>;
+		};
+
+		r_gpu0: r_gpu0@34c00000 {
+			compatible = "imagination,pvr-rogue";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x34c00000) 0x0 0x80000>;
+			interrupts = <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			clocks = <&r_GPU1_0>;
+			clock-names = "gpucoreclk";
+			operating-points-v2 = <&r_gpu0_opp_table>;
+			status = "disabled";
+		};
+
+		r_pcie1: r_pcie@31000000 {
+			compatible = "semidrive,kunlun-pcie";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31000000) 0x0 0xE0000>,
+			<R_OFFSET_H (R_OFFSET_L+0x310e0000) 0x0 0x20000>,
+			<R_OFFSET_H (R_OFFSET_L+0x31200000) 0x0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x31210000) 0x0 0x10000>,
+			<R_OFFSET_H (R_OFFSET_L+0x10000000) 0x0 0x2000>;
+			reg-names = "dbi", "ctrl_ncr", "phy", "phy_ncr", "config";
+			bus-range = <0x0 0xff>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x02000000 0x0 0x00000000
+			0x5 0x0
+			0x0 0x8000000>;
+			num-lanes = <1>;
+
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			interrupt-names = "msi";
+			interrupt-map-mask = <0xf800 0 0 7>;
+			interrupt-map = <0x0 0 0 1
+			&r_gic 0 78 4>,
+			<0x0 0 0 2
+			&r_gic 0 79 4>,
+			<0x0 0 0 3
+			&r_gic 0 80 4>,
+			<0x0 0 0 4
+			&r_gic 0 81 4>;
+
+			clocks = <&r_HIS_BUS_1>,
+				<&r_HIS_BUS_3_PCIE_PHY>,
+				<&r_HIS_BUS_2_PCIE1>,
+				<&r_HIS_BUS_3_PCIE1>;
+			clock-names = "pcie_phy_ref", "pcie_phy_pclk",
+			"pcie_aclk", "pcie_pclk";
+
+			ref-clk = "internal,diffbuf_on";
+
+			status = "disabled";
+
+		};
+
+		r_watchdog5: r_watchdog@0x30a20000 {
+			compatible = "semidrive,watchdog";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x30a20000) 0x0 0x1000>;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			wdt,clock-source = "main-clk";
+			wdt,clock-divider = <0>;
+			timeout-sec = <2>;
+			wdt,min-hw-hearbeat = <800>;
+			wdt,max-hw-hearbeat = <2000>;
+			wdt,dying-delay;
+			wdt,sig-rstgen = "false";
+			wdt,auto-run = "true";
+			regctl = <&r_regctl SDRV_REG_BOOTREASON>;
+			status = "disabled";
+		};
+		r_rtc: r_rtc@0x31810000 {
+			compatible = "semidrive,sdrv-rtc";
+			reg = <R_OFFSET_H (R_OFFSET_L+0x31810000) 0x0 0x10000>;
+			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-parent = <&r_gic>;
+			status = "disabled";
+		};
+	};
+
+	r_display: r_display@0 {
+		compatible = "semdrive,display-subsystem";
+		sdriv,crtc = <&r_crtc0>;
+		status = "disabled";
+	};
+	r_crtc0: r_crtc0 {
+		compatible = "semidrive,kunlun-crtc";
+		dpc-master = <&r_dc1>;
+		display-mode = <1>;
+
+		r_crtc0_out: r_port {
+			r_crtc0_out_interface: r_endpoint@0 {
+				remote-endpoint = <&r_parallel_in_crtc0>;
+			};
+		};
+	};
+
+	r_parallel0: r_parallel@0 {
+		compatible = "semidrive, kunlun-display-parallel";
+		status = "disabled";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			r_parallel0_in: r_port@0 {
+				r_parallel_in_crtc0: r_endpoint@0 {
+					remote-endpoint = <&r_crtc0_out_interface>;
+				};
+			};
+
+			r_parallel0_out: r_port@1 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <1>;
+				r_parallel_out_timing0: r_endpoint@0 {
+					reg = <0>;
+					remote-endpoint = <&r_parall_panel0_in>;
+				};
+			};
+		};
+	};
+
+	r_ptimings0: r_parallel-timings@0 {
+		compatible = "semidrive,panel-simple";
+		status = "disabled";
+
+		port {
+			r_parall_panel0_in: r_endpoint {
+				remote-endpoint = <&r_parallel_out_timing0>;
+			};
+		};
+
+		r_dtimings0: r_display-timings {
+		};
+	};
+
+	r_ptimings1: r_parallel-timings@1 {
+		compatible = "semidrive,panel-simple";
+		status = "disabled";
+
+		r_dtimings1: r_display-timings {
+		};
+	};
+};
+
+&r_rstgen {
+	reg = <R_OFFSET_H (R_OFFSET_L+0x38467000) 0x0 0x1000>,      /* vpu1 */
+		<R_OFFSET_H (R_OFFSET_L+0x38468000) 0x0 0x1000>,    /* vpu2 */
+		<R_OFFSET_H (R_OFFSET_L+0x38469000) 0x0 0x1000>,    /* mjpeg */
+		<R_OFFSET_H (R_OFFSET_L+0x38490000) 0x0 0x1000>,    /* gpu1 core */
+		<R_OFFSET_H (R_OFFSET_L+0x38491000) 0x0 0x1000>;    /* gpu1 ss */
+	rstgen_resource = <
+		RSTGEN_MODULE_VPU1
+		RSTGEN_MODULE_VPU2
+		RSTGEN_MODULE_MJPEG
+		RSTGEN_MODULE_GPU1_CORE
+		RSTGEN_MODULE_GPU1_SS
+	>;
+	status = "disabled";
+};
+

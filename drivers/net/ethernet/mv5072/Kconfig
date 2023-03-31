@@ -1,0 +1,4 @@
+config MV5072_ENET
+        tristate "Marvell 5072 PCIe ethernet driver"
+        help
+	  Say Y or M here if you want to use the Marvell 5072 PCIe ethernet driver.

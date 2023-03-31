@@ -1,0 +1,11 @@
+* Semidrive kunlun virtual vpu DTS file
+
+Required properties :
+- compatible : should be "sd,vfe-mmio"
+- status : enable or disable device node
+
+Examples :
+	virtio_vpu1 {
+		model = "sd,vfe-mmio";
+		status = "okay";
+	};

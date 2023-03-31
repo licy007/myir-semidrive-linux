@@ -1,0 +1,219 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/ {
+	amba {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "arm,amba-bus";
+		ranges;
+		/* coresight 600 */
+		css_etf: etf@01002000 {
+			compatible = "arm,coresight-tmc", "arm,primecell";
+			reg = <0 0x01002000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					etf_in_port: endpoint@0 {
+						slave-mode;
+						remote-endpoint = <&css_funnel_out>;
+					};
+				};
+
+				port@1 {
+					reg = <0>;
+					etf_out_port: endpoint@1 {
+						remote-endpoint = <&tpiu_in_port>;
+					};
+				};
+			};
+		};
+
+		css_tpiu: tpiu@01003000 {
+			compatible = "arm,coresight-tpiu", "arm,primecell";
+			reg = <0 0x01003000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			port {
+				tpiu_in_port: endpoint@0 {
+					slave-mode;
+					remote-endpoint = <&etf_out_port>;
+				};
+			};
+		};
+
+		cti_cpu1_core0: cti@01821000 {
+			compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti", "arm,primecell";
+			reg = <0 0x01821000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu0>;
+		};
+
+		cti_cpu1_core1: cti@01921000 {
+			compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti", "arm,primecell";
+			reg = <0 0x01921000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu1>;
+		};
+
+		cti_cpu1_core2: cti@01a21000 {
+			compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti", "arm,primecell";
+			reg = <0 0x01a21000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu2>;
+		};
+
+		cti_cpu1_core3: cti@01b21000 {
+			compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti", "arm,primecell";
+			reg = <0 0x01b21000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu3>;
+		};
+
+
+		etm_cpu1_core0: etm@01841000 {
+			compatible = "arm,coresight-etm4x", "arm,primecell";
+			reg = <0 0x01841000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu0>;
+			port {
+				etm_cpu1_core0_out: endpoint {
+				remote-endpoint = <&funnel_cpu1_in0>;
+				};
+			};
+		};
+
+		etm_cpu1_core1: etm@01941000 {
+			compatible = "arm,coresight-etm4x", "arm,primecell";
+			reg = <0 0x01941000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu1>;
+			port {
+				etm_cpu1_core1_out: endpoint {
+					remote-endpoint = <&funnel_cpu1_in1>;
+				};
+			};
+		};
+
+		etm_cpu1_core2: etm@01a41000 {
+			compatible = "arm,coresight-etm4x", "arm,primecell";
+			reg = <0 0x01a41000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu2>;
+			port {
+				etm_cpu1_core2_out: endpoint {
+					remote-endpoint = <&funnel_cpu1_in2>;
+				};
+			};
+		};
+
+		etm_cpu1_core3: etm@01b41000 {
+			compatible = "arm,coresight-etm4x", "arm,primecell";
+			reg = <0 0x01b41000 0 0x1000>;
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			cpu = <&cpu3>;
+			port {
+				etm_cpu1_core3_out: endpoint {
+					remote-endpoint = <&funnel_cpu1_in3>;
+				};
+			};
+		};
+
+
+		css_funnel {
+			/*
+			 * non-configurable funnel don't show up on the AMBA
+			 * bus.  As such no need to add "arm,primecell".
+			*/
+			compatible = "arm,coresight-static-funnel";
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				/* funnel output port */
+				port@0 {
+					reg = <0>;
+					css_funnel_out: endpoint {
+						remote-endpoint = <&etf_in_port>;
+					};
+				};
+
+				port@5 {
+					reg = <4>;
+					css_funnel_in4: endpoint {
+						slave-mode;
+						remote-endpoint = <&funnel_cpu1_out>;
+					};
+				};
+			};
+		};
+
+		funnel_cpu1 {
+			compatible = "arm,coresight-static-funnel";
+			clocks = <&TRACE>;
+			clock-names = "apb_pclk";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					funnel_cpu1_out: endpoint {
+						remote-endpoint = <&css_funnel_in4>;
+					};
+				};
+
+				port@1 {
+					reg = <0>;
+					funnel_cpu1_in0: endpoint {
+						slave-mode;
+						remote-endpoint = <&etm_cpu1_core0_out>;
+					};
+				};
+
+				port@2 {
+					reg = <1>;
+					funnel_cpu1_in1: endpoint {
+						slave-mode;
+						remote-endpoint = <&etm_cpu1_core1_out>;
+					};
+				};
+
+				port@3 {
+					reg = <2>;
+					funnel_cpu1_in2: endpoint {
+						slave-mode;
+						remote-endpoint = <&etm_cpu1_core2_out>;
+					};
+				};
+
+				port@4 {
+					reg = <3>;
+					funnel_cpu1_in3: endpoint {
+						slave-mode;
+						remote-endpoint = <&etm_cpu1_core3_out>;
+					};
+				};
+
+			};
+		};
+
+	};
+};

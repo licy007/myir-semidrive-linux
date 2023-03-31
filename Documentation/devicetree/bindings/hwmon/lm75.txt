@@ -1,0 +1,13 @@
+* LM75 thermometer.
+
+Required properties:
+- compatible: "sgmicro,sgm452"
+
+Example:
+
+i2c4 {
+	dtt@4f {
+		compatible = "sgmicro,sgm452";
+		reg = <0x4f>;
+	};
+};

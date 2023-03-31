@@ -1,0 +1,26 @@
+#
+# Netswift Ethernet device configuration
+#
+config NET_VENDOR_NETSWIFT
+	bool "Netswift devices"
+	default y
+	---help---
+	  If you have a network (Ethernet) device belonging to this class, say Y.
+
+	  Note that the answer to this question doesn't directly affect the
+	  kernel: saying N will just cause the configurator to skip all
+	  the questions about Netswift devices. If you say Y, you will be asked
+	  for your specific device in the following questions.
+
+if NET_VENDOR_NETSWIFT
+
+config NGBE
+	tristate "Netswift PCI Ethernet Device support"
+	depends on PCI
+	---help---
+	  This option enables driver support for WX1860AL4:
+
+	  If you have a network (Ethernet) card of this type, say Y here.
+
+	  To compile this driver as a module, choose M here.
+endif

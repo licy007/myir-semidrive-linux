@@ -1,0 +1,165 @@
+/*
+* Semidrive X9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "x9_high-plus.dtsi"
+#include "x9_high-plus_cluster-import.dtsi"
+#include "gic5_int_diff.dtsi"
+#include "sdrv-coresight-cpu2.dtsi"
+/{
+        interrupt-parent=<&gic5>;
+
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>; /* hz */
+		max-freq = <0xffffffff>; /* driver will using the minimum value between this value and pll capability */
+		trans-delay-us = <200000>;
+		start-time = <10>; /*second*/
+		status = "okay";
+	};
+
+	cpus {
+                #address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP2 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU2_0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2>;
+		};
+
+              	l2: l2-cache {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>;
+	};
+
+	str_sync: str_sync {
+		compatible = "sd,str-sync";
+		mboxes = <&mbox 0x49 0x4903>;
+		status = "disabled";
+	};
+
+	virt_uart: virt_uart {
+		compatible = "semidrive, virtual-uart";
+		status = "disabled";
+	};
+
+	rtc: rtc@0x31810000 {
+		compatible = "semidrive,sdrv-rtc";
+		reg = <0x0 0x31810000 0x0 0x10000>;
+		interrupts = <0 220 IRQ_TYPE_LEVEL_HIGH>;
+		status = "disabled";
+	};
+
+        /delete-node/interrupt-controller@35411000;/*gic2*/
+        /delete-node/interrupt-controller@35421000;/*gic3*/
+        /delete-node/interrupt-controller@35431000;/*gic4*/
+
+        soc {
+            /delete-node/ smmu@35800000; /*smmu*/
+            /delete-node/ serial@304c0000;/*HW uart9*/
+            /*/delete-node/ serial@304d0000; HW uart10, should remove later*/
+            /delete-node/ serial@304e0000;/*HW uart11*/
+            /delete-node/ serial@304f0000;/*HW uart12*/
+            /delete-node/ serial@30500000;/*HW uart13*/
+            /delete-node/ serial@30520000;/*HW uart15*/
+            /delete-node/ serial@30530000;/*HW uart16*/
+            /delete-node/ timer@0x308b0000;/*HW timer3 */
+            /delete-node/ timer@0x308c0000;/*HW timer4 */
+            /delete-node/ timer@0x308d0000;/*HW timer5 */
+            /delete-node/ timer@0x308e0000;/*HW timer6 */
+            /delete-node/ timer@0x308f0000;/*HW timer7 */
+            /delete-node/ timer@0x30900000;/*HW timer8 */
+            /delete-node/ i2c@30ad0000; /*HW I2C6*/
+            /delete-node/ i2c@30ae0000; /*HW I2C7*/
+            /delete-node/ i2c@30af0000; /*HW I2C8*/
+            /delete-node/ i2c@30b00000; /*HW I2C9*/
+            /delete-node/ i2c@30b10000; /*HW I2C10*/
+            /delete-node/ i2c@30b20000; /*HW I2C11*/
+            /delete-node/ i2c@30b30000; /*HW I2C12*/
+            /delete-node/ i2c@30b40000; /*HW I2C14*/
+            /delete-node/ i2c@30b60000; /*HW I2C15*/
+            /delete-node/ i2c@30b70000; /*HW I2C16*/
+            /delete-node/ usb3@31220000; /*usbdrd3_0*/
+            /delete-node/ phy@31240000; /*usbdrd_phy0*/
+            /delete-node/ usb3@31260000; /*usbdrd3_1*/
+            /delete-node/ phy@31280000; /*usbdrd_phy1*/
+            /delete-node/ dma@35510000; /*HW dmac2*/
+            /delete-node/ dma@35520000; /*HW dmac3*/
+            /delete-node/ dma@35540000; /*HW dmac5*/
+            /delete-node/ dma@35550000; /*HW dmac6*/
+            /delete-node/ dma@35560000; /*HW dmac7*/
+            /delete-node/ dma@35570000; /*HW dmac8*/
+            /delete-node/ gpu0@34c00000;/*gpu0*/
+            /delete-node/ pcie@31000000;/*pcie1*/
+            /delete-node/ pcie@31100000;/*pcie2*/
+            /delete-node/ gpio@30400000;/*gpio2*/
+            /delete-node/ gpio@30410000;/*gpio3*/
+            /delete-node/ gpio@30420000;/*gpio4*/
+            /delete-node/ timer@0x30900000;/*HW timer8 */
+            /delete-node/ i2s@30600000;/*HW I2S_SC3*/
+            /delete-node/ i2s@30620000;/*HW I2S_SC5*/
+            /delete-node/ i2s@30630000;/*HW I2S_SC6*/
+            /delete-node/ i2s@30640000;/*HW I2S_SC7*/
+            /delete-node/ i2s@30650000;/*HW I2S_SC8*/
+            /delete-node/ xrp@0;
+            /delete-node/ csi@30cc0000;/*csi0*/
+            /delete-node/ csi@30cd0000;/*csi1*/
+            /delete-node/ csi@30ce0000;/*csi2*/
+            /delete-node/ csi-mipi@30d00000; /*csimipi0*/
+            /delete-node/ csi-mipi@30d10000; /*csimipi1*/
+            /delete-node/ sdhci@34180000;/*sdhci1*/
+            /delete-node/ sdhci@34190000;/*sdhci2*/
+            /delete-node/ sdhci@341a0000;/*sdhci3*/
+            /delete-node/ sdhci@341b0000;/*sdhci4*/
+            /delete-node/ eth@306A0000;/**ethernet2*/
+	    /delete-node/ watchdog@0x30a00000;/*watchdog3,secure*/
+	    /delete-node/ watchdog@0x30a10000;/*watchdog4,mp*/
+	    /delete-node/ watchdog@0x30a20000;/*watchdog5,ap1*/
+        };
+
+	ulink_channel0: ulink_channel0 {
+		compatible = "sd,ulink-channel";
+		mboxes = <&mbox 0xc0 0xc000>;
+		rproc = <0>;
+		status = "okay";
+	};
+
+	ulink_channel1: ulink_channel1 {
+		compatible = "sd,ulink-channel";
+		mboxes = <&mbox 0xb4 0xb403>;
+		rproc = <3>;
+		status = "okay";
+	};
+
+	ulink_net: ulink_net {
+		compatible = "sd,ulink-net";
+		default_rproc = <3>;
+		status = "okay";
+	};
+};
+

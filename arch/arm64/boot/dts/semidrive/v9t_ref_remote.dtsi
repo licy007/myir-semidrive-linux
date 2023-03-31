@@ -1,0 +1,600 @@
+#include "v9t_remote.dtsi"
+//clk
+&r_clk_cpu1 {
+	status = "disabled";
+};
+
+&r_clk_cpu2 {
+	status = "okay";
+};
+
+&r_clk_gpu1 {
+	status = "okay";
+};
+
+&r_clk_gpu2 {
+	status = "disabled";
+};
+
+&r_clk_vsn {
+	status = "disabled";
+};
+
+&r_clk_vpumjpeg {
+	status = "disabled";
+};
+
+&r_clk_hpi {
+	status = "disabled";
+};
+
+&r_clk_ddr {
+	status = "disabled";
+};
+
+&r_clk_his {
+	status = "disabled";
+};
+
+&r_PLL_DISP {
+	status = "okay";
+};
+&r_MIPI_CSI1_PIX {
+	status = "okay";
+};
+&r_MIPI_CSI2_PIX {
+	status = "okay";
+};
+&r_MIPI_CSI3_PIX {
+	status = "okay";
+};
+&r_CSI1 {
+	status = "okay";
+};
+&r_CSI2 {
+	status = "okay";
+};
+&r_CSI3 {
+	status = "okay";
+};
+&r_DC1 {
+	status = "okay";
+};
+&r_DISP_BUS {
+	status = "okay";
+};
+
+&r_clk_extaud {
+	status = "disabled";
+};
+
+&r_PLL3 {
+	status = "okay";
+};
+&r_PLL4 {
+	status = "okay";
+};
+&r_PLL5 {
+	status = "okay";
+};
+&r_PLL6 {
+	status = "okay";
+};
+&r_PLL7 {
+	status = "okay";
+};
+
+&r_CE2 {
+	status = "disabled";
+};
+
+&r_ADC {
+	status = "disabled";
+};
+
+&r_I2C_SEC0 {
+	status = "okay";
+};
+
+&r_I2C_SEC0_5 {
+	status = "okay";
+};
+&r_I2C_SEC0_7 {
+	status = "okay";
+};
+&r_I2C_SEC0_9 {
+	status = "okay";
+};
+&r_I2C_SEC0_11 {
+	status = "okay";
+};
+&r_I2C_SEC0_13 {
+	status = "okay";
+};
+&r_I2C_SEC0_15 {
+	status = "okay";
+};
+
+&r_I2C_SEC1 {
+	status = "okay";
+};
+
+&r_I2C_SEC1_6 {
+	status = "okay";
+};
+&r_I2C_SEC1_8 {
+	status = "okay";
+};
+&r_I2C_SEC1_10 {
+	status = "okay";
+};
+&r_I2C_SEC1_12 {
+	status = "okay";
+};
+&r_I2C_SEC1_14 {
+	status = "okay";
+};
+&r_I2C_SEC1_16 {
+	status = "okay";
+};
+
+&r_SPI_SEC0 {
+	status = "okay";
+};
+
+&r_SPI_SEC1 {
+	status = "okay";
+};
+
+&r_SPI_SEC0_5 {
+	status = "okay";
+};
+&r_SPI_SEC0_7 {
+	status = "okay";
+};
+&r_SPI_SEC1_6 {
+	status = "okay";
+};
+&r_SPI_SEC1_8 {
+	status = "okay";
+};
+&r_UART_SEC0 {
+	status = "okay";
+};
+
+&r_UART_SEC0_9 {
+	status = "okay";
+};
+&r_UART_SEC0_11 {
+	status = "okay";
+};
+&r_UART_SEC0_13 {
+	status = "okay";
+};
+&r_UART_SEC0_15 {
+	status = "okay";
+};
+&r_UART_SEC1_10 {
+	status = "okay";
+};
+&r_UART_SEC1_12 {
+	status = "okay";
+};
+&r_UART_SEC1_14 {
+	status = "okay";
+};
+&r_UART_SEC1_16 {
+	status = "okay";
+};
+
+&r_UART_SEC1 {
+	status = "okay";
+};
+
+&r_EMMC1 {
+	status = "okay";
+};
+
+&r_EMMC2 {
+	status = "okay";
+};
+
+&r_EMMC3 {
+	status = "okay";
+};
+
+&r_ETH2_TX {
+	status = "okay";
+};
+
+&r_ETH2_RMII {
+	status = "okay";
+};
+
+&r_ETH2_PHY_REF {
+	status = "okay";
+};
+
+&r_ETH2_TIMER_SEC {
+	status = "okay";
+};
+
+&r_OSPI2 {
+	status = "okay";
+};
+
+&r_TIMER3 {
+	status = "okay";
+};
+
+&r_TIMER4 {
+	status = "okay";
+};
+
+&r_TIMER5 {
+	status = "okay";
+};
+
+&r_TIMER6 {
+	status = "okay";
+};
+
+&r_TIMER7 {
+	status = "okay";
+};
+
+&r_PWM3 {
+	status = "okay";
+};
+
+&r_PWM4 {
+	status = "okay";
+};
+
+&r_PWM5 {
+	status = "okay";
+};
+
+&r_PWM6 {
+	status = "okay";
+};
+
+&r_PWM7 {
+	status = "okay";
+};
+
+&r_PWM8 {
+	status = "okay";
+};
+
+&r_I2S_MCLK2 {
+	status = "okay";
+};
+
+&r_I2S_MCLK3 {
+	status = "okay";
+};
+
+&r_I2S_SC3 {
+	status = "okay";
+};
+
+&r_I2S_SC4 {
+	status = "okay";
+};
+
+&r_CSI_MCLK1 {
+	status = "okay";
+};
+
+&r_CSI_MCLK2 {
+	status = "okay";
+};
+
+&r_CAN5_TO_20 {
+	status = "okay";
+};
+
+&r_TRACE {
+	status = "okay";
+};
+
+&r_SYS_CNT {
+	status = "okay";
+};
+
+&r_MSHC_TIMER {
+	status = "okay";
+};
+
+//display
+
+&r_dtimings0 {
+	native-mode = <&r_hd1280x720>;
+
+	r_s640x600: vesa_640x600@60 {
+		clock-frequency = <22260000>;
+		hactive = <640>;
+		vactive = <600>;
+		hback-porch = <20>;
+		hfront-porch = <20>;
+		vback-porch = <20>;
+		vfront-porch = <20>;
+		hsync-len = <20>;
+		vsync-len = <10>;
+	};
+
+	r_s1280x600: vesa_1280x600@60 {
+		clock-frequency = <42612000>;
+		hactive = <1280>;
+		vactive = <600>;
+		hback-porch = <20>;
+		hfront-porch = <20>;
+		vback-porch = <20>;
+		vfront-porch = <20>;
+		hsync-len = <20>;
+		vsync-len = <10>;
+	};
+
+	r_svga800x600: vesa_800x600@60 {
+		clock-frequency = <40000000>;
+		hactive = <800>;
+		vactive = <600>;
+		hback-porch = <88>;
+		hfront-porch = <40>;
+		vback-porch = <23>;
+		vfront-porch = <1>;
+		hsync-len = <128>;
+		vsync-len = <4>;
+	};
+
+	r_hd1024x600: vesa_1024x600@60 {
+		clock-frequency = <51200000>;
+		hactive = <1024>;
+		vactive = <600>;
+		hback-porch = <120>;
+		hfront-porch = <120>;
+		vback-porch = <10>;
+		vfront-porch = <10>;
+		hsync-len = <80>;
+		vsync-len = <15>;
+	};
+
+	r_hd1280x480: vesa_1280x480@60 {
+		clock-frequency = <40000000>;
+		hactive = <1280>;
+		vactive = <480>;
+		hback-porch = <220>;
+		hfront-porch = <55>;
+		vback-porch = <20>;
+		vfront-porch = <5>;
+		hsync-len = <40>;
+		vsync-len = <5>;
+	};
+
+	r_hd1280x720: vesa_1280x720@60 {
+		clock-frequency = <74250000>;
+		hactive = <1280>;
+		vactive = <720>;
+		hback-porch = <220>;
+		hfront-porch = <110>;
+		vback-porch = <20>;
+		vfront-porch = <5>;
+		hsync-len = <40>;
+		vsync-len = <5>;
+	};
+
+	r_hd1280x800: vesa_1280x800@60 {
+		clock-frequency = <71000000>;
+		hactive = <1280>;
+		vactive = <800>;
+		hback-porch = <80>;
+		hfront-porch = <48>;
+		vback-porch = <10>;
+		vfront-porch = <10>;
+		hsync-len = <32>;
+		vsync-len = <3>;
+	};
+
+	r_fhd1920x720: vesa_1920x720@60 {
+		clock-frequency = <95000000>;
+		hactive = <1920>;
+		vactive = <720>;
+		hback-porch = <50>;
+		hfront-porch = <50>;
+		vback-porch = <15>;
+		vfront-porch = <15>;
+		hsync-len = <60>;
+		vsync-len = <10>;
+	};
+
+	r_hsd_fhd1920x720: hsd_1920x720@60 {
+		clock-frequency = <95000000>;
+		hactive = <1920>;
+		vactive = <720>;
+		hback-porch = <40>;
+		hfront-porch = <40>;
+		vback-porch = <50>;
+		vfront-porch = <50>;
+		hsync-len = <40>;
+		vsync-len = <10>;
+	};
+
+	r_fhd1920x1080: z1_1920x1080@60 {
+		clock-frequency = <132220000>;
+		hactive = <1920>;
+		vactive = <1080>;
+		hback-porch = <1>;
+		hfront-porch = <39>;
+		vback-porch = <1>;
+		vfront-porch = <20>;
+		hsync-len = <20>;
+		vsync-len = <12>;
+	};
+
+	r_qxga2560x1600: z1_2560x1600@60 {
+		clock-frequency = <257180000>;
+		hactive = <2560>;
+		vactive = <1600>;
+		hback-porch = <20>;
+		hfront-porch = <2>;
+		vback-porch = <15>;
+		vfront-porch = <2>;
+		hsync-len = <40>;
+		vsync-len = <38>;
+	};
+
+	r_uhd3840x720: uhd_3840x720@60 {
+		clock-frequency = <213840000>;
+		hactive = <3840>;
+		vactive = <720>;
+		hback-porch = <200>;
+		hfront-porch = <200>;
+		vback-porch = <35>;
+		vfront-porch = <35>;
+		hsync-len = <160>;
+		vsync-len = <20>;
+	};
+	r_uhd3200x600: uhd_3200x600@60 {
+		clock-frequency = <40000000>;
+		hactive = <3200>;
+		vactive = <600>;
+		hback-porch = <352>;
+		hfront-porch = <160>;
+		vback-porch = <23>;
+		vfront-porch = <1>;
+		hsync-len = <512>;
+		vsync-len = <4>;
+	};
+};
+
+&r_dtimings1 {
+	native-mode = <&r_hd1280x720_1>;
+
+	r_svga800x600_1: vesa_800x600@60 {
+		clock-frequency = <40000000>;
+		hactive = <800>;
+		vactive = <600>;
+		hback-porch = <88>;
+		hfront-porch = <40>;
+		vback-porch = <23>;
+		vfront-porch = <1>;
+		hsync-len = <128>;
+		vsync-len = <4>;
+	};
+
+	r_hd1280x480_1: vesa_1280x480@60 {
+		clock-frequency = <40000000>;
+		hactive = <1280>;
+		vactive = <480>;
+		hback-porch = <220>;
+		hfront-porch = <55>;
+		vback-porch = <20>;
+		vfront-porch = <5>;
+		hsync-len = <40>;
+		vsync-len = <5>;
+	};
+
+	r_hd1280x720_1: vesa_1280x720@60 {
+		clock-frequency = <74250000>;
+		hactive = <1280>;
+		vactive = <720>;
+		hback-porch = <220>;
+		hfront-porch = <110>;
+		vback-porch = <20>;
+		vfront-porch = <5>;
+		hsync-len = <40>;
+		vsync-len = <5>;
+	};
+
+	r_hd1280x800_1: vesa_1280x800@60 {
+		clock-frequency = <71000000>;
+		hactive = <1280>;
+		vactive = <800>;
+		hback-porch = <80>;
+		hfront-porch = <48>;
+		vback-porch = <10>;
+		vfront-porch = <10>;
+		hsync-len = <32>;
+		vsync-len = <3>;
+	};
+
+	r_fhd1920x720_1: vesa_1920x720@60 {
+		clock-frequency = <95000000>;
+		hactive = <1920>;
+		vactive = <720>;
+		hback-porch = <50>;
+		hfront-porch = <50>;
+		vback-porch = <15>;
+		vfront-porch = <15>;
+		hsync-len = <60>;
+		vsync-len = <10>;
+	};
+
+	r_hsd_fhd1920x720_1: hsd_1920x720@60 {
+		clock-frequency = <95000000>;
+		hactive = <1920>;
+		vactive = <720>;
+		hback-porch = <40>;
+		hfront-porch = <40>;
+		vback-porch = <50>;
+		vfront-porch = <50>;
+		hsync-len = <40>;
+		vsync-len = <10>;
+	};
+
+	r_fhd1920x1080_1: z1_1920x1080@60 {
+		clock-frequency = <132220000>;
+		hactive = <1920>;
+		vactive = <1080>;
+		hback-porch = <1>;
+		hfront-porch = <39>;
+		vback-porch = <1>;
+		vfront-porch = <20>;
+		hsync-len = <20>;
+		vsync-len = <12>;
+	};
+
+	r_qxga2560x1600_1: z1_2560x1600@60 {
+		clock-frequency = <257180000>;
+		hactive = <2560>;
+		vactive = <1600>;
+		hback-porch = <20>;
+		hfront-porch = <2>;
+		vback-porch = <15>;
+		vfront-porch = <2>;
+		hsync-len = <40>;
+		vsync-len = <38>;
+	};
+
+	r_uhd3840x720_1: uhd_3840x720@60 {
+		clock-frequency = <213840000>;
+		hactive = <3840>;
+		vactive = <720>;
+		hback-porch = <200>;
+		hfront-porch = <200>;
+		vback-porch = <35>;
+		vfront-porch = <35>;
+		hsync-len = <160>;
+		vsync-len = <20>;
+	};
+	r_uhd3200x600_1: uhd_3200x600@60 {
+		clock-frequency = <40000000>;
+		hactive = <3200>;
+		vactive = <600>;
+		hback-porch = <352>;
+		hfront-porch = <160>;
+		vback-porch = <23>;
+		vfront-porch = <1>;
+		hsync-len = <512>;
+		vsync-len = <4>;
+	};
+};
+
+&r_rstgen {
+	status = "okay";
+};
+
+&r_dc1 {
+	status = "okay";
+};

@@ -1,0 +1,116 @@
+/*
+* Semidrive X9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+/*Note: add safety/rtc imported resources here!*/
+
+/ {
+	soc{
+
+		spi0: spi@30380000 { /* physical spi num is 1 */
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x0 0x30380000 0x0 0x10000>;
+			interrupts = <0 48 4>;
+			num-cs = <1>;
+			reg-io-width = <4>;
+			bus-num = <0>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			max_freq = <133000000>;
+			status = "disabled";
+		};
+
+		spi1: spi@30390000 { /* physical spi num is 2 */
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x0 0x30390000 0x0 0x10000>;
+			interrupts = <0 49 4>;
+			num-cs = <1>;
+			reg-io-width = <4>;
+			bus-num = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			max_freq = <133000000>;
+			status = "disabled";
+		};
+
+		spi2: spi@303A0000 { /* physical spi num is 3 */
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x0 0x303A0000 0x0 0x10000>;
+			interrupts = <0 50 4>;
+			num-cs = <1>;
+			reg-io-width = <4>;
+			bus-num = <2>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			max_freq = <133000000>;
+			status = "disabled";
+		};
+
+		spi3: spi@303B0000 { /* physical spi num is 4 */
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x0 0x303B0000 0x0 0x10000>;
+			interrupts = <0 51 4>;
+			num-cs = <1>;
+			reg-io-width = <4>;
+			bus-num = <3>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			max_freq = <133000000>;
+			status = "disabled";
+		};
+	};
+
+	ulink_channel0: ulink_channel0 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x7ca00000 0x0 0x200000>,
+			<0x0 0x7c200000 0x0 0x200000>;
+		mboxes = <&mbox 0xc0 0xc000>;
+		rproc = <0>;
+		status = "okay";
+	};
+
+	ulink_channel1: ulink_channel1 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x7cc00000 0x0 0x200000>,
+			<0x0 0x7c800000 0x0 0x200000>;
+		mboxes = <&mbox 0xb4 0xb403>;
+		rproc = <3>;
+		status = "okay";
+	};
+
+	ulink_channel2: ulink_channel2 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x1a400000 0x0 0x400000>,
+			<0x0 0x78c00000 0x0 0x400000>;
+		mboxes = <&mbox 0xc8 0xc800>;
+		rproc = <6>;
+		status = "okay";
+	};
+
+	ulink_channel3: ulink_channel3 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x1a800000 0x0 0x400000>,
+			<0x0 0x79c00000 0x0 0x400000>;
+		mboxes = <&mbox 0xcb 0xcb00>;
+		rproc = <9>;
+		status = "okay";
+	};
+
+	ulink_channel4: ulink_channel4 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x1ac00000 0x0 0x400000>,
+			<0x0 0x7ac00000 0x0 0x400000>;
+		mboxes = <&mbox 0xcc 0xcc00>;
+		rproc = <10>;
+		status = "okay";
+	};
+
+	ulink_net: ulink_net {
+		compatible = "sd,ulink-net";
+		status = "okay";
+	};
+};

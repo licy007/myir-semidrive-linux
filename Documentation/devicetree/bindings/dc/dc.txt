@@ -1,0 +1,28 @@
+Generic device tree bindings for dc
+===========================================
+
+This document describes generic bindings which can be used to describe dc
+busses in a device tree.
+
+Required properties
+-------------------
+- compatible
+    should contain "sdrv,dc"
+
+- status:
+    "okay" or "disabled"
+
+- sdrv,ip
+    select different dc operation
+
+Example:
+
+dc1: dc1@30db0000 {
+			compatible = "sdrv,dc";
+			reg = <DC1_BASE DPU_RANGE>;
+			interrupts = <0 DC1_IRQ 4>;
+			status = "disabled";
+			sdrv,ip = "dc-r0p1";
+			clocks = <&PLL_LVDS1 PLL_DIVA>;
+			clock-names = "pll_clk";
+		};

@@ -1,0 +1,19 @@
+/*
+* Semidrive V9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "v9t.dtsi"
+#include "v9t-import.dtsi"
+
+/{
+        soc {
+            /delete-node/ gpio@30400000;/*gpio2*/
+            /*/delete-node/ serial@30520000; uart14, temp added, should  remove later*/
+            /delete-node/ dma@35510000;/*dmac1*/
+            /delete-node/ timer@0x30900000;/*timer7*/
+        };
+};

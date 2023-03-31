@@ -1,0 +1,360 @@
+/*
+* Semidrive X9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+#include "x9.dtsi"
+#include "x9-reset-base.dtsi"
+#include "gic4_int_diff.dtsi"
+#include "sdrv-coresight-cpu1.dtsi"
+
+/{
+        interrupt-parent=<&gic4>;
+
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <1656000000>;
+		trans-delay-us = <200000>;
+		start-time = <30>; /*second*/
+		status = "okay";
+	};
+
+        cpus {
+                #address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP1 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU1A_0_CORE0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_0>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x100>;
+			clocks = <&CPU1A_0_CORE1>;
+			clock-names = "cpu1";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_1>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x200>;
+			clocks = <&CPU1A_0_CORE2>;
+			clock-names = "cpu2";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x300>;
+			clocks = <&CPU1A_0_CORE3>;
+			clock-names = "cpu3";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_3>;
+		};
+
+		cpu4: cpu@4 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x400>;
+			clocks = <&CPU1A_0_CORE4>;
+			clock-names = "cpu4";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_4>;
+		};
+
+		cpu5: cpu@5 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x500>;
+			clocks = <&CPU1A_0_CORE5>;
+			clock-names = "cpu5";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_5>;
+		};
+
+		l2_0: l2-cache0 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_1: l2-cache1 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_2: l2-cache2 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_3: l2-cache3 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_4: l2-cache4 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_5: l2-cache5 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l3: l3-cache {
+			compatible = "cache";
+			cache-size = <0x100000>;
+			cache-line-size = <64>;
+			cache-sets = <0x400>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 9 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 10 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 11 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 12 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 13 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>, <&cpu4>, <&cpu5>;
+	};
+
+	soc {
+		vpu1:wave412@31440000 {
+			compatible = "semidrive,wave412";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			reg = <0x0 0x31440000 0x0 0x4000>;
+			reg-names = "register";
+			interrupts = <0 167 4>;
+			clocks = <&VPU1_0>, <&VPU_BUS_0_VPU1>;
+			clock-names = "bcore-clk", "core-clk";
+			clock-frequency = <532800000>, <666000000>;
+			sdrv,scr_signal = <SCR_SEC__vpu2_i_linebuffer_cfg_1_0>;
+			status = "disabled";
+		};
+
+		gpu0:gpu0@34c00000 {
+				compatible = "imagination,pvr-rogue";
+				reg = <0x0 0x34c00000 0x0 0x80000>;
+				interrupts = <0 149 4>;
+				clocks = <&GPU1_0>;
+				clock-names = "gpucoreclk";
+				operating-points-v2 = <&gpu0_opp_table>;
+				resets = <&rstgen RSTGEN_MODULE_GPU1_CORE>, <&rstgen RSTGEN_MODULE_GPU1_SS>;
+				reset-names = "gpucore-reset", "gpusys-reset";
+				status = "disabled";
+		};
+
+		gpu1:gpu1@34e00000 {
+				compatible = "imagination,pvr-rogue";
+				reg = <0x0 0x34e00000 0x0 0x80000>;
+				interrupts = <0 158 4>;
+				clock-frequency = <800000000>;
+				clocks = <&GPU2_0>;
+				clock-names = "gpucoreclk";
+				operating-points-v2 = <&gpu1_opp_table>;
+				resets = <&rstgen RSTGEN_MODULE_GPU2_CORE>, <&rstgen RSTGEN_MODULE_GPU2_SS>;
+				reset-names = "gpucore-reset", "gpusys-reset";
+				status = "disabled";
+		};
+
+		vdsp:xrp@0 {
+			#address-cells = <2>;
+			#size-cells = <2>;
+			compatible = "cdns,xrp-hw-semidrive,v1";
+			mbox-names = "tx";
+			mboxes = <&mbox 0x07 0x0705>;
+			host-irq = <232>; /* record mu IRQ#, won't register handler */
+			device-irq = <23>;	/* vdsp mu_ready IRQ#, pass to vdsp */
+			device-irq-mode = <1>;    /* level */
+			host-irq-mode = <1>;      /* level */
+			status = "disabled";
+			dsp@0 { /* only 1 dsp core */
+			};
+		};
+
+		csi1:csi@30cd0000 {
+			compatible = "semidrive,sdrv-csi";
+			reg = <0x0 0x30CD0000 0x0 0x10000>;
+			interrupts = <0 142 4>;
+			host_id = <1>;
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				csi1_stream0: port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					csi1_stream0_in: endpoint@0 {
+						reg = <0>;
+					};
+				};
+
+				csi1_stream1: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					csi1_stream1_in: endpoint@0 {
+						reg = <1>;
+					};
+				};
+
+				csi1_stream2: port@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					csi1_stream2_in: endpoint@0 {
+						reg = <2>;
+					};
+				};
+
+				csi1_stream3: port@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					csi1_stream3_in: endpoint@0 {
+						reg = <3>;
+					};
+				};
+			};
+		};
+
+		csimipi1:csi-mipi@30d10000 {
+			compatible = "semidrive,sdrv-csi-mipi";
+			reg = <0x0 0x30d10000 0x0 0x10000>, <0x0 0x30d50000 0x0 0x1000>;
+			interrupts = <0 145 4>;
+			host_id = <1>;
+			status = "disabled";
+
+			/*port {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				csimipi1_0_in: endpoint@0 {
+					reg = <0>;
+				};
+
+				csimipi1_0_out: endpoint@1 {
+					reg = <1>;
+				};
+			};*/
+	       };
+
+               pcie2: pcie@31100000 {
+			compatible = "semidrive,kunlun-pcie";
+			reg = <0x0 0x31100000 0x0 0xE0000>,
+			      <0x0 0x311e0000 0x0 0x20000>,
+			      <0x0 0x31200000 0x0 0x10000>,
+			      <0x0 0x31210000 0x0 0x10000>,
+			      <0x0 0x34080000 0x0 0x20000>;
+			reg-names = "dbi", "ctrl_ncr", "phy", "phy_ncr", "config";
+			bus-range = <0x0  0xff>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x02000000 0x0 0x20000000 0x0 0x20000000 0x0 0x10000000
+				  0x43000000 0x6 0x0 0x6 0x0 0x1 0x0>;
+			num-lanes = <1>;
+
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "msi";
+			interrupt-map-mask = <0xf800 0 0 7>;
+			interrupt-map = <0x0 0 0 1
+					 &gic4 GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 2
+					 &gic4 GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 3
+					 &gic4 GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 4
+					 &gic4 GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+
+			clocks = <&HIS_BUS_1>,
+				 <&HIS_BUS_3_PCIE_PHY>,
+				 <&HIS_BUS_2_PCIE2>,
+				 <&HIS_BUS_3_PCIE2>;
+			clock-names = "pcie_phy_ref", "pcie_phy_pclk",
+					  "pcie_aclk", "pcie_pclk";
+
+			ref-clk = "internal,diffbuf_on";
+                        status = "disabled";
+		};
+        };
+};
+
+#include "x9_high-sid.dtsi"

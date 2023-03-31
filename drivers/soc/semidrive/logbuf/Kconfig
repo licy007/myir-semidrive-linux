@@ -1,0 +1,17 @@
+config SEMIDRIVE_LOGBUF
+	bool "Semidrive log buffer driver"
+	help
+	  we use the driver to access the log buffer which saved in the DDR.
+
+if SEMIDRIVE_LOGBUF
+config SEMIDRIVE_LOGBUF_SERVER_DEV
+	tristate "Semidrive log buffer server device driver"
+	help
+	  we use the driver to detect changes of the log data.
+
+config SEMIDRIVE_LOGBUF_CLIENT_DEV
+	tristate "Semidrive log buffer client device driver"
+	help
+	  we use the driver to report lastlog to application tool.
+
+endif

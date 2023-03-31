@@ -1,0 +1,37 @@
+semidrive pvr-rogue specific node properties:
+================================================================================
+
+Optional:
+
+- compatible
+    should contain "imagination,pvr-rogue"
+
+- clocks
+	the clock of this module
+
+- clock-names
+	the clock's name
+
+- operating-points-v2
+	gpu runtime settings
+
+- resets
+	module reset settings
+
+- status:
+    "okay" or "disabled"
+
+Examples:
+
+	gpu1:gpu1@34c00000 {
+		compatible = "imagination,pvr-rogue";
+		reg = <0x0 0x34c00000 0x0 0x80000>;
+		interrupts = <0 149 4>;
+		clocks = <&GPU1_0>;
+		clock-names = "gpucoreclk";
+		operating-points-v2 = <&gpu0_opp_table>;
+		resets = <&rstgen RSTGEN_MODULE_GPU1_CORE>, <&rstgen RSTGEN_MODULE_GPU1_SS>;
+		reset-names = "gpucore-reset", "gpusys-reset";
+		status = "disabled";
+	};
+

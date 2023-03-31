@@ -1,0 +1,36 @@
+/ { lcds {
+	lcd_lt9611_bridge_mipi_1920x1080: lcd_lt9611_bridge_mipi_1920x1080 {
+
+		semidrive,dsi-work-mode = <1>; /* video burst mode*/
+		semidrive,dsi-lanes-number = <4>;
+		semidrive,dsi-color-format = "rgb888";
+
+		semidrive,phy_freq = <980>;  /* Mbps */
+
+		semidrive,width-mm = <202>;
+		semidrive,height-mm = <109>;
+
+		semidrive,initial-command = [
+			];
+
+		semidrive,sleep-in-command = [
+			];
+		semidrive,sleep-out-command = [
+			];
+
+		display-timings {
+			timing0 {
+				clock-frequency = <148500000>;
+				hactive = <1920>;
+				vactive = <1080>;
+				hback-porch = <148>;
+				hfront-porch = <88>;
+				vback-porch = <36>;
+				vfront-porch = <4>;
+				hsync-len = <44>;
+				vsync-len = <5>;
+				vrefresh = <60>;
+			};
+		};
+	};
+};};

@@ -1,0 +1,10 @@
+Semidrive ES7144 sound card driver for d9 ref
+
+Required properties:
+- compatible : "semidrive,d9-ref-es7144"
+
+Example:
+
+sound_es7144: sound@es7144 {
+	compatible = "semidrive,d9-ref-es7144";
+};

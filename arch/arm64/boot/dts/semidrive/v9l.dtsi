@@ -1,0 +1,63 @@
+/*
+* Semidrive V9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "v9.dtsi"
+#include "v9-reset-base.dtsi"
+#include "sdrv-coresight-cpu2.dtsi"
+/{
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <1496000000>;
+		trans-delay-us = <200000>;
+		start-time = <10>; /*second*/
+		status = "okay";
+	};
+        cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+		/* AP2 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU2_0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2>;
+		};
+	        l2: l2-cache {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+		};
+        };
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts =    <GIC_SPI 8 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>;
+        };
+
+        gic: interrupt-controller@35441000 {
+		compatible = "arm,gic-400";
+	        reg = <0 0x35441000 0 0x1000>,
+		      <0 0x35442000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_HIGH)>;
+                interrupt-parent = <&gic>;
+        };
+};

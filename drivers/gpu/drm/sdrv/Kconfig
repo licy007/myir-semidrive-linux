@@ -1,0 +1,21 @@
+config DRM_SEMIDRIVE
+	tristate "DRM Support for Semidrive"
+	select DRM_KMS_HELPER
+	select VIDEOMODE_HELPERS
+	select DRM_KMS_CMA_HELPER
+	select DRM_MIPI_DSI
+	depends on DRM
+	help
+	  enable semidrive graphics support
+
+config DRM_SEMIDRIVE_VIDEO_DISPLAY
+	bool "Simulated display driver using V4L2"
+	depends on VIDEO_V4L2
+	depends on VIDEO_V4L2_SUBDEV_API
+	depends on HAS_DMA
+	select VIDEOBUF2_DMA_SG
+	select VIDEOBUF2_DMA_CONTIG
+	select V4L2_FWNODE
+
+config DRM_DMAFD_V2
+	bool "Semidrive export dmafd version2"

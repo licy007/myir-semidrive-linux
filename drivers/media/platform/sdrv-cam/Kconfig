@@ -1,0 +1,51 @@
+config VIDEO_SEMIDRIVE_PARALLEL
+	tristate "Semidrive Camera parallel interface"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_MIPICSI2
+	tristate "Semidrive Camera MIPI-CSI2 interface"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_SRV
+	tristate "AR0132 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+	depends on ARCH_SEMIDRIVE
+	depends on RPMSG_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_OV5640
+	tristate "Ov5640 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_MAX9286_MAX96705
+	tristate "MAX9286 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_MAX96706_MAX96705
+	tristate "MAX96706 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_MAX96722_MAX96705
+	tristate "MAX96722/12 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_AR0132_AP0101
+	tristate "AR0132 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_NEXTCHIP_N4
+	tristate "nextchip n4 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+	default n
+
+config VIDEO_SEMIDRIVE_DESERS_ADAPTIVE
+	tristate "self-adaptive semidrive deser driver"
+	depends on VIDEO_SEMIDRIVE
+
+config POWER_POC_DRIVER
+	tristate "deser poc driver"
+	depends on VIDEO_SEMIDRIVE
+
+config VIDEO_SEMIDRIVE_NEXTCHIP_TP2850
+	tristate "tp tp2850 for Semidrive"
+	depends on VIDEO_SEMIDRIVE
+

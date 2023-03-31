@@ -1,0 +1,18 @@
+config MIPI_MAX9286_FENGJING_MC163_720P_MAX96705
+	tristate "mipi_max9286_fengjing_MC163_720P_MAX96705 for Semidrive."
+	depends on VIDEO_SEMIDRIVE_V2
+
+config MIPI_MAX96722_SENGYUN_IMX390C_5200_MAX9295
+	tristate "mipi_max96722_sengyun_IMX390C_5200_MAX9295 for Semidrive."
+	depends on VIDEO_SEMIDRIVE_V2
+	
+config DVP_MAX96706_FENGJING_MC163_MAX96705
+	tristate "dvp_max96706_fengjing_MC163_MAX96705 for Semidrive."
+	depends on VIDEO_SEMIDRIVE_V2
+
+config MIPI_MAX96722_FENGJING_MC163_MAX96705
+	tristate "mipi_max96722_fengjing_MC163_MAX96705 for Semidrive."
+	depends on VIDEO_SEMIDRIVE_V2
+
+
+

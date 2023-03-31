@@ -1,0 +1,343 @@
+/*
+* Semidrive V9 DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "v9.dtsi"
+#include "v9-reset-base.dtsi"
+#include "gic4_int_diff.dtsi"
+#include "sdrv-coresight-cpu1.dtsi"
+/{
+	sdrvcpufreq: cpufreq {
+		compatible = "semidrive,sdrv-cpufreq";
+		min-freq = <100000000>;/*hz*/
+		max-freq = <1656000000>;
+		trans-delay-us = <200000>;
+		start-time = <10>; /*second*/
+		status = "okay";
+	};
+        cpus {
+                #address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP1 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU1A_0_CORE0>;
+			clock-names = "cpu0";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_0>;
+		};
+
+                cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x100>;
+			clocks = <&CPU1A_0_CORE1>;
+			clock-names = "cpu1";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_1>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x200>;
+			clocks = <&CPU1A_0_CORE2>;
+			clock-names = "cpu2";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x300>;
+			clocks = <&CPU1A_0_CORE3>;
+			clock-names = "cpu3";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_3>;
+		};
+
+		cpu4: cpu@4 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x400>;
+			clocks = <&CPU1A_0_CORE4>;
+			clock-names = "cpu4";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_4>;
+		};
+
+		cpu5: cpu@5 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x500>;
+			clocks = <&CPU1A_0_CORE5>;
+			clock-names = "cpu5";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2_5>;
+		};
+
+		l2_0: l2-cache0 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_1: l2-cache1 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_2: l2-cache2 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_3: l2-cache3 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_4: l2-cache4 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l2_5: l2-cache5 {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+			next-level-cache = <&l3>;
+		};
+
+		l3: l3-cache {
+			compatible = "cache";
+			cache-size = <0x100000>;
+			cache-line-size = <64>;
+			cache-sets = <0x400>;
+		};
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 9 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 10 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 11 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 12 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 13 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>, <&cpu4>, <&cpu5>;
+	};
+
+        gic: interrupt-controller@35431000 {
+		compatible = "arm,gic-400";
+		reg = <0 0x35431000 0 0x1000>,
+		      <0 0x35432000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
+		interrupt-parent = <&gic>;
+	};
+
+        soc{
+                gpu0:gpu0@34c00000 {
+                                compatible = "imagination,pvr-rogue";
+                                reg = <0x0 0x34c00000 0x0 0x80000>;
+                                interrupts = <0 149 4>;
+                                clocks = <&GPU1_0>;
+                                clock-names = "gpucoreclk";
+				operating-points-v2 = <&gpu0_opp_table>;
+                                status = "disabled";
+                };
+
+		pcie1:	pcie@31000000 {
+			compatible = "semidrive,kunlun-pcie";
+			reg = <0x0 0x31000000 0x0 0xE0000>,
+			      <0x0 0x310e0000 0x0 0x20000>,
+			      <0x0 0x31200000 0x0 0x10000>,
+			      <0x0 0x31210000 0x0 0x10000>,
+			      <0x0 0x34060000 0x0 0x20000>;
+			reg-names = "dbi", "ctrl_ncr", "phy", "phy_ncr", "config";
+			bus-range = <0x0  0xff>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x02000000 0x0 0x10000000 0x0 0x10000000 0x0 0x10000000
+				  0x43000000 0x7 0x0 0x5 0x0 0x1 0x0>;
+			num-lanes = <1>;
+
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "msi";
+			interrupt-map-mask = <0xf800 0 0 7>;
+			interrupt-map = <0x0 0 0 1
+					 &gic GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 2
+					 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 3
+					 &gic GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 4
+					 &gic GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
+
+			clocks = <&HIS_BUS_1>,
+				 <&HIS_BUS_3_PCIE_PHY>,
+				 <&HIS_BUS_2_PCIE1>,
+				 <&HIS_BUS_3_PCIE1>;
+			clock-names = "pcie_phy_ref", "pcie_phy_pclk",
+				          "pcie_aclk", "pcie_pclk";
+
+			ref-clk = "internal,diffbuf_on";
+
+			status = "disabled";
+
+		};
+
+		pcie2: pcie@31100000 { /* MXM slot */
+			compatible = "semidrive,kunlun-pcie";
+			reg = <0x0 0x31100000 0x0 0xE0000>,
+			      <0x0 0x311e0000 0x0 0x20000>,
+			      <0x0 0x31200000 0x0 0x10000>,
+			      <0x0 0x31210000 0x0 0x10000>,
+			      <0x0 0x20000000 0x0 0x2000>;
+			reg-names = "dbi", "ctrl_ncr", "phy", "phy_ncr", "config";
+			bus-range = <0x0  0xff>;
+
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x01000000 0x0 0x0 0x0 0x21000000 0 0x2000>,
+				 <0x02000000 0x0 0x10000000 0x6 0x0 0x1 0x0>;
+			num-lanes = <1>;
+
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "msi";
+			interrupt-map-mask = <0xf800 0 0 7>;
+			interrupt-map = <0x0 0 0 1
+					 &gic GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 2
+					 &gic GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 3
+					 &gic GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 4
+					 &gic GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+
+			clocks = <&HIS_BUS_1>,
+				 <&HIS_BUS_3_PCIE_PHY>,
+				 <&HIS_BUS_2_PCIE2>,
+				 <&HIS_BUS_3_PCIE2>;
+			clock-names = "pcie_phy_ref", "pcie_phy_pclk",
+				      "pcie_aclk", "pcie_pclk";
+
+			ref-clk = "internal,diffbuf_on";
+
+			status = "disabled";
+		};
+
+		watchdog5: watchdog@0x30a20000 {    //AP1 watchdog
+			compatible = "semidrive,watchdog";
+			reg = <0x0 0x30a20000 0x0 0x1000>;
+			#interrupt-cells = <1>;
+			interrupts = <0 190 4>;
+			interrupt-parent = <&gic>;
+			wdt,clock-source = "main-clk";
+			wdt,clock-divider = <0>;
+			timeout-sec = <2>;
+			wdt,min-hw-hearbeat = <800>;
+			wdt,max-hw-hearbeat = <2000>;
+			wdt,dying-delay;
+			wdt,sig-rstgen = "false";
+			wdt,auto-run = "true";
+			regctl = <&regctl SDRV_REG_BOOTREASON>;
+			status = "disabled";
+		};
+        };
+
+	ulink_channel0: ulink_channel0 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x47400000 0x0 0x400000>,
+			<0x0 0x47000000 0x0 0x400000>;
+		mboxes = <&mbox 0xb0 0xb000>;
+		rproc = <0>;
+		status = "okay";
+	};
+
+	ulink_channel1: ulink_channel1 {
+		compatible = "sd,ulink-channel";
+		reg = <0x0 0x16800000 0x0 0x400000>,
+			<0x0 0x46800000 0x0 0x400000>;
+		mboxes = <&mbox 0xbb 0xbb00>;
+		rproc = <9>;
+		status = "okay";
+	};
+
+	ulink_net: ulink_net {
+		compatible = "sd,ulink-net";
+		status = "okay";
+	};
+
+	ulink_pcie: ulink_pcie {
+		compatible = "sd,ulink-pcie-ep";
+		reg = <0x0 0x310c8000 0x0 0x2000>;
+		channel = <0>;
+		status = "okay";
+	};
+};

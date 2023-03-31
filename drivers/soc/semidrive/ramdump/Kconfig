@@ -1,0 +1,6 @@
+config SEMIDRIVE_CRASHDUMP_ELF
+	bool "Semidrive crashdump elf"
+	depends on ARCH_SEMIDRIVE
+	depends on KEXEC_CORE
+	help
+	  we use the driver to generate kernel elf header.

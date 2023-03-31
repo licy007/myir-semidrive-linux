@@ -1,0 +1,12 @@
+/ {
+	soc{
+
+		rtc: rtc@0x31810000 {
+			compatible = "semidrive,sdrv-rtc";
+			reg = <0x0 0x31810000 0x0 0x10000>;
+			interrupts = <0 220 IRQ_TYPE_LEVEL_HIGH>;
+			status = "disabled";
+		};
+
+	};
+};

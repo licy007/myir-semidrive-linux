@@ -1,0 +1,13 @@
+Semidrive ulink channel driver.
+
+Required properties:
+- compatible : "sd,ulink-channel"
+
+Example:
+
+ulink_channel1: ulink_channel1 {
+	compatible = "sd,ulink-channel";
+	mboxes = <&mbox 0xb4 0xb404>;
+	rproc = <4>;
+	status = "okay";
+};

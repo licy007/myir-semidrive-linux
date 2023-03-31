@@ -1,0 +1,28 @@
+/*
+* Semidrive G9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "g9x.dtsi"
+#include "g9x-import.dtsi"
+
+/{
+        soc {
+            /delete-node/ gpio@30400000;/*gpio2*/
+            /delete-node/ gpio@30410000;/*gpio3*/
+            /delete-node/ gpio@30420000;/*gpio4*/
+            /delete-node/ soc_sram;/*iram2 iram3 iram4*/
+            /delete-node/ serial@304c0000;/*uart8*/
+            /delete-node/ serial@304d0000;/*uart9*/
+            /delete-node/ dma@35510000;/*dmac1*/
+            /delete-node/ dma@35520000;/*dmac2*/
+            /delete-node/ dma@35530000;/*dmac3*/
+            /delete-node/ dma@35540000;/*dmac4*/
+            /delete-node/ dma@35550000;/*dmac5*/
+            /delete-node/ timer@0x308f0000;/*timer6*/
+            /delete-node/ timer@0x30900000;/*timer7*/
+        };
+};

@@ -1,0 +1,135 @@
+/dts-v1/;
+
+#include "x9-vm.dtsi"
+#include "display-xen.dtsi"
+#include "clk-xen.dtsi"
+#include "x9-clk-common-xen.dtsi"
+#include "lcd-timings-xen.dtsi"
+#include "x9-gpu.dtsi"
+#include "x9-import.dtsi"
+
+/ {
+	reserved-memory {
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		ranges;
+
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x2000000>;
+			linux,cma-default;
+		};
+
+		vm_shmem: vm_shm,cma {
+			compatible = "shared-dma-pool";
+			reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+			status = "okay";
+		};
+	};
+
+};
+
+&dmac2 {
+	status = "disabled";
+};
+
+&dmac3 {
+	status = "disabled";
+};
+
+&pinctrl {
+	reg = <0x0 0x38500000 0x0 0x10000>;
+};
+
+&gpio5 {
+	status = "disabled";
+};
+
+&gpu1 {
+	status = "okay";
+        vm,passthrough;
+        clocks = <&GPU2_0>;
+        clock-names = "gpucoreclk";
+};
+
+&mbox{
+	status = "okay";
+};
+
+&display {
+	sdriv,crtc = <&crtc1>;
+	status = "okay";
+        reg = <0x00 0x38419000 0x00 0x3000>;
+};
+
+&dp2 {
+	status = "okay";
+};
+
+&crtc1 {
+	dpc-master = <&dp2>;
+	status = "okay";
+	vm,passthrough;
+};
+
+&parallel1 {
+	status = "okay";
+};
+
+&dtimings1 {
+	native-mode = <&hsd_jpw1920x720_1>;
+};
+
+&ptimings1 {
+	status = "okay";
+};
+
+&regctl {
+	reg = <0x0 0x38415000 0x0 0x1000>,
+              <0x0 0x38418000 0x0 0x1000>,
+              <0x0 0x38419000 0x0 0x1000>;
+	reg-names = "SDRV_REG_REMAP",
+			"SDRV_REG_BOOTREASON",
+                        "SDRV_REG_HWID";
+	status = "okay";
+};
+
+&dcf_property {
+	status = "okay";
+};
+
+&dcf_vircan1 {
+	status = "okay";
+};
+
+&vce3 {
+   /*
+ 	* op-mode options:
+ 	* bit 0: rng enable(1) or disable(0)
+ 	* bit 1: ce enable(1) or disable(0)
+ 	*/
+ 	op-mode = <3>;
+	status = "okay";
+};
+
+&pwm4 {
+	sd,playback-num-chan = <2>;
+	#pwm-cells = <3>;
+	status = "okay";
+};
+
+&semidrive_bl2 {
+		compatible = "pwm-backlight"; /*"sd,rpmsg-bl" for rpmsg; "pwm-backlight" for native*/
+		bl_screen-id = /bits/ 32 <0>;
+		pwms = <&pwm4 PWM_CH0 PWM_FREQUENCY PWM_POLARITY_INVERSED>;
+		brightness-levels = <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+							 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+							 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+							 45 46 47 48 49 50 51 52 53 54 55 56 57 58
+							 59 60 61 62 63 64 65 66 67 68 69 70 71 72
+							 73 74 75 76 77 78 79 80 81 82 83 84 85 86
+							 87 88 89 90 91 92 93 94 95 96 97 98 99 100>;
+		default-brightness-level = <70>;
+		status = "okay";
+};

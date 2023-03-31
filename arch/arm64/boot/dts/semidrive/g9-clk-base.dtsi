@@ -1,0 +1,1649 @@
+/*
+ * Semidrive G9 platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/ {
+	RC_24M: RC_24M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	RC_RTC: RC_RTC {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <2000000>;
+	};
+
+	XTAL_24M: XTAL_24M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	XTAL_RTC: XTAL_RTC {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32000>;
+	};
+
+	PLL1_DIVA: PLL1_DIVA {
+		compatible = "fixed-clock";
+		//reg = <0 0x30250000 0 0x10000>;
+		#clock-cells = <0>;
+		clock-frequency = <500000000>;
+	};
+
+	PLL2_DIVA: PLL2_DIVA {
+		compatible = "fixed-clock";
+		//reg = <0 0x30260000 0 0x10000>;
+		#clock-cells = <0>;
+		clock-frequency = <399999999>;
+	};
+
+	ETH1_TX: ETH1_TX {
+		compatible = "fixed-clock";
+		clock-frequency = <250000000>;
+		#clock-cells = <0>;
+		status = "disabled";
+	};
+	// ETH1 is in safety domain,clk nodes are read-only
+	ETH1_RMII: ETH1_RMII {
+		compatible = "fixed-clock";
+		clock-frequency = <50000000>;
+		#clock-cells = <0>;
+		status = "disabled";
+	};
+
+	ETH1_PHY_REF: ETH1_PHY_REF {
+		compatible = "fixed-clock";
+		clock-frequency = <125000000>;
+		#clock-cells = <0>;
+		status = "disabled";
+	};
+
+	ETH1_TIMER_SEC: ETH1_TIMER_SEC {
+		compatible = "fixed-clock";
+		clock-frequency = <500000000>;
+		#clock-cells = <0>;
+		status = "disabled";
+	};
+
+	clk_cpu1: clk_cpu1 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_CPU1A: PLL_CPU1A {
+			compatible = "semidrive,pll";
+			reg = <0 0x314A0000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+			sdrv,pll-integer = <1>;/*TODO*/
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <207>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		PLL_CPU1B: PLL_CPU1B {
+			compatible = "semidrive,pll";
+			reg = <0 0x314D0000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <166>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		CPU1A: CPU1A {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x360c0000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		CPU1B: CPU1B {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x360c1000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		CPU1A_SEL0: CPU1A_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&CPU1A>, <&PLL_CPU1A PLL_ROOT>;
+		};
+		CPU1A_M: CPU1A_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&CPU1A_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+		CPU1A_1: CPU1A_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1A_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+		CPU1A_2: CPU1A_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1A_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+		CPU1A_3: CPU1A_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1A_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+		CPU1A_0: CPU1A_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36180000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&CPU1A_M>, <&PLL_CPU1A PLL_ROOT>;
+			//assigned-clocks =<&CPU1A_0>;
+			//assigned-clock-parents = <&PLL_CPU1A PLL_ROOT>;
+		};
+
+		CPU1B_SEL0: CPU1B_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&CPU1B>, <&PLL_CPU1B PLL_ROOT>;
+		};
+		CPU1B_M: CPU1B_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&CPU1B_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+		CPU1B_1: CPU1B_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1B_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+		CPU1B_2: CPU1B_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1B_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+		CPU1B_3: CPU1B_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU1B_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+		CPU1B_0: CPU1B_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36181000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&CPU1B_M>, <&PLL_CPU1B PLL_ROOT>;
+			//assigned-clocks =<&CPU1B_0>;
+			//assigned-clock-parents = <&PLL_CPU1B PLL_ROOT>;
+		};
+		CPU1A_0_CORE0: CPU1A_0_CORE0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36136000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+		};
+
+		CPU1A_0_CORE1: CPU1A_0_CORE1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36137000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+		};
+
+		CPU1A_0_CORE2: CPU1A_0_CORE2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36138000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+		};
+
+		CPU1A_0_CORE3: CPU1A_0_CORE3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36139000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+		};
+
+		CPU1A_0_CORE4: CPU1A_0_CORE4 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3613a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+			status = "disabled";
+		};
+
+		CPU1A_0_CORE5: CPU1A_0_CORE5 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3613b000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&CPU1A_0>;
+			status = "disabled";
+		};
+	};
+	clk_cpu2: clk_cpu2 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_CPU2: PLL_CPU2 {
+			compatible = "semidrive,pll";
+			reg = <0 0x314B0000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <2>;
+			sdrv,pll-divb = <4>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <187>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		CPU2: CPU2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x360c2000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		CPU2_SEL0: CPU2_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&CPU2>, <&PLL_CPU2 PLL_ROOT>;
+		};
+
+		CPU2_M: CPU2_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&CPU2_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+
+		CPU2_1: CPU2_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU2_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+
+		CPU2_2: CPU2_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU2_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+
+		CPU2_3: CPU2_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&CPU2_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+
+		CPU2_0: CPU2_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36182000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&CPU2_M>, <&PLL_CPU2 PLL_ROOT>;
+			//assigned-clocks =<&CPU2_0>;
+			//assigned-clock-parents = <&PLL_CPU2 PLL_ROOT>;
+		};
+	};
+	clk_gpu2: clk_gpu2 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_GPU2: PLL_GPU2 {
+			compatible = "semidrive,pll";
+			reg = <0 0x31490000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <182>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		GPU2: GPU2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x360c4000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		GPU2_SEL0: GPU2_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&GPU2>, <&PLL_GPU2 PLL_ROOT>;
+		};
+
+		GPU2_M: GPU2_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&GPU2_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+
+		GPU2_1: GPU2_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&GPU2_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+
+		GPU2_2: GPU2_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&GPU2_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+
+		GPU2_3: GPU2_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&GPU2_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+
+		GPU2_0: GPU2_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36184000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&GPU2_M>, <&PLL_GPU2 PLL_ROOT>;
+			//assigned-clocks =<&GPU2_0>;
+			//assigned-clock-parents = <&PLL_GPU2 PLL_ROOT>;
+		};
+	};
+	clk_hpi: clk_hpi {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_HPI: PLL_HPI {
+			compatible = "semidrive,pll";
+			reg = <0 0x31500000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <237>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+		NOC: NOC {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36084000 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>, <&PLL_HPI PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+	};
+	clk_his: clk_his {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_HIS: PLL_HIS {
+			compatible = "semidrive,pll";
+			reg = <0 0x312A0000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <250>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		HIS_BUS: HIS_BUS {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36086000 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		HIS_BUS_SEL0: HIS_BUS_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&HIS_BUS>, <&PLL_HIS PLL_ROOT>;
+		};
+
+		HIS_BUS_M: HIS_BUS_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&HIS_BUS_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+
+		HIS_BUS_1: HIS_BUS_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&HIS_BUS_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+
+		HIS_BUS_2: HIS_BUS_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&HIS_BUS_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+
+		HIS_BUS_3: HIS_BUS_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&HIS_BUS_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+
+		HIS_BUS_0: HIS_BUS_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3618a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&HIS_BUS_M>, <&PLL_HIS PLL_ROOT>;
+			//assigned-clocks =<&HIS_BUS_0>;
+			//assigned-clock-parents = <&PLL_HIS PLL_ROOT>;
+		};
+		/*ckgen gate*/
+
+		HIS_BUS_2_NOC_HIS: HIS_BUS_2_NOC_HIS {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612c000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_2>;
+		};
+		HIS_BUS_2_PCIE2: HIS_BUS_2_PCIE2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612e000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_2>;
+		};
+		HIS_BUS_2_PCIE1: HIS_BUS_2_PCIE1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612f000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_2>;
+		};
+
+		HIS_BUS_2_USB1: HIS_BUS_2_USB1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36132000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_2>;
+		};
+		HIS_BUS_2_USB2: HIS_BUS_2_USB2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36133000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_2>;
+		};
+		HIS_BUS_3_NOC_HIS: HIS_BUS_3_NOC_HIS {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612c000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+		HIS_BUS_3_PCIE2: HIS_BUS_3_PCIE2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612e000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+		HIS_BUS_3_PCIE1: HIS_BUS_3_PCIE1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3612f000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+		HIS_BUS_3_USB1: HIS_BUS_3_USB1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36132000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+
+		HIS_BUS_3_USB2: HIS_BUS_3_USB2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36133000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+		HIS_BUS_3_PCIE_PHY: HIS_BUS_3_PCIE_PHY {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36130000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&HIS_BUS_3>;
+		};
+	};
+	clk_ddr: clk_ddr {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		PLL_DDR: PLL_DDR {
+			compatible = "semidrive,pll";
+			reg = <0 0x33010000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <4>;
+			sdrv,pll-divb = <6>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params*/
+			sdrv,pll-integer = <1>;
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <3>;
+			sdrv,pll-fbdiv = <266>;
+			sdrv,pll-frac = <0>;
+			sdrv,pll-postdiv = <2 1>;
+		};
+		DDR: DDR {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x360c5000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_CORE>;
+			clocks=<&RC_24M>, <&XTAL_24M>, <&PLL1_DIVA>, <&PLL2_DIVA>;
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+		DDR_SEL0: DDR_SEL0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX>;
+			clocks=<&DDR>, <&PLL_DDR PLL_ROOT>;
+		};
+
+		DDR_M: DDR_M {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type = <CLK_TYPE_UUU_DIVIDER>;
+			clocks = <&DDR_SEL0>;
+			sdrv,div-shift = <UUU_M_SHIFT>;
+			sdrv,div-width = <UUU_M_WIDTH>;
+		};
+
+		DDR_1: DDR_1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&DDR_SEL0>;
+			sdrv,div-shift = <UUU_N_SHIFT>;
+			sdrv,div-width = <UUU_N_WIDTH>;
+		};
+
+		DDR_2: DDR_2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&DDR_SEL0>;
+			sdrv,div-shift = <UUU_P_SHIFT>;
+			sdrv,div-width = <UUU_P_WIDTH>;
+		};
+
+		DDR_3: DDR_3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_DIVIDER>;
+			clocks=<&DDR_SEL0>;
+			sdrv,div-shift = <UUU_Q_SHIFT>;
+			sdrv,div-width = <UUU_Q_WIDTH>;
+		};
+
+		DDR_0: DDR_0 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36189000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_UUU_MUX2>;
+			clocks=<&DDR_M>, <&PLL_DDR PLL_ROOT>;
+			//assigned-clocks =<&DDR_0>;
+			//assigned-clock-parents = <&PLL_DDR PLL_ROOT>;
+		};
+	};
+
+	clk_disp: clk_disp {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		/*ckgen disp */
+		PLL_DISP: PLL_DISP {
+			compatible = "semidrive,pll";
+			reg = <0 0x30D30000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+			sdrv,pll-integer = <0>;/*TODO*/
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		PLL_LVDS1:	PLL_LVDS1 {
+			compatible = "semidrive,pll";
+			reg = <0 0x30C00000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+			sdrv,pll-integer = <0>;/*TODO*/
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		PLL_LVDS2:	PLL_LVDS2 {
+			compatible = "semidrive,pll";
+			reg = <0 0x30C10000 0 0x10000>;
+			#clock-cells = <1>;
+			sdrv,pll-diva = <5>;
+			sdrv,pll-divb = <2>;
+			sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+			sdrv,pll-integer = <0>;/*TODO*/
+			sdrv,pll-spread_spectrum = <0>;
+			sdrv,pll-refdiv = <2>;
+			sdrv,pll-fbdiv = <173>;
+			sdrv,pll-frac = <4194304>;
+			sdrv,pll-postdiv = <1 1>;
+		};
+
+		MIPI_CSI1_PIX: MIPI_CSI1_PIX {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36200000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVB>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		MIPI_CSI2_PIX: MIPI_CSI2_PIX {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36201000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVB>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		MIPI_CSI3_PIX: MIPI_CSI3_PIX {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36202000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVB>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		MIPI_CSI1: MIPI_CSI1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3631d000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI1_PIX>;
+		};
+		MIPI_CSI2: MIPI_CSI2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3631e000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI2_PIX>;
+		};
+		MIPI_CSI3: MIPI_CSI3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3631f000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI3_PIX>;
+		};
+		CSI1: CSI1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36319000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI1_PIX>;
+		};
+		CSI2: CSI2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3631a000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI2_PIX>;
+		};
+		CSI3: CSI3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3631b000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_GATE>;
+			clocks=<&MIPI_CSI3_PIX>;
+		};
+
+		DC1: DC1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36207000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVA>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		DC2: DC2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36208000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVA>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		DISP_BUS: DISP_BUS {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36280000 0 0x2000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_BUS>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL_DISP PLL_DIVB>, <&PLL_DISP PLL_ROOT>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+	};
+
+	clk_extaud: clk_extaud {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "disabled";
+		EXT_AUD1: EXT_AUD1 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3620d000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		EXT_AUD2: EXT_AUD2 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3620e000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		EXT_AUD3: EXT_AUD3 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x3620f000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+
+		EXT_AUD4: EXT_AUD4 {
+			compatible = "semidrive,clkgen-composite";
+			reg =  <0 0x36210000 0 0x1000>;
+			#clock-cells = <0>;
+			sdrv,type =<CLK_TYPE_IP>;
+			clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>;
+			sdrv,prediv = <1>;/*TODO*/
+			sdrv,postdiv = <1>;/*TODO*/
+		};
+	};
+	/*ckgen sec */
+	PLL3: PLL3 {
+		compatible = "semidrive,pll";
+		reg = <0 0x30800000 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <12>;
+		sdrv,pll-divc = <15>;
+		sdrv,pll-divd = <5>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,pll-integer = <1>;/*TODO*/
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <150>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	PLL4: PLL4 {
+		compatible = "semidrive,pll";
+		reg = <0 0x30810000 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <4>;
+		sdrv,pll-divb = <6>;
+		sdrv,pll-divc = <8>;
+		sdrv,pll-divd = <10>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,pll-integer = <1>;/*TODO*/
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <3>;
+		sdrv,pll-fbdiv = <250>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	PLL5: PLL5 {
+		compatible = "semidrive,pll";
+		reg = <0 0x30820000 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <4>;
+		sdrv,pll-divb = <6>;
+		sdrv,pll-divc = <8>;
+		sdrv,pll-divd = <10>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,pll-integer = <1>;/*TODO*/
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <3>;
+		sdrv,pll-fbdiv = <199>;
+		sdrv,pll-frac = <0>;
+		sdrv,pll-postdiv = <2 1>;
+		status = "disabled";
+	};
+	PLL6: PLL6 {
+		compatible = "semidrive,pll";
+		reg = <0 0x30830000 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <4>;
+		sdrv,pll-divc = <5>;
+		sdrv,pll-divd = <6>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,pll-integer = <0>;/*TODO*/
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <122>;
+		sdrv,pll-frac = <14763950>;
+		sdrv,pll-postdiv = <5 1>;
+		status = "disabled";
+	};
+	PLL7: PLL7 {
+		compatible = "semidrive,pll";
+		reg = <0 0x30840000 0 0x10000>;
+		#clock-cells = <1>;
+		sdrv,pll-diva = <3>;
+		sdrv,pll-divb = <4>;
+		sdrv,pll-divc = <5>;
+		sdrv,pll-divd = <6>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,pll-integer = <0>;/*TODO*/
+		sdrv,pll-spread_spectrum = <0>;
+		sdrv,pll-refdiv = <2>;
+		sdrv,pll-fbdiv = <90>;
+		sdrv,pll-frac = <5315022>;
+		sdrv,pll-postdiv = <4 1>;
+		status = "disabled";
+	};
+
+	CE2: CE2 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38000000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_ROOT>, <&PLL4 PLL_ROOT>, <&PLL3 PLL_ROOT>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	ADC: ADC {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38001000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_ROOT>, <&PLL4 PLL_ROOT>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_ROOT>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2C_SEC0: I2C_SEC0 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38003000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2C_SEC0_5: I2C_SEC0_5 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3811e000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC0_7: I2C_SEC0_7 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38120000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC0_9: I2C_SEC0_9 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38122000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC0_11: I2C_SEC0_11 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38124000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC0_13: I2C_SEC0_13 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38126000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC0_15: I2C_SEC0_15 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38128000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC0>;
+		status = "disabled";
+	};
+	I2C_SEC1: I2C_SEC1 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38004000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,clk-readonly = <1>;/*if this property exist, will ignore below params. TODO*/
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+	I2C_SEC1_6: I2C_SEC1_6 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3811f000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+	I2C_SEC1_8: I2C_SEC1_8 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38121000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+	I2C_SEC1_10: I2C_SEC1_10 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38123000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+	I2C_SEC1_12: I2C_SEC1_12 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38125000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+	I2C_SEC1_14: I2C_SEC1_14 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38127000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+	I2C_SEC1_16: I2C_SEC1_16 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38129000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&I2C_SEC1>;
+		status = "disabled";
+	};
+
+	SPI_SEC0: SPI_SEC0 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38005000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	SPI_SEC1: SPI_SEC1 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38006000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+	SPI_SEC0_5: SPI_SEC0_5 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812a000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&SPI_SEC0>;
+		status = "disabled";
+	};
+	SPI_SEC0_7: SPI_SEC0_7 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812c000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&SPI_SEC0>;
+		status = "disabled";
+	};
+	SPI_SEC1_6: SPI_SEC1_6 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812b000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&SPI_SEC1>;
+		status = "disabled";
+	};
+	SPI_SEC1_8: SPI_SEC1_8 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812d000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&SPI_SEC1>;
+		status = "disabled";
+	};
+	UART_SEC0: UART_SEC0 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38007000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		sdrv,clk-readonly = <1>;
+		status = "disabled";
+	};
+	UART_SEC0_9: UART_SEC0_9 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812e000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC0>;
+		status = "disabled";
+	};
+	UART_SEC0_11: UART_SEC0_11 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38130000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC0>;
+		status = "disabled";
+	};
+	UART_SEC0_13: UART_SEC0_13 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38132000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC0>;
+		status = "disabled";
+	};
+	UART_SEC0_15: UART_SEC0_15 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38134000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC0>;
+		status = "disabled";
+	};
+	UART_SEC1_10: UART_SEC1_10 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3812f000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC1>;
+		status = "disabled";
+	};
+	UART_SEC1_12: UART_SEC1_12 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38131000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC1>;
+		status = "disabled";
+	};
+	UART_SEC1_14: UART_SEC1_14 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38133000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC1>;
+		status = "disabled";
+	};
+	UART_SEC1_16: UART_SEC1_16 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38135000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_GATE>;
+		clocks=<&UART_SEC1>;
+		status = "disabled";
+	};
+	UART_SEC1: UART_SEC1 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38008000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL3 PLL_DIVD>, <&PLL5 PLL_DIVD>, <&PLL3 PLL_DIVB>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		sdrv,clk-readonly = <1>;
+		status = "disabled";
+	};
+
+	EMMC1: EMMC1 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38009000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL4 PLL_DIVB>, <&PLL5 PLL_DIVC>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	EMMC2: EMMC2 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3800a000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL4 PLL_DIVB>, <&PLL5 PLL_DIVC>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	EMMC3: EMMC3 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3800b000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL4 PLL_DIVB>, <&PLL5 PLL_DIVC>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	ETH2_TX: ETH2_TX {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3800d000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	ETH2_RMII: ETH2_RMII {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3800e000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	ETH2_PHY_REF: ETH2_PHY_REF {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3800f000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVC>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	ETH2_TIMER_SEC: ETH2_TIMER_SEC {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38010000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVA>, <&PLL5 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	OSPI1: OSPI1 {
+		compatible = "fixed-clock";
+		//reg = <0 0x3c00b000 0 0x1000>;
+		#clock-cells = <0>;
+		clock-frequency = <266000000>;
+		status = "disabled";
+	};
+
+	OSPI2: OSPI2 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38015000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVB>, <&PLL5 PLL_DIVB>, <&PLL5 PLL_DIVC>, <&PLL5 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER3: TIMER3 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38016000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER4: TIMER4 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38017000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER5: TIMER5 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38018000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER6: TIMER6 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38019000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER7: TIMER7 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801a000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TIMER8: TIMER8 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801b000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM3: PWM3 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801c000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM4: PWM4 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801d000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM5: PWM5 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801e000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM6: PWM6 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3801f000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM7: PWM7 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38020000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	PWM8: PWM8 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38021000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_DIVA>, <&PLL7 PLL_DIVC>, <&PLL3 PLL_DIVA>, <&PLL6 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2S_MCLK2: I2S_MCLK2 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38022000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&EXT_AUD1>, <&PLL6 PLL_ROOT>, <&PLL7 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2S_MCLK3: I2S_MCLK3 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38023000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&EXT_AUD3>, <&PLL6 PLL_ROOT>, <&PLL7 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2S_SC3: I2S_SC3 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38026000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&EXT_AUD1>, <&PLL6 PLL_ROOT>, <&PLL7 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2S_SC4: I2S_SC4 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38027000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&EXT_AUD2>, <&PLL6 PLL_ROOT>, <&PLL7 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	I2S_SC7: I2S_SC7 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3802a000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&EXT_AUD2>, <&PLL6 PLL_ROOT>, <&PLL7 PLL_ROOT>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	CAN5_TO_20: CAN5_TO_20 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x3802f000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVC>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>, <&PLL5 PLL_DIVD>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	TRACE: TRACE {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38030000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_DIVB>, <&PLL5 PLL_DIVA>, <&PLL3 PLL_DIVA>, <&PLL4 PLL_ROOT>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	SYS_CNT: SYS_CNT {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38031000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL4 PLL_ROOT>, <&PLL5 PLL_ROOT>, <&PLL3 PLL_ROOT>, <&PLL6 PLL_ROOT>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	MSHC_TIMER: MSHC_TIMER {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38032000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	HPI_CLK600: HPI_CLK600 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38033000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL3 PLL_DIVA>, <&PLL3 PLL_ROOT>, <&PLL4 PLL_ROOT>, <&PLL5 PLL_ROOT>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+
+	HPI_CLK800: HPI_CLK800 {
+		compatible = "semidrive,clkgen-composite";
+		reg =  <0 0x38034000 0 0x1000>;
+		#clock-cells = <0>;
+		sdrv,type =<CLK_TYPE_IP>;
+		clocks=<&RC_24M>, <&RC_RTC>, <&XTAL_24M>, <&XTAL_RTC>, <&PLL5 PLL_ROOT>, <&PLL3 PLL_ROOT>, <&PLL4 PLL_ROOT>, <&PLL3 PLL_DIVA>;
+		sdrv,prediv = <1>;/*TODO*/
+		sdrv,postdiv = <1>;/*TODO*/
+		status = "disabled";
+	};
+};

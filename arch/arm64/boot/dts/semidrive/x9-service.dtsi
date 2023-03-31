@@ -1,0 +1,29 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+
+/ {
+        semidrive_ts0:semidrive_ts@0 {
+                mboxes = <&mbox 0x70 0x7000>;
+                touchscreen-id = /bits/ 16 <0>;
+                compatible = "sd,safetouch";
+        };
+        semidrive_ts1:semidrive_ts@1 {
+                mboxes = <&mbox 0x71 0x7100>;
+                touchscreen-id = /bits/ 16 <1>;
+                compatible = "sd,safetouch";
+        };
+
+        semidrive_cs0:semidrive_cs@0 {
+                mboxes = <&mbox MBOX_INDEX_CAMERA_CSI0 MBOX_INDEX_CAMERA_CSI0_PARAM>;
+                compatible = "sd,sdrv_dummy";
+                dev_id = /bits/ 16 <0>;
+                type="EVS";
+                status = "disabled";
+        };
+};

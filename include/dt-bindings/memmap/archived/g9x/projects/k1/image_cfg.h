@@ -1,0 +1,64 @@
+
+//*****************************************************************************
+//
+// WARNING: Automatically generated file, don't modify anymore!!!
+//
+// Copyright (c) 2019-2029 Semidrive Incorporated.  All rights reserved.
+// Software License Agreement
+//
+//*****************************************************************************
+
+#ifndef __IMAGE_CFG_H__
+#define __IMAGE_CFG_H__
+
+#define LOW32(x) ((x) & 0xffffffff)
+#define HIGH32(x) ((x) >> 32)
+
+#define DTB_MEMSIZE 0x200000
+#define BOARD_RAMDISK_OFFSET 0xC000000
+#define BOARD_TARS_OFFSET 0x0
+#define BOARD_KERNEL_OFFSET 0x4080000
+#define SAF_MEMBASE 0x30000000
+#define SAF_MEMSIZE 0x2000000
+#define SEC_MEMBASE 0x32000000
+#define SEC_MEMSIZE 0x600000
+#define SYS_CFG_MEMBASE 0x32600000
+#define SYS_CFG_MEMSIZE 0x200000
+#define VBMETA_MEMBASE 0x32800000
+#define VBMETA_MEMSIZE 0x10000
+#define DIL_IMAGES_MEMBASE 0x32810000
+#define DIL_IMAGES_MEMSIZE 0x1F0000
+#define SDPE_MEMBASE 0x180000
+#define SDPE_MEMSIZE 0x67000
+#define ROUTE_TAB_MEMBASE 0x1E7000
+#define ROUTE_TAB_MEMSIZE 0x10000
+#define SAF_SEC_MEMBASE 0x32A00000
+#define SAF_SEC_MEMSIZE 0x200000
+#define SDPE_STAT_MEMBASE 0x1F7000
+#define SDPE_STAT_MEMSIZE 0x1000
+#define SAF_SDPE_RPC_MEMBASE 0x1F8000
+#define SAF_SDPE_RPC_MEMSIZE 0x8000
+#define SAF_SDPE_MEMBASE 0x32C00000
+#define SAF_SDPE_MEMSIZE 0x200000
+#define SAF_AP2_MEMBASE 0x32E00000
+#define SAF_AP2_MEMSIZE 0x200000
+#define SDPE_AP2_MEMBASE 0x33000000
+#define SDPE_AP2_MEMSIZE 0x200000
+#define SEC_AP2_MEMBASE 0x33200000
+#define SEC_AP2_MEMSIZE 0x200000
+#define SEC_SDPE_MEMBASE 0x33400000
+#define SEC_SDPE_MEMSIZE 0x200000
+#define AP2_ATF_MEMBASE 0x43600000
+#define AP2_ATF_MEMSIZE 0x200000
+#define AP2_REE_MEMBASE 0x43800000
+#define AP2_REE_MEMSIZE 0x3C800000
+#define AP2_PRELOADER_MEMBASE 0x43A00000
+#define AP2_PRELOADER_MEMSIZE 0x400000
+#define AP2_BOOTLOADER_MEMBASE 0x45800000
+#define AP2_BOOTLOADER_MEMSIZE 0x800000
+#define AP2_KERNEL_MEMBASE 0x47880000
+#define AP2_KERNEL_MEMSIZE 0x3C600000
+#define AP2_BOARD_RAMDISK_MEMBASE 0x4F800000
+#define AP2_BOARD_RAMDISK_MEMSIZE 0x2000000
+
+#endif /* __IMAGE_CFG_H__*/

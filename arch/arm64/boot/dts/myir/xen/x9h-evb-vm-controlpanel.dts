@@ -1,0 +1,71 @@
+/dts-v1/;
+
+#include "x9-vm.dtsi"
+#include "display-xen.dtsi"
+#include "clk-xen.dtsi"
+#include "lcd-timings-xen.dtsi"
+#include "x9-gpu.dtsi"
+#include "x9-import.dtsi"
+#include "./x9-reset-common.dtsi"
+
+
+/ {
+        reserved-memory {
+		   	#address-cells = <0x2>;
+		   	#size-cells = <0x2>;
+		   	ranges;
+
+			linux,cma {
+			    compatible = "shared-dma-pool";
+			    reusable;
+			    size = <0x0 0x10000000>;
+			    linux,cma-default;
+			};
+
+                        vm_reserved: vm_shm {
+                           compatible = "shared-dma-pool";
+                           reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+                           status = "disabled";
+                        };
+	};
+};
+
+&soc_cgu {
+         status = "okay";
+};
+
+&sec_cgu {
+         status = "okay";
+};
+
+&dmac7 {
+	status = "okay";
+};
+
+&i2c14 {
+	status = "okay";
+	gt9271_15_j1805:gt9271_15_j1805@5d {
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&pinctrl_gpiotouch_lvds>;
+		compatible = "goodix,gt9271";
+                irq-gpios = <&port3e 1 0>;	/*io81*/
+		reset-gpios = <&tp_gpio 3 0>;		/*index 3*/
+		reg = <0x5d>;
+	};
+
+	tp_gpio: gpio@74 {
+		compatible = "ti,tca9539";
+		reg = <0x74>;
+		#gpio-cells = <2>;
+		gpio-controller;
+	};
+};
+
+
+&pinctrl {
+	reg = <0x0 0x37020000 0x0 0x10000>;
+};
+
+&gpio3 {
+	status = "okay";
+};

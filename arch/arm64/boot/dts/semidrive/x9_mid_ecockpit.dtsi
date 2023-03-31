@@ -1,0 +1,25 @@
+/*
+* Semidrive X9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+#include "x9_mid.dtsi"
+#include "x9_mid_ecockpit-import.dtsi"
+/{
+        /delete-node/interrupt-controller@35411000;/*gic2*/
+        /delete-node/interrupt-controller@35421000;/*gic3*/
+        /delete-node/interrupt-controller@35441000;/*gic5*/
+        soc {
+            /delete-node/ gpio@30400000;/*gpio2*/
+            /delete-node/ timer@0x30900000;/*HW timer8 */
+            /*/delete-node/ xrp@0; vdsp should remove later*/
+            /*/delete-node/ csi@30cc0000; csi0 should remove later*/
+            /*/delete-node/ csi-mipi@30d00000; csimipi0 should remove later*/
+            /delete-node/ watchdog@0x30a00000;/*watchdog3*/
+            /delete-node/ watchdog@0x30a10000;/*watchdog4*/
+            /delete-node/ watchdog@0x30a30000;/*watchdog6*/
+        };
+};

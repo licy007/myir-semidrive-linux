@@ -1,0 +1,19 @@
+config PINCTRL_SEMIDRIVE
+	bool
+	depends on OF
+	depends on ARCH_SEMIDRIVE
+	select GENERIC_PINCTRL_GROUPS
+	select GENERIC_PINMUX_FUNCTIONS
+	select GENERIC_PINCONF
+	select REGMAP
+
+config PINCTRL_SD_MEMMAP
+	bool
+
+config PINCTRL_SDX9
+	bool "Semidrive kunlun pinctrl driver"
+	select PINCTRL_SEMIDRIVE
+	select PINCTRL_SD_MEMMAP
+	help
+	  Say Y here to enable the semidrive x9 pinctrl driver
+

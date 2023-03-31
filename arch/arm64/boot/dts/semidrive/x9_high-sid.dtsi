@@ -1,0 +1,80 @@
+/**
+ * Semidrive SID DTS file
+ *
+ * Copyright (C) 2019, Semidrive Semiconductor
+ *
+ * All rights reserved.
+ */
+
+/**
+ * This file is maintained by Semidrive.
+ * Semidrive strongly suggest others do not change the Stream-IDs
+ * unless you know what you are doing!
+ */
+
+#include <dt-bindings/memory/sdrv-sid.h>
+/*should remove later, soultion level*/
+&display {
+	/* DRM domain has multiple master IDs for DC/DP in the IOMMU */
+	iommus = <&smmu SDRV_SID_DP1>,
+	<&smmu SDRV_SID_DP3>;
+        smmu;
+};
+
+&g2d {
+	iommus = <&smmu SDRV_SID_G2D1>,
+		<&smmu SDRV_SID_G2D2>;
+	smmu;
+};
+
+&vpu1 {
+	iommus = <&smmu SDRV_SID_VPU1>;
+	smmu;
+};
+
+&vpu2 {
+	iommus = <&smmu SDRV_SID_VPU2>;
+	smmu;
+};
+
+/*&dmac2 {
+	iommus = <&smmu SDRV_SID_DMA3>;
+};
+
+&dmac3 {
+	iommus = <&smmu SDRV_SID_DMA4>;
+};
+
+&dmac4 {
+	iommus = <&smmu SDRV_SID_DMA5>;
+	smmu;
+};
+
+&dmac5 {
+	iommus = <&smmu SDRV_SID_DMA6>;
+	smmu;
+};
+
+&dmac6 {
+	iommus = <&smmu SDRV_SID_DMA7>;
+	smmu;
+};
+
+&dmac7 {
+	iommus = <&smmu SDRV_SID_DMA8>;
+	smmu;
+};*/
+
+&vdsp {
+	iommus = <&smmu SDRV_SID_VDSP>;
+	smmu;
+};
+
+&gpu0 {
+	iommus = <&smmu SDRV_SID_GPU1_OS1>;
+};
+
+&gpu1 {
+	iommus = <&smmu SDRV_SID_GPU2_OS1>;
+};
+

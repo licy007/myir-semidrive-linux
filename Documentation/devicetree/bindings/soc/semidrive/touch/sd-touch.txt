@@ -1,0 +1,14 @@
+* Semidrive kunlun simulated touch DTS file
+
+Required properties :
+- compatible : should be "siw,sw4101"
+
+Examples :
+siw4101_main:touch@50 {
+	compatible = "siw,sw4101";
+}
+
+siw4101_aux:touch@51 {
+	compatible = "siw,sw4101";
+}
+

@@ -1,0 +1,155 @@
+/*
+* Semidrive D9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+#include "d9.dtsi"
+#include "d9310_clk_ctrl.dtsi"
+#include "d9_reset_base.dtsi"
+#include "gic5_int_diff.dtsi"
+#include "sdrv-coresight-cpu2.dtsi"
+/{
+	interrupt-parent=<&gic5>;
+
+	gic5: interrupt-controller@35441000 {
+		compatible = "arm,gic-400";
+		reg = <0 0x35441000 0 0x1000>,
+		      <0 0x35442000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
+		interrupt-parent = <&gic5>;
+	};
+
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		/* AP2 */
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x0>;
+			clocks = <&CPU2_0>, <&CPU2_SEL0>, <&CPU2>, <&PLL_CPU2 PLL_ROOT>;
+			clock-names = "cpu0", "sel0", "ckgen", "pll";
+			enable-method = "psci";
+			i-cache-size = <0x8000>;
+			i-cache-line-size = <64>;
+			i-cache-sets = <0x80>;
+			d-cache-size = <0x8000>;
+			d-cache-line-size = <64>;
+			d-cache-sets = <0x80>;
+			next-level-cache = <&l2>;
+		};
+	        l2: l2-cache {
+			compatible = "cache";
+			cache-size = <0x20000>;
+			cache-line-size = <64>;
+			cache-sets = <0x200>;
+		};
+
+	};
+
+	pmu {
+		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
+		interrupts = 	<GIC_SPI 8 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 9 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 10 IRQ_TYPE_EDGE_RISING>,
+				<GIC_SPI 11 IRQ_TYPE_EDGE_RISING>;
+		interrupt-affinity = <&cpu0>;
+	};
+
+	soc {
+		/* AP2 watchdog */
+		watchdog6: watchdog@0x30a30000 {
+			compatible = "semidrive,watchdog";
+			reg = <0x0 0x30a30000 0x0 0x1000>;
+			#interrupt-cells = <1>;
+			interrupts = <0 190 4>;
+			interrupt-parent = <&gic5>;
+			wdt,clock-source = "main-clk";
+			wdt,clock-divider = <0>;
+			timeout-sec = <2>;
+			wdt,min-hw-hearbeat = <800>;
+			wdt,max-hw-hearbeat = <2000>;
+			wdt,dying-delay;
+			wdt,sig-rstgen = "false";
+			wdt,auto-run = "true";
+			regctl = <&regctl SDRV_REG_BOOTREASON>;
+			status = "disabled";
+		};
+
+		sdrvcpufreq: cpufreq {
+			compatible = "semidrive,sdrv-cpufreq";
+			min-freq = <100000000>;/*hz*/
+			max-freq = <1656000000>;
+			trans-delay-us = <200000>;
+			start-time = <30>; /*second*/
+			status = "okay";
+		};
+
+		vdsp:xrp@0 {
+			#address-cells = <2>;
+			#size-cells = <2>;
+			compatible = "cdns,xrp-hw-semidrive,v1";
+			mbox-names = "tx";
+			mboxes = <&mbox 0x07 0x0705>;
+			host-irq = <232>; /* record mu IRQ#, won't register handler */
+			device-irq = <23>;      /* vdsp mu_ready IRQ#, pass to vdsp */
+			device-irq-mode = <1>;    /* level */
+			host-irq-mode = <1>;      /* level */
+			status = "disabled";
+			dsp@0 { /* only 1 dsp core */
+			};
+		};
+
+		ospi1: spi@30020000 {
+			compatible = "sdrv,ospi-nor";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0 0x30020000 0 0x10000>,
+				<0 0x4000000 0 0x4000000>;
+			interrupts = <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>;
+			cdns,fifo-depth = <256>;
+			cdns,fifo-width = <4>;
+			cdns,trigger-address = <0x3fffe00>;
+			clocks = <&OSPI1>;
+			status = "disabled";
+		};
+
+		rtc: rtc@0x31810000 {
+			compatible = "semidrive,sdrv-rtc";
+			reg = <0x0 0x31810000 0x0 0x10000>;
+			interrupts = <0 220 IRQ_TYPE_LEVEL_HIGH>;
+			status = "disabled";
+		};
+	};
+};
+
+&generic_timer {
+	interrupts = <1 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+		   <1 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+		   <1 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+		   <1 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+};
+
+&CPU1A_0_CORE4 {
+	status = "disabled";
+};
+
+&CPU1A_0_CORE5 {
+	status = "disabled";
+};
+
+&pcie1 {
+	interrupt-map = <0x0 0 0 1
+		 &gic5 GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>,
+		<0x0 0 0 2
+		 &gic5 GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
+		<0x0 0 0 3
+		 &gic5 GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>,
+		<0x0 0 0 4
+		 &gic5 GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
+};

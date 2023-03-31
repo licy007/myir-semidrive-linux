@@ -1,0 +1,9 @@
+* Semidrive kunlun ethernet phy DTS file
+
+Required properties :
+- compatible : should be "ethernet-phy-id0022.1620" or "ethernet-phy-ieee802.3-c22" or "ethernet-phy-id001c.c916" or "ethernet-phy-ieee802.3-c22" or "ethernet-phy-id001c.cb30" or "ethernet-phy-ieee802.3-c22"
+
+Examples :
+	eth_phy2 {
+		compatible = "ethernet-phy-id0022.1620", "ethernet-phy-ieee802.3-c22";
+	};

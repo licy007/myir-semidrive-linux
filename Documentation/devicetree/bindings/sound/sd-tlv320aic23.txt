@@ -1,0 +1,20 @@
+* Semidrive kunlun tlv320aic23 DTS file
+
+Required properties :
+- compatible : should be "semidrive,x9-ref-tlv320aic23"
+- status : enable or disable device node
+
+Examples :
+/ {
+    sound_tlv320aic23: sound@tlv320aic23 {
+	compatible = "semidrive,x9-ref-tlv320aic23";
+	status = "okay";
+    };
+
+    &i2c9 {
+	tlv320aic23_ms: codec@1a {
+	    compatible = "ti,tlv320aic23";
+	    reg = <0x1a>;
+	};
+    }
+}

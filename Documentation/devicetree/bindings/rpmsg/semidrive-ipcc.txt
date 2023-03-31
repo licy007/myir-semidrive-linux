@@ -1,0 +1,35 @@
+Semidrive IPCC Driver
+=====================
+
+Semidrive Inter-Processor Communication Controller (IPCC), based on Semidrive
+Mailbox Controller, is designed for inter-core communication.
+
+IPCC Device Node:
+=================
+
+Required properties:
+--------------------
+- compatible :		Should be "sd,rpmsg-ipcc".
+- mboxes :		This is a phandle object consisting of 3 parts. The
+			first is a handle to mailbox node. The second is
+			mailbox local address. The last is an unsigned short
+			with high byte as mailbox remote address and low byte
+			as mailbox remote processor ID. See semidrive-mailbox
+			for details.
+
+Optional properties:
+--------------------
+- rpmsg-mtu :		Set MTU for device, will be RPMSG_DEFAULT_HW_MTU if
+			not set.
+- tx-desc-num :		Number of TX buffer, will be RPMSG_DEFAULT_TXD_NUM if
+			not set.
+
+Example:
+--------
+	ipcc0: ipcc@0 {
+		compatible = "sd,rpmsg-ipcc";
+		mboxes = <&mbox 0x33 0x3300>;
+		#rpmsg-cells = <2>;
+		rpmsg-mtu = <1024>;
+		status = "disabled";
+	};

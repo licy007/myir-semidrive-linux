@@ -1,0 +1,15 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/soc/sdrv_dt_mapping.h>
+
+/{
+	compatible = "semidrive,kunlun";
+	chip-id = < SDRV_CHIPID_ALL >;
+	board-type = < SDRV_BOARD_TYPE_REF >;
+	board-id = < SDRV_BOARDID_A04 >;
+
+	fragment@0 {
+		target = <&sound_ak7738>;
+	};
+};

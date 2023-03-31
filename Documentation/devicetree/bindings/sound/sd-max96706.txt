@@ -1,0 +1,9 @@
+* Semidrive kunlun max96706 DTS file
+
+Required properties :
+- compatible : should be "sdrv,semidrive_serdes"
+
+Examples :
+	max96706:max96706@78 {
+		model = "sdrv,semidrive_serdes";
+	};

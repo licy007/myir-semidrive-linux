@@ -1,0 +1,38 @@
+/{
+        reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		vm_shmem: vm_shm,cma {
+			compatible = "shared-dma-pool","vm,reserved";
+			reg = <0x0 XEN_RESERVED_VM_BASE 0x0 XEN_RESERVED_VM_SIZE>;
+			no-map;
+		};
+
+		xrp_shared: xrp@0 {
+                        compatible = "shared-dma-pool","vm,reserved";
+                        reg = <0x0 XEN_RESERVED_VDSP_BASE 0x0 XEN_RESERVED_VDSP_SIZE>;
+                        no-map;
+		};
+
+		rproc_0_safety: rproc@0 {
+			compatible = "shared-dma-pool","vm,reserved";
+			no-map;
+			reg = <0x0 RPMSG0_MEM_POOL_BASE 0x0 RPMSG0_MEM_POOL_SIZE>;
+		};
+
+		rproc_1_secure: rproc@1 {
+			compatible = "shared-dma-pool","vm,reserved";
+			no-map;
+			reg = <0x0 RPMSG1_MEM_POOL_BASE 0x0 RPMSG1_MEM_POOL_SIZE>;
+		};
+
+                services_shmem: services_shm,cma {
+			compatible = "shared-dma-pool","vm,reserved";
+			reg = <0x0 XEN_RESERVED_SERVICE_BASE 0x0 XEN_RESERVED_SERVICE_SIZE>;
+			no-map;
+		};
+	};
+
+};

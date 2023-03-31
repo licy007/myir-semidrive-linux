@@ -1,0 +1,28 @@
+Semidrive Vircan Driver
+=====================
+
+Semidrive Virtual Can device driver, based on Semidrive
+rpmsg framework, is designed for transmit can frame between
+A core and R core.
+
+Vircan Device Node:
+=================
+
+Required properties:
+--------------------
+- compatible :		Should be "sd,vircan".
+- endpoint :		endpoint for create rpmsg channel.
+
+Optional properties:
+--------------------
+- canif-bind :		Set Can controller for device, will be searched by name if
+			not set.
+
+Example:
+--------
+	dcf_vircan0:vircan@0 {
+		compatible = "sd,vircan";
+		endpoint = <101>;
+		canif-bind = <2>;
+		status = "disabled";
+	};

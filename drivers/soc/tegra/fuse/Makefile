@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+obj-y					+= fuse-tegra.o
+obj-y					+= fuse-tegra30.o
+obj-y					+= tegra-apbmisc.o
+obj-$(CONFIG_GK20A_PCI)			+= tegra-platform.o
+tegra_fuse-objs                         := tegra-chipid.o
+obj-$(CONFIG_GK20A_PCI)			+= tegra_fuse.o
+obj-$(CONFIG_ARCH_TEGRA_2x_SOC)		+= fuse-tegra20.o
+obj-$(CONFIG_ARCH_TEGRA_2x_SOC)		+= speedo-tegra20.o
+obj-$(CONFIG_GK20A_PCI)			+= speedo-tegra30.o
+obj-$(CONFIG_GK20A_PCI)			+= speedo-tegra114.o
+obj-$(CONFIG_GK20A_PCI)			+= speedo-tegra124.o
+obj-$(CONFIG_ARCH_TEGRA_132_SOC)	+= speedo-tegra124.o
+obj-$(CONFIG_GK20A_PCI)			+= speedo-tegra210.o

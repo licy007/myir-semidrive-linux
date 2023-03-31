@@ -1,0 +1,160 @@
+/*
+ * Semidrive kunlun platform DTS file
+ *
+ * Copyright (C) 2019, Semidrive  Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "x9-opp.dtsi"
+/ {
+        soc {
+               gpu0:gpu0@34c00000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c00000 0x0 0x80000>;
+                               interrupts = <0 149 4>;
+                               clock-frequency = <800000000>;
+                               operating-points-v2 = <&gpu0_opp_table>;
+                               osid = <0>;
+                               status = "disabled";
+               };
+               gpu0_0:gpu0_0@34c00000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c00000 0x0 0x80000>;
+                               interrupts = <0 150 4>;
+                               clock-frequency = <800000000>;
+                               operating-points-v2 = <&gpu0_opp_table>;
+                               osid = <0>;
+                               status = "disabled";
+               };
+               gpu0_1:gpu0_1@34c10000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c10000 0x0 0x10000>;
+                               interrupts = <0 151 4>;
+                               clock-frequency = <800000000>;
+                               osid = <1>;
+                               status = "disabled";
+               };
+               gpu0_2:gpu0_2@34c20000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c20000 0x0 0x10000>;
+                               interrupts = <0 152 4>;
+                               clock-frequency = <800000000>;
+                               osid = <2>;
+                               status = "disabled";
+               };
+               gpu0_3:gpu0_3@34c30000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c30000 0x0 0x10000>;
+                               interrupts = <0 153 4>;
+                               clock-frequency = <800000000>;
+                               osid = <3>;
+                               status = "disabled";
+               };
+               gpu0_4:gpu0_4@34c40000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c40000 0x0 0x10000>;
+                               interrupts = <0 154 4>;
+                               clock-frequency = <800000000>;
+                               osid = <4>;
+                               status = "disabled";
+               };
+               gpu0_5:gpu0_5@34c50000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c50000 0x0 0x10000>;
+                               interrupts = <0 155 4>;
+                               clock-frequency = <800000000>;
+                               osid = <5>;
+                               status = "disabled";
+               };
+               gpu0_6:gpu0_6@34c60000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c60000 0x0 0x10000>;
+                               interrupts = <0 156 4>;
+                               clock-frequency = <800000000>;
+                               osid = <6>;
+                               status = "disabled";
+               };
+               gpu0_7:gpu0_7@34c70000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34c70000 0x0 0x10000>;
+                               interrupts = <0 157 4>;
+                               clock-frequency = <800000000>;
+                               osid = <7>;
+                               status = "disabled";
+               };
+               gpu1:gpu1@34e00000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e00000 0x0 0x80000>;
+                               interrupts = <0 158 4>;
+                               clock-frequency = <800000000>;
+                               operating-points-v2 = <&gpu1_opp_table>;
+                               osid = <0>;
+                               status = "disabled";
+               };
+               gpu1_0:gpu1_0@34e00000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e00000 0x0 0x80000>;
+                               interrupts = <0 159 4>;
+                               clock-frequency = <800000000>;
+                               operating-points-v2 = <&gpu1_opp_table>;
+                               osid = <0>;
+                               status = "disabled";
+               };
+               gpu1_1:gpu1_1@34e10000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e10000 0x0 0x10000>;
+                               interrupts = <0 160 4>;
+                               clock-frequency = <800000000>;
+                               osid = <1>;
+                               status = "disabled";
+               };
+               gpu1_2:gpu1_2@34e20000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e20000 0x0 0x10000>;
+                               interrupts = <0 161 4>;
+                               clock-frequency = <800000000>;
+                               osid = <2>;
+                               status = "disabled";
+               };
+               gpu1_3:gpu1_3@34e30000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e30000 0x0 0x10000>;
+                               interrupts = <0 162 4>;
+                               clock-frequency = <800000000>;
+                               osid = <3>;
+                               status = "disabled";
+               };
+               gpu1_4:gpu1_4@34e40000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e40000 0x0 0x10000>;
+                               interrupts = <0 163 4>;
+                               clock-frequency = <800000000>;
+                               osid = <4>;
+                               status = "disabled";
+               };
+               gpu1_5:gpu1_5@34e50000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e50000 0x0 0x10000>;
+                               interrupts = <0 164 4>;
+                               clock-frequency = <800000000>;
+                               osid = <5>;
+                               status = "disabled";
+               };
+               gpu1_6:gpu1_6@34e60000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e60000 0x0 0x10000>;
+                               interrupts = <0 165 4>;
+                               clock-frequency = <800000000>;
+                               osid = <6>;
+                               status = "disabled";
+               };
+               gpu1_7:gpu1_7@34e70000 {
+                               compatible = "imagination,pvr-rogue";
+                               reg = <0x0 0x34e70000 0x0 0x10000>;
+                               interrupts = <0 166 4>;
+                               clock-frequency = <800000000>;
+                               osid = <7>;
+                               status = "disabled";
+               };
+	};
+};

@@ -1,0 +1,60 @@
+/*
+* Semidrive G9 platform DTS file
+*
+* Copyright (C) 2019, Semidrive  Communications Inc.
+*
+* This file is licensed under a dual GPLv2 or X11 license.
+*/
+
+/ {
+	soc{
+		ethernet1: eth@30170000 {
+			compatible = "semidrive,dwc-qos-ethernet";
+			reg = <0x0 0x30170000 0x0 0x10000>;
+			interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>;
+			phy-handle = <&eth_phy1>;
+			phy-mode = "rgmii";
+			snps,force_sf_dma_mode;
+			clk_csr = <1>;
+			rx-fifo-depth = <0x2000>;
+			tx-fifo-depth = <0x2000>;
+			status = "disabled";
+			semidrive,multicast_filter_bins = <4>;
+			semidrive,mcast_bits_log2 = <7>;
+
+			mdio {
+				compatible = "snps,dwmac-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				eth_phy1: ethernet-phy@1 {
+					compatible = "ethernet-phy-id5050.5050", "ethernet-phy-ieee802.3-c22";
+					reg = <0x1f>;
+				};
+			};
+		};
+
+		ospi1: spi@30020000 {
+			compatible = "sdrv,ospi-nor";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0 0x30020000 0 0x10000>,
+				<0 0x4000000 0 0x4000000>;
+			interrupts = <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>;
+			cdns,fifo-depth = <256>;
+			cdns,fifo-width = <4>;
+			cdns,trigger-address = <0x3fffe00>;
+			sdrv,need-handover;
+			clocks = <&OSPI1>;
+			status = "disabled";
+		};
+
+		rtc: rtc@0x31810000 {
+			compatible = "semidrive,sdrv-rtc";
+			reg = <0x0 0x31810000 0x0 0x10000>;
+			interrupts = <0 220 IRQ_TYPE_LEVEL_HIGH>;
+			status = "disabled";
+		};
+
+	};
+};

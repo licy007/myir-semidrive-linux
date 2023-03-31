@@ -1,0 +1,31 @@
+Generic device tree bindings for crtc
+===========================================
+
+This document describes generic bindings which can be used to describe crtc
+busses in a device tree.
+
+Required properties
+-------------------
+- compatible
+    should contain "semidrive,kunlun-crtc"
+
+- status:
+    "okay" or "disabled"
+
+- sdrv,ip
+    select different crtc operation
+
+Example:
+
+crtc0: crtc0 {
+			compatible = "semidrive,kunlun-crtc";
+			dpc-master = <&dc1>;
+			/* 1 single, 2: duplicate, 3: combine */
+			display-mode = <1>;
+
+			crtc0_out: port {
+				crtc0_out_interface: endpoint@0 {
+					remote-endpoint = <&parallel_in_crtc0>;
+				};
+			};
+};
